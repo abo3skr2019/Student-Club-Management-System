@@ -9,7 +9,11 @@ We are excited about your interest in contributing to our web application projec
         
     - `dev`: The primary development branch where all features and bug fixes are integrated before merging into `master`. Always pull the latest `dev`before creating a new branch.
         
+<<<<<<< HEAD
     - `Feature Branches` : Create feature-specific branches using the naming convention: `feature/feature-name` , `bugfix/issue-description` or `docs/doc-name/description`.
+=======
+    - `Feature Branches` : Create feature-specific branches using the naming convention: `feature/feature-name` , `bugfix/issue-description` or `docs/doc-name`.
+>>>>>>> b7b7aab (Update Contribution-Guidelines.md)
 - **Commits**:
 	- Use clear, descriptive commit messages (e.g., "Fix bug in user authentication" or "Add search functionality").
 		
