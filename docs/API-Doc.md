@@ -266,3 +266,48 @@ This is the API documentation for the Event Management System.
     }
   }
   ```
+
+#### **POST** `/:eventId/register`
+  - **Description**: Register for Event 
+  - **Request Headers**:
+    ```json
+    Authorization: Bearer <token>
+    ```
+  - **Response**:
+    ```json
+    {
+    "registration_id": "string",
+    "event_id": "string",
+    "status": "confirmed",
+    "message": "string"
+    }
+    ```
+
+#### **GET** `/:eventId/registrations`
+  - **Description**: Fetch Event Registrations (Club Admin only).
+  - **Request Headers**:
+    ```json
+     Authorization: Bearer <club_admin_jwt_token>
+    ```
+  - **Response**:
+    ```json
+    {
+      "event_id": "string",
+      "registrations": [
+        {
+          "registration_id": "string",
+          "user": {
+            "user_id": "string",
+            "username": "string",
+            "email": "string",
+          },
+          "registration_date": "ISO_8601_string",
+          "status": "confirmed"
+        }
+      ],
+      "total_registrations": "number",
+      "availableSeats": "number"
+    }
+    ```
+
+
