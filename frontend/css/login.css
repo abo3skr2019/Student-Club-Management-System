@@ -1,0 +1,67 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Tajawal', sans-serif;
+    background-color: #dfe2e3;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.brand {
+    font-weight: 700;
+    font-size: 2rem;
+    color: #2962ff;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #2962ff, #3d5afe);
+    border: none;
+    color: #fff;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #3d5afe, #2962ff);
+    transform: scale(1.02);
+}
+
+.btn-outline {
+    border: 1px solid #3d5afe;
+    color: #3d5afe;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: #e9ecef;
+    transform: scale(1.02);
+}
+
+.icon {
+    font-size: 1.5rem;
+}
+
+hr {
+    border-top: 1px solid #e9ecef;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
