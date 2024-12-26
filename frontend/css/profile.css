@@ -97,7 +97,18 @@ body {
     }
 }
 
+/* Hover Effects */
+.profile-header:hover {
+    transform: translateY(-5px);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+
 /* Footer */
 footer {
     font-size: 0.9rem;
 }
+
