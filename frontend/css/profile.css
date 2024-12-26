@@ -1,0 +1,98 @@
+/* General Styles */
+body {
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    background-color: #f8f9fa;
+}
+
+/* Navbar Styles */
+.navbar {
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2962ff;
+}
+
+/* Profile Header */
+.profile-header {
+    background: #fff;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: transform 0.3s;
+}
+
+.profile-avatar {
+    font-size: 4rem;
+    color: #2962ff;
+    text-align: center;
+}
+
+.profile-info-placeholder {
+    padding: 1rem 0;
+}
+
+.placeholder-glow .placeholder {
+    height: 1.5rem;
+    margin-bottom: 0.5rem;
+    background-color: #e9ecef;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.card-header {
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.5rem;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+    color: #2962ff;
+}
+
+.card-header h2 i {
+    margin-left: 0.5rem;
+}
+
+/* Events Placeholder */
+.events-placeholder {
+    min-height: 200px;
+}
+
+.events-placeholder i {
+    font-size: 2rem;
+    color: #2962ff;
+    display: block;
+}
+
+.events-placeholder p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .profile-header {
+        margin: 1rem 0;
+    }
+}
