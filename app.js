@@ -3,12 +3,11 @@ const path = require('path');
 
 const app = express();
 
-// Set EJS as the template engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
 
-// Serve static assets from /public
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'frontend', 'views'));
+
+app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
