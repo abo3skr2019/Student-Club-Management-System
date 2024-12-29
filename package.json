@@ -2,7 +2,7 @@
   "name": "webdevcourseproject",
   "version": "1.0.0",
   "description": "Lorem Ipsum",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +16,10 @@
     "express": "^4.21.2",
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.1",
-    "mongoose": "^8.8.3"
+    "mongoose": "^8.8.3",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "uuid": "^11.0.3"
   }
 }
