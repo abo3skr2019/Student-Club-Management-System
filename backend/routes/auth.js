@@ -7,8 +7,8 @@ const GitHubStrategy = require("passport-github2").Strategy;
 const User = require("../models/User");
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientID: process.env.GOOGLE_CLIENT_ID || "test-google-client-id",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || "test-google-client-secret",
     callbackURL: process.env.GOOGLE_CALLBACK_URI || "http://localhost:5000/google/callback"
 },
     async function (accessToken, refreshToken, profile, done) {
@@ -47,8 +47,8 @@ passport.use(new GoogleStrategy({
 ));
 
 passport.use(new GitHubStrategy({
-    clientID: process.env.GITHUB_CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    clientID: process.env.GITHUB_CLIENT_ID || "test-github-client-id",
+    clientSecret: process.env.GITHUB_CLIENT_SECRET || "test-github-client-secret",
     callbackURL: process.env.GITHUB_CALLBACK_URI || "http://localhost:5000/github/callback"
 },
     async function (accessToken, refreshToken, profile, done) {
