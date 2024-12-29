@@ -3,7 +3,8 @@ const path = require('path');
 const connectDB = require('backend/config/db')
 const passport = require('passport');
 const session = require('express-session');
-
+const dotenv = require('dotenv');
+dotenv.config();
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -35,7 +36,7 @@ app.use(require('./backend/routes/auth'));
 app.use(require('./backend/routes/profile'));
 
 // Start the server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
