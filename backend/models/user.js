@@ -34,7 +34,8 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        match: [/.+\@.+\..+/, 'Please fill a valid email address']
+        match: [/.+\@.+\..+/, 'Please fill a valid email address'],
+        index: true
     },
     profileImage: {
         type: String,
@@ -48,7 +49,8 @@ const UserSchema = new Schema({
     role: {
         type: String,
         enum: ['Admin', 'ClubAdmin', 'Member', 'Visitor'],
-        default: 'Visitor'
+        default: 'Visitor',
+        index: true
     },
     createdAt: {
         type: Date,
