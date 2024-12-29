@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ClubSchema = require('./club').schema; // Import ClubSchema
-
 const ProviderSchema = new Schema({
     name: {
         type: String,
@@ -42,8 +40,16 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    ClubsManaged: [ClubSchema],
+    clubsManaged: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Club'
+    }],
     providers: [ProviderSchema],
+    role: {
+        type: String,
+        enum: ['Admin', 'ClubAdmin', 'Member', 'Visitor'],
+        default: 'Visitor'
+    },
     createdAt: {
         type: Date,
         default: Date.now
