@@ -1,6 +1,6 @@
 .env
 /node_modules
-Requirements-Document.md
-.idea
 /coverage
 output.txt
+Requirements-Document.md
+.idea
