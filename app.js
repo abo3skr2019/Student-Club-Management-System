@@ -4,6 +4,8 @@ const passport = require('passport');
 const session = require('express-session');
 const dotenv = require('dotenv');
 const connectDB = require('backend/config/db')
+const passport = require('passport');
+const session = require('express-session');
 
 // Initialize environment variables from .env file
 dotenv.config();
