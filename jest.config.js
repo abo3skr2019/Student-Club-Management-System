@@ -4,6 +4,6 @@ module.exports = {
     collectCoverage: true,
     coverageDirectory: 'coverage',
     testPathIgnorePatterns: ['/node_modules/'],
-    roots: ['<rootDir>/backend/tests', '<rootDir>/frontend/tests'],
+    roots: ['<rootDir>/backend/tests'], // removed frontend/tests from roots since it is empty for now 
     setupFiles: ["dotenv/config"],
   };
