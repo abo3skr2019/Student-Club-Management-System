@@ -2,3 +2,5 @@
 /node_modules
 Requirements-Document.md
 .idea
+coverage
+output.txt
