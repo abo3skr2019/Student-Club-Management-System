@@ -56,11 +56,24 @@ passport.use(new GitHubStrategy({
             name: 'github',
             providerId: profile.id
         };
+        let firstName, lastName;
+        if (profile.name) {
+            firstName = profile.name.givenName;
+            lastName = profile.name.familyName;
+        } else if (profile.displayName) {
+            const nameParts = profile.displayName.split(' ');
+            firstName = nameParts[0];
+            lastName = nameParts.slice(1).join(' ');
+        } else {
+            firstName = profile.username;
+            lastName = '';
+        }
+
         const newUser = {
             id: uuidv4(), // Generate a unique id
             displayName: profile.displayName,
-            firstName: profile.name.givenName,
-            lastName: profile.name.familyName,
+            firstName: firstName,
+            lastName: lastName,
             email: profile.emails[0].value,
             profileImage: profile.photos[0].value,
             providers: [newProvider]
@@ -98,7 +111,7 @@ router.get('/google/callback',
     });
 // GitHub auth routes
 router.get('/auth/github',
-    passport.authenticate('github', { scope: ['user:email'] }));
+    passport.authenticate('github', { scope: ['user:email','read:user'] }));
 
 router.get('/github/callback',
     passport.authenticate('github', {
