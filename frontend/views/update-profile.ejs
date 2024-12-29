@@ -5,6 +5,9 @@
 </head>
 <body>
     <h1>Update Profile</h1>
+    <% if (!user) { %>
+        <p>Please <a href="/login">login</a> to update your profile.</p>
+    <% } else { %>
     <form action="/update-profile" method="POST">
         <label for="firstName">First Name:</label>
         <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required>
@@ -14,5 +17,6 @@
         <br>
         <button type="submit">Update</button>
     </form>
+    <% } %>
 </body>
 </html>
