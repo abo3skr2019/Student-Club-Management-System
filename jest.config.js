@@ -5,4 +5,5 @@ module.exports = {
     coverageDirectory: 'coverage',
     testPathIgnorePatterns: ['/node_modules/'],
     roots: ['<rootDir>/backend/tests', '<rootDir>/frontend/tests'],
+    setupFiles: ["dotenv/config"],
   };
