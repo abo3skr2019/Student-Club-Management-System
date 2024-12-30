@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "test:watch": "jest --watch --detectOpenHandles",
-    "dev": "nodemon app.js"
+    "test:watch": "jest --watch --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +23,6 @@
     "@playwright/test": "^1.49.1",
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.1.2",
-    "nodemon": "^3.1.9",
     "playwright": "^1.49.1",
     "supertest": "^7.0.0"
   }
