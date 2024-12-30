@@ -18,7 +18,7 @@ router.post('/update-profile',isAuthenticated, async (req, res) => {
         user.firstName = firstName;
         user.lastName = lastName;
         await user.save();
-        res.redirect('/dashboard');
+        res.redirect('/profile');
     } catch (error) {
         console.log(error);
         res.redirect('/update-profile');
