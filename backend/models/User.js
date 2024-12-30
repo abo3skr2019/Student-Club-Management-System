@@ -8,9 +8,10 @@ const ProviderSchema = new Schema({
     providerId: {
         type: String,
         required: true,
-        unique: true
-    }
+        index: true
+    },
 });
+ProviderSchema.index({ name: 1, providerId: 1 }, { unique: true });
 
 const UserSchema = new Schema({
     id: {
@@ -51,8 +52,13 @@ const UserSchema = new Schema({
     }],
     eventsJoined: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Event'
+        ref: 'Event',
+        index: true
     }],
+    /*
+    Possible TODO: Add the following fields:
+    - eventsManaged: Array of Event references    
+    */
 
     providers: [ProviderSchema],
     role: {
