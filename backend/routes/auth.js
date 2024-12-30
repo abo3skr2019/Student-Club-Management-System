@@ -21,8 +21,8 @@ passport.use(new GoogleStrategy({
             displayName: profile.displayName,
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
-            email: profile.emails[0].value,
-            profileImage: profile.photos[0].value,
+            email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
+            profileImage: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
             providers: [newProvider]
         };
         try {
@@ -74,8 +74,8 @@ passport.use(new GitHubStrategy({
             displayName: profile.displayName,
             firstName: firstName,
             lastName: lastName,
-            email: profile.emails[0].value,
-            profileImage: profile.photos[0].value,
+            email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
+            profileImage: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
             providers: [newProvider]
         };
         try {
