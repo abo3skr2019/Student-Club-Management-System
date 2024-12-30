@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Update Profile</title>
+    <title>تحديث الملف الشخصي</title>
 </head>
 <body>
-    <h1>Update Profile</h1>
+    <h1>تحديث الملف الشخصي</h1>
+    
     <% if (!user) { %>
-        <p>Please <a href="/login">login</a> to update your profile.</p>
+    <p>يرجى <a href="/login">تسجيل الدخول</a> لتحديث ملفك الشخصي.</p>
     <% } else { %>
     <form action="/update-profile" method="POST">
-        <label for="firstName">First Name:</label>
+        <label for="firstName">الاسم الأول:</label>
         <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required>
         <br>
-        <label for="lastName">Last Name:</label>
+        <label for="lastName">الاسم الأخير:</label>
         <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>">
         <br>
-        <button type="submit">Update</button>
+        <button type="submit">تحديث</button>
     </form>
     <% } %>
 </body>
