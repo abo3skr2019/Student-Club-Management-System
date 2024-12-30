@@ -22,7 +22,7 @@ passport.use(new GoogleStrategy({
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
-            profileImage: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
+            profileImage: profile.photos && profile.photos[0] ? profile.photos[0].value : `https://ui-avatars.com/api/?name=${firstName}+${lastName}`,
             providers: [newProvider]
         };
         try {
@@ -75,7 +75,7 @@ passport.use(new GitHubStrategy({
             firstName: firstName,
             lastName: lastName,
             email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
-            profileImage: profile.photos && profile.photos[0] ? profile.photos[0].value : '',
+            profileImage: profile.photos && profile.photos[0] ? profile.photos[0].value : `https://ui-avatars.com/api/?name=${firstName}+${lastName}`,
             providers: [newProvider]
         };
         try {
