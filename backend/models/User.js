@@ -41,10 +41,19 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    clubsJoined: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Club'
+    }],
     clubsManaged: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Club'
     }],
+    eventsJoined: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event'
+    }],
+
     providers: [ProviderSchema],
     role: {
         type: String,
@@ -52,6 +61,7 @@ const UserSchema = new Schema({
         default: 'Visitor',
         index: true
     },
+
     createdAt: {
         type: Date,
         default: Date.now
