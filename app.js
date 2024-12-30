@@ -14,7 +14,11 @@ app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 // Initialize session and passport
-app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'secret',
+    resave: false,
+    saveUninitialized: false 
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
