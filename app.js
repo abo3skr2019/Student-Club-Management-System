@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const connectDB = require('backend/config/db')
 
 const app = express();
 
@@ -8,6 +9,9 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'frontend', 'views'));
 
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
+
+// Connect to database
+connectDB();
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
