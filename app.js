@@ -4,7 +4,12 @@ const connectDB = require('backend/config/db')
 const passport = require('passport');
 const session = require('express-session');
 const dotenv = require('dotenv');
+const connectDB = require('backend/config/db')
+
+// Initialize environment variables from .env file
 dotenv.config();
+
+
 const app = express();
 
 app.set('view engine', 'ejs');
