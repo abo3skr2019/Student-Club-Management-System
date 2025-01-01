@@ -10,7 +10,6 @@ const session = require('express-session');
 // Initialize environment variables from .env file
 dotenv.config();
 
-
 const app = express();
 
 app.set('view engine', 'ejs');
