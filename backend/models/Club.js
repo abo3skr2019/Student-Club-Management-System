@@ -17,8 +17,8 @@ const clubSchema = new mongoose.Schema({
     },
     admin: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-        // Will be required once auth is implemented
+        ref: 'User',
+        required: true,
     },
     createdEvents: [{
         type: mongoose.Schema.Types.ObjectId,
