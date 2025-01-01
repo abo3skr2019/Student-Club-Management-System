@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>تحديث الملف الشخصي</title>
+</head>
+<body>
+    <h1>تحديث الملف الشخصي</h1>
+    
+    <% if (!user) { %>
+    <p>يرجى <a href="/login">تسجيل الدخول</a> لتحديث ملفك الشخصي.</p>
+    <% } else { %>
+    <form action="/update-profile" method="POST">
+        <label for="firstName">الاسم الأول:</label>
+        <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required>
+        <br>
+        <label for="lastName">الاسم الأخير:</label>
+        <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>">
+        <br>
+        <button type="submit">تحديث</button>
+    </form>
+    <% } %>
+</body>
+</html>
