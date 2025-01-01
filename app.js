@@ -1,9 +1,12 @@
 const express = require('express');
-require('dotenv').config();
 const path = require('path');
 const mongoose = require('mongoose');
 const clubRoutes = require('./backend/routes/clubRoutes');
 
+const passport = require('passport');
+const session = require('express-session');
+const dotenv = require('dotenv');
+dotenv.config();
 const app = express();
 
 // Middleware
@@ -13,6 +16,16 @@ app.use(express.urlencoded({ extended: true }));  // For parsing URL-encoded bod
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'frontend', 'views'));
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
+app.use(express.urlencoded({ extended: true }));
+
+// Initialize session and passport
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'secret',
+    resave: false,
+    saveUninitialized: false 
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
@@ -26,14 +39,16 @@ app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
 // API Routes
 app.use('/api/clubs', clubRoutes);
+app.use(require('./backend/routes/auth'));
+app.use(require('./backend/routes/profile'));
+
 
 // Database connection
 mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
-
 // Start the server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
