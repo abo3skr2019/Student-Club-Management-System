@@ -5,6 +5,7 @@ const clubSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        index: true
     },
     description: {
         type: String,
@@ -18,17 +19,14 @@ const clubSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
         // Will be required once auth is implemented
-    }
+    },
+    createdEvents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
+        index: true
+    }]
 }, {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-});
-
-clubSchema.virtual('events', {
-    ref: 'Event',
-    localField: '_id',
-    foreignField: 'club_id'
+    timestamps: true
 });
 
 module.exports = mongoose.model('Club', clubSchema);
