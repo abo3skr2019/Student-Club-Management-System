@@ -11,7 +11,6 @@ const app = express();
 
 // Middleware
 app.use(express.json());  // For parsing JSON bodies
-app.use(express.urlencoded({ extended: true }));  // For parsing URL-encoded bodies
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'frontend', 'views'));
