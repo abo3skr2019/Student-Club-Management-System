@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const clubController = require('../controllers/clubController');
 const { isAuthenticated } = require('../middleware/CheckAuth');
-const { isAdmin, isClubAdmin } = require('../middleware/CheckRoles');
+const { isAdmin, isClubAdmin } = require('../middleware/CheckRole');
 
 // Public Routes
 router.get('/', clubController.getAllClubs);
