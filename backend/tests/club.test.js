@@ -11,7 +11,7 @@ const errorHandler = (err, req, res, next) => {
     });
 };
 
-// Improved Club model mock
+// Club model mock
 jest.mock('../models/Club', () => {
     class MockClub {
         constructor(data) {
@@ -33,16 +33,34 @@ jest.mock('../models/Club', () => {
     return MockClub;
 });
 
+// Mock the User model
+jest.mock('../models/User', () => ({
+    findById: jest.fn(),
+}));
+
 const Club = require('../models/Club');
+const User = require('../models/User');
 const clubController = require('../controllers/clubController');
 
 const app = express();
 app.use(express.json());
 
+// Mock authentication and authorization middleware
+const isAuthenticated = (req, res, next) => {
+    req.user = { _id: 'mockUserId', role: 'Admin' }; // Mock authenticated user
+    next();
+};
+const isAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'Admin') {
+        return next();
+    }
+    res.status(403).json({ error: 'Admin access required' });
+};
+
 app.get('/api/clubs', clubController.getAllClubs);
 app.get('/api/clubs/:clubId', clubController.getClubById);
-app.post('/api/clubs', clubController.createClub);
-app.put('/api/clubs/:clubId', clubController.updateClub);
+app.post('/api/clubs', isAuthenticated, isAdmin, clubController.createClub);
+app.put('/api/clubs/:clubId', isAuthenticated, isAdmin, clubController.updateClub);
 
 app.use(errorHandler);
 
@@ -113,10 +131,19 @@ describe('Club Controller', () => {
             // Mock findOne to return null (no existing club)
             Club.findOne.mockResolvedValueOnce(null);
 
+            // Mock User.findById to return a valid admin user
+            const mockAdminUser = {
+                _id: 'adminId',
+                clubsManaged: [],
+                save: jest.fn().mockResolvedValue(true)
+            };
+            User.findById.mockResolvedValueOnce(mockAdminUser);
+
             const newClubData = {
                 name: 'New Club',
                 description: 'New Description',
-                logo: 'new-logo.jpg'
+                logo: 'new-logo.jpg',
+                adminId: 'adminId'
             };
 
             const response = await request(app)
@@ -126,13 +153,25 @@ describe('Club Controller', () => {
             expect(response.statusCode).toBe(201);
             expect(response.body).toHaveProperty('message', 'Club created.');
             expect(response.body.club).toHaveProperty('name', 'New Club');
+            expect(Club.findOne).toHaveBeenCalledWith({ name: /^New Club$/i });
+            expect(User.findById).toHaveBeenCalledWith('adminId');
         });
 
         test('should prevent duplicate club names', async () => {
             const existingClub = {
+                _id: 'existingClubId',
                 name: 'Existing Club'
             };
 
+            // Mock User.findById to return a valid admin user
+            const mockAdminUser = {
+                _id: 'adminId',
+                clubsManaged: [],
+                save: jest.fn().mockResolvedValue(true)
+            };
+            User.findById.mockResolvedValueOnce(mockAdminUser);
+
+            // Mock findOne to return an existing club with the same name
             Club.findOne.mockResolvedValueOnce(existingClub);
 
             const response = await request(app)
@@ -140,7 +179,8 @@ describe('Club Controller', () => {
                 .send({
                     name: 'Existing Club',
                     description: 'New Description',
-                    logo: 'new-logo.jpg'
+                    logo: 'new-logo.jpg',
+                    adminId: 'adminId'
                 });
 
             expect(response.statusCode).toBe(400);
@@ -156,11 +196,12 @@ describe('Club Controller', () => {
                 description: 'Updated Description',
                 logo: 'updated-logo.jpg'
             };
-
+        
             // Mock findOne to return null (no duplicate name)
             Club.findOne.mockResolvedValueOnce(null);
+            // Mock findByIdAndUpdate to return the updated club
             Club.findByIdAndUpdate.mockResolvedValueOnce(updatedClub);
-
+        
             const response = await request(app)
                 .put('/api/clubs/1')
                 .send({
@@ -168,7 +209,7 @@ describe('Club Controller', () => {
                     description: 'Updated Description',
                     logo: 'updated-logo.jpg'
                 });
-
+        
             expect(response.statusCode).toBe(200);
             expect(response.body).toHaveProperty('message', 'Club updated.');
             expect(response.body.club).toHaveProperty('name', 'Updated Club');
