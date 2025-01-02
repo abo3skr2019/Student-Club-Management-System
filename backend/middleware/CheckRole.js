@@ -22,3 +22,5 @@ const isClubAdmin = async (req, res, next) => {
     
     res.status(403).json({ error: 'Club admin access required' });
 };
+
+module.exports = { isAdmin, isClubAdmin };
