@@ -118,6 +118,73 @@ module.exports = {
 
     // Assign a club admin
     assignClubAdmin: async (req, res, next) => {
-        // Todo
+        try {
+            const { clubId } = req.params;
+            const { email } = req.body;  // New admin's email
+    
+            // Validate provided email
+            if (!email || !/.+\@.+\..+/.test(email)) {
+                return next(createError(400, 'Valid email is required'));
+            }
+    
+            // Find the club
+            const club = await Club.findById(clubId);
+            if (!club) {
+                return next(createError(404, 'Club not found'));
+            }
+    
+            // Find the new admin by email
+            const newAdmin = await User.findOne({ email: email });
+            if (!newAdmin) {
+                return next(createError(404, 'User with this email not found'));
+            }
+    
+            // Check if new admin is already admin of this club
+            if (club.admin.toString() === newAdmin._id.toString()) {
+                return next(createError(400, 'User is already admin of this club'));
+            }
+    
+            // Update old admin's clubsManaged
+            const oldAdmin = await User.findById(club.admin);
+            if (oldAdmin) {
+                oldAdmin.clubsManaged = oldAdmin.clubsManaged.filter(
+                    id => id.toString() !== clubId
+                );
+                
+                // Update old admin's role if they don't manage any other clubs
+                if (oldAdmin.clubsManaged.length === 0 && oldAdmin.role === 'ClubAdmin') {
+                    oldAdmin.role = 'Visitor';
+                }
+                await oldAdmin.save();
+            }
+    
+            // Update new admin's clubsManaged and role
+            if (!newAdmin.clubsManaged.includes(clubId)) {
+                newAdmin.clubsManaged.push(clubId);
+            }
+            if (newAdmin.role === 'Member' || newAdmin.role === 'Visitor') {
+                newAdmin.role = 'ClubAdmin';
+            }
+            await newAdmin.save();
+    
+            // Update club's admin
+            club.admin = newAdmin._id;
+            await club.save();
+    
+            res.status(200).json({
+                message: 'Club admin updated successfully',
+                club: {
+                    ...formatClubResponse(club),
+                    admin: {
+                        id: newAdmin._id,
+                        email: newAdmin.email,
+                        displayName: newAdmin.displayName
+                    }
+                }
+            });
+    
+        } catch (err) {
+            next(createError(500, 'Error assigning club admin: ' + err.message));
+        }
     },
 };
