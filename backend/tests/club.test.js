@@ -36,6 +36,7 @@ jest.mock('../models/Club', () => {
 // Mock the User model
 jest.mock('../models/User', () => ({
     findById: jest.fn(),
+    findOne: jest.fn(),
 }));
 
 const Club = require('../models/Club');
@@ -61,6 +62,7 @@ app.get('/api/clubs', clubController.getAllClubs);
 app.get('/api/clubs/:clubId', clubController.getClubById);
 app.post('/api/clubs', isAuthenticated, isAdmin, clubController.createClub);
 app.put('/api/clubs/:clubId', isAuthenticated, isAdmin, clubController.updateClub);
+app.post('/api/clubs/:clubId/assign-admin', isAuthenticated, clubController.assignClubAdmin);
 
 app.use(errorHandler);
 
@@ -233,6 +235,181 @@ describe('Club Controller', () => {
 
             expect(response.statusCode).toBe(400);
             expect(response.body).toHaveProperty('error', 'Club with this name already exists');
+        });
+    });
+
+    describe('POST /api/clubs/:clubId/assign-admin', () => {
+        // Mock setup
+        let mockClub;
+        let mockNewAdmin;
+        let mockOldAdmin;
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+            
+            // Reset mock objects
+            mockClub = {
+                _id: 'club1',
+                name: 'Test Club',
+                admin: 'oldAdminId',
+                save: jest.fn().mockResolvedValue(true)
+            };
+        
+            mockNewAdmin = {
+                _id: 'newAdminId',
+                email: 'newadmin@test.com',
+                displayName: 'New Admin',
+                clubsManaged: [],
+                role: 'Member',
+                save: jest.fn().mockResolvedValue(true)
+            };
+        
+            mockOldAdmin = {
+                _id: 'oldAdminId',
+                clubsManaged: ['club1'],
+                role: 'ClubAdmin',
+                save: jest.fn().mockResolvedValue(true)
+            };
+
+            // Reset mock implementations
+            Club.findById.mockReset();
+            User.findOne.mockReset();
+            User.findById.mockReset();
+        });
+    
+        test('should successfully assign new admin', async () => {
+            // Setup mocks
+            Club.findById.mockResolvedValue(mockClub);
+            User.findOne.mockResolvedValue(mockNewAdmin);
+            User.findById.mockResolvedValue(mockOldAdmin);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'newadmin@test.com' });
+    
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toHaveProperty('message', 'Club admin updated successfully');
+            expect(response.body.club.admin).toEqual({
+                id: mockNewAdmin._id,
+                email: mockNewAdmin.email,
+                displayName: mockNewAdmin.displayName
+            });
+        });
+    
+        test('should return 400 if email is not provided', async () => {
+            Club.findById.mockResolvedValue(mockClub);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({});
+    
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toHaveProperty('error', 'Valid email is required');
+        });
+
+        test('should return 400 for invalid email format', async () => {
+            Club.findById.mockResolvedValueOnce(mockClub);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'invalid-email' });
+    
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toHaveProperty('error', 'Valid email is required');
+        });
+    
+        test('should return 404 if club not found', async () => {
+            Club.findById.mockResolvedValue(null);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'newadmin@test.com' });
+    
+            expect(response.statusCode).toBe(404);
+            expect(response.body).toHaveProperty('error', 'Club not found');
+        });
+    
+        test('should return 404 if new admin user not found', async () => {
+            Club.findById.mockResolvedValueOnce(mockClub);
+            User.findOne.mockResolvedValueOnce(null);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'nonexistent@test.com' });
+    
+            expect(response.statusCode).toBe(404);
+            expect(response.body).toHaveProperty('error', 'User with this email not found');
+        });
+    
+        test('should return 400 if user is already admin of the club', async () => {
+            const mockExistingAdmin = {
+                ...mockNewAdmin,
+                _id: mockClub.admin // Same ID as current admin
+            };
+    
+            Club.findById.mockResolvedValueOnce(mockClub);
+            User.findOne.mockResolvedValueOnce(mockExistingAdmin);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'newadmin@test.com' });
+    
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toHaveProperty('error', 'User is already admin of this club');
+        });
+    
+        test('should handle case when old admin is not found', async () => {
+            Club.findById.mockResolvedValueOnce(mockClub);
+            User.findOne.mockResolvedValueOnce({ ...mockNewAdmin });
+            User.findById.mockResolvedValueOnce(null); // Old admin not found
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'newadmin@test.com' });
+    
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toHaveProperty('message', 'Club admin updated successfully');
+            // Should still update new admin and club
+            expect(mockNewAdmin.save).toHaveBeenCalled();
+            expect(mockClub.save).toHaveBeenCalled();
+        });
+    
+        test('should update role to Visitor if old admin has no other clubs', async () => {
+            const oldAdminWithOneClub = {
+                ...mockOldAdmin,
+                clubsManaged: ['club1'], // Only managing this club
+            };
+    
+            Club.findById.mockResolvedValueOnce(mockClub);
+            User.findOne.mockResolvedValueOnce({ ...mockNewAdmin });
+            User.findById.mockResolvedValueOnce(oldAdminWithOneClub);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'newadmin@test.com' });
+    
+            expect(response.statusCode).toBe(200);
+            expect(oldAdminWithOneClub.role).toBe('Visitor');
+            expect(oldAdminWithOneClub.save).toHaveBeenCalled();
+        });
+
+        test('should not downgrade Admin role to Visitor', async () => {
+            const oldAdminWithAdminRole = {
+                ...mockOldAdmin,
+                role: 'Admin', // Admin role should not be downgraded
+            };
+    
+            Club.findById.mockResolvedValueOnce(mockClub);
+            User.findOne.mockResolvedValueOnce({ ...mockNewAdmin });
+            User.findById.mockResolvedValueOnce(oldAdminWithAdminRole);
+    
+            const response = await request(app)
+                .post('/api/clubs/club1/assign-admin')
+                .send({ email: 'newadmin@test.com' });
+    
+            expect(response.statusCode).toBe(200);
+            expect(oldAdminWithAdminRole.role).toBe('Admin'); // Role should remain Admin
+            expect(oldAdminWithAdminRole.save).toHaveBeenCalled();
         });
     });
 });
