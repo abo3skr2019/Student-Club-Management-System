@@ -1,4 +1,5 @@
 const Club = require('../models/Club');
+const User = require('../models/User');
 const { createError } = require('../utils/errors');
 
 // Utility function to format club response
@@ -44,30 +45,38 @@ module.exports = {
     // Create a new club
     createClub: async (req, res, next) => {
         try {
-            // Mock admin check
-            // if (!req.isAdmin) {
-            //     return res.status(403).json({ error: 'Admin access required' });
-            // }
+            const { name, description, logo, adminId } = req.body;
+
+            // Validate admin user exists
+            const adminUser = await User.findById(adminId);
+            if (!adminUser) {
+                return next(createError(404, 'Specified admin user not found'));
+            }
 
             // Check if name already exist
-            const { name } = req.body;
             const existingClub = await Club.findOne({ name: new RegExp(`^${name}$`, 'i') });
             if (existingClub) {
                 return next(createError(400, 'Club with this name already exists'));
             }
 
             // Create Club
-            const club = new Club(req.body);
+            const club = new Club({
+                name,
+                description,
+                logo,
+                admin: adminId
+            });
             await club.save();
+
+            // Update admin's clubsManaged
+            adminUser.clubsManaged.push(club._id);
+            await adminUser.save();
 
             res.status(201).json({
                 message: 'Club created.',
                 club: formatClubResponse(club)
             });
         } catch (err) {
-            if (err.code === 11000) { // MongoDB duplicate key error
-                return next(createError(400, 'Club with this name already exists'));
-            }
             next(createError(400, err.message));
         }
     },
@@ -75,11 +84,6 @@ module.exports = {
     // Update a club's details
     updateClub: async (req, res, next) => {
         try {
-            // Mock club admin check
-            // if (!req.isClubAdmin) {
-            //     return res.status(403).json({ error: 'Club Admin access required' });
-            // }
-
             // Check if name already exist
             const { name } = req.body;
             const existingClub = await Club.findOne({ 
