@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const connectDB = require('backend/config/db')
 const passport = require('passport');
 const session = require('express-session');
+const SessionDBStore = require('connect-mongo');
 
 // Initialize environment variables from .env file
 dotenv.config();
@@ -22,13 +23,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
-    saveUninitialized: false 
+    saveUninitialized: false,
+    store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    cookie: {maxAge: 86400000} // 1 day
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Connect to database
-connectDB();
+connectDB().then(() => {
+    console.log('Connected to database');
+}).catch(err => {
+    console.log(err);
+    process.exit(1);
+});
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
