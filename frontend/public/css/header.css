@@ -1,0 +1,40 @@
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #dfe2e3;
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, #2962ff, #3d5afe);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 900; /* Increased font weight */
+    font-family: 'Tajawal', sans-serif; /* Set font family */
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 0.5rem 1rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #2962ff;
+}
