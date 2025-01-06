@@ -3,8 +3,6 @@ body {
     background-color: #dfe2e3;
 }
 
-
-
 .gradient-text {
     background: linear-gradient(45deg, #2962ff, #3d5afe);
     -webkit-background-clip: text;
@@ -28,13 +26,6 @@ body {
 .navbar-brand {
     font-weight: 800;
     font-size: 1.5rem;
-}
-
-.gradient-text {
-    background: linear-gradient(45deg, #2962ff, #3d5afe);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
 }
 
 .nav-link {
