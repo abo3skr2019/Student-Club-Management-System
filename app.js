@@ -50,7 +50,7 @@ app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
 // Include authentication routes
 app.use(require('./backend/routes/auth'));
-app.use(require('./backend/routes/profile'));
+// app.use(require('./backend/routes/profile')); # TODO: uncomment when profile route is created
 
 // Start the server
 const PORT = process.env.PORT || 3000;
