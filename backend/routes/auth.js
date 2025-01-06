@@ -17,7 +17,7 @@ passport.use(new GoogleStrategy({
             providerId: profile.id
         };
         const newUser = {
-            id: uuidv4(), // Generate a unique id
+            uuid: uuidv4(), // Generate a unique id
             displayName: profile.displayName,
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
@@ -70,7 +70,7 @@ passport.use(new GitHubStrategy({
         }
 
         const newUser = {
-            id: uuidv4(), // Generate a unique id
+            uuid: uuidv4(), // Generate a unique id
             displayName: profile.displayName,
             firstName: firstName,
             lastName: lastName,

@@ -14,7 +14,13 @@ const ProviderSchema = new Schema({
 ProviderSchema.index({ name: 1, providerId: 1 }, { unique: true });
 
 const UserSchema = new Schema({
-    id: {
+    /*
+    UUID is a universally unique identifier that is used to identify the user.
+    It is unique across all users in the system.
+    it is currently unused in the codebase, but it is a good practice to have it.
+    in case you need to integrate with other systems in the future. or change the database.
+    */
+    uuid: {
         type: String,
         required: true,
         unique: true,
