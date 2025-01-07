@@ -14,7 +14,7 @@ const ProviderSchema = new Schema({
 ProviderSchema.index({ name: 1, providerId: 1 }, { unique: true });
 
 const UserSchema = new Schema({
-    id: {
+    uuid: {
         type: String,
         required: true,
         unique: true,
