@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>تعديل النادي - <%= club.name %></title>
+</head>
+<body>
+    <h1>تعديل النادي - <%= club.name %></h1>
+    
+    <% if (locals.error) { %>
+        <div class="error"><%= error %></div>
+    <% } %>
+
+    <form action="/clubs/<%= club._id %>/edit" method="POST">
+        <div>
+            <label for="name">اسم النادي:</label>
+            <input type="text" id="name" name="name" value="<%= club.name %>" required>
+        </div>
+        
+        <div>
+            <label for="description">الوصف:</label>
+            <textarea id="description" name="description" required><%= club.description %></textarea>
+        </div>
+        
+        <div>
+            <label for="logo">شعار النادي (URL):</label>
+            <input type="url" id="logo" name="logo" value="<%= club.logo %>" required>
+        </div>
+        
+        <button type="submit">حفظ التغييرات</button>
+    </form>
+</body>
+</html>

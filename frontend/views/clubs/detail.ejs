@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= club.name %></title>
+</head>
+<body>
+    <h1><%= club.name %></h1>
+    
+    <div class="club-details">
+        <img src="<%= club.logo %>" alt="<%= club.name %>">
+        <p><%= club.description %></p>
+        <p>المشرف: <%= club.clubAdmin.displayName %></p>
+        
+        <% if (user && (user.role === 'Admin' || user.clubsManaged.includes(club._id))) { %>
+            <a href="/clubs/<%= club._id %>/edit">تعديل النادي</a>
+        <% } %>
+    </div>
+</body>
+</html>
