@@ -47,7 +47,7 @@ app.get('/event-admin-view', (req, res) => res.render('event-admin-view'));
 app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
 // API Routes
-app.use('/api/clubs', clubRoutes);
+app.use('/clubs', clubRoutes);
 app.use(require('./backend/routes/auth'));
 // app.use(require('./backend/routes/profile')); # TODO: uncomment when profile route is created
 
