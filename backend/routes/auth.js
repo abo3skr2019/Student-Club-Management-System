@@ -104,7 +104,9 @@ router.get('/google/callback',
     passport.authenticate('google', {
         failureRedirect: '/login-failure'
     }), (req, res) => {
-        res.redirect('/update-profile');
+        // Check if this was the user's first login
+        const isNewUser = req.user.createdAt === req.user.updatedAt;
+        res.redirect(isNewUser ? '/update-profile' : '/profile');
     });
 // GitHub auth routes
 router.get('/auth/github',
@@ -114,7 +116,9 @@ router.get('/github/callback',
     passport.authenticate('github', {
         failureRedirect: '/login-failure'
     }), (req, res) => {
-        res.redirect('/update-profile');
+        // Check if this was the user's first login
+        const isNewUser = req.user.createdAt === req.user.updatedAt;
+        res.redirect(isNewUser ? '/update-profile' : '/profile');
     });
 
 router.get("/login-failure", (req, res) => {
