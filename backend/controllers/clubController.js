@@ -2,61 +2,73 @@ const Club = require('../models/Club');
 const User = require('../models/User');
 const { createError } = require('../utils/errors');
 
-// Utility function to format club response
-const formatClubResponse = (club) => {
-    return {
-        id: club._id,
-        name: club.name,
-        description: club.description,
-        logo: club.logo
-    };
-};
-
 module.exports = {
-    // Fetch all clubs
-    getAllClubs: async (req, res, next) => {
+    // Render all clubs
+    getAllClubs: async (req, res) => {
         try {
-            const clubs = await Club.find();
-            res.status(200).json(clubs.map(formatClubResponse));
+            const clubs = await Club.find().populate('clubAdmin', 'displayName email');
+            res.render('clubs/index', { 
+                clubs,
+                user: req.user 
+            });
         } catch (err) {
-            next(createError(500, 'Error fetching clubs'));
+            console.error(err);
+            res.status(500).render('error', { 
+                message: 'Error fetching clubs',
+                user: req.user 
+            });
         }
     },
 
-    // Fetch specific club details
-    getClubById: async (req, res, next) => {
+    // Render specific club details
+    getClubById: async (req, res) => {
         try {
-            const club = await Club.findById(req.params.clubId);
-            //.populate('events');
+            const club = await Club.findById(req.params.clubId)
+            .populate('clubAdmin', 'displayName email');
+            // populate('createdEvents'); #TODO!
             
             if (!club) {
-                return next(createError(404, 'Club not found'));
+                return res.status(404).render('error', { 
+                    message: 'Club not found',
+                    user: req.user 
+                });
             }
 
-            res.status(200).json({
-                ...formatClubResponse(club)
-                //events: club.events
-    });
+            res.render('clubs/detail', { 
+                club,
+                user: req.user 
+            });
         } catch (err) {
-            next(createError(500, 'Error fetching club details'));
+            console.error(err);
+            res.status(500).render('error', { 
+                message: 'Error fetching club details',
+                user: req.user 
+            });
         }
+    },
+
+    // Render club creation form
+    renderCreateClubForm: async (req, res) => {
+        res.render('clubs/create', { 
+            user: req.user 
+        });
     },
 
     // Create a new club
-    createClub: async (req, res, next) => {
+    createClub: async (req, res) => {
         try {
-            const { name, description, logo, adminId } = req.body;
+            const { name, description, logo } = req.body;
 
-            // Validate admin user exists
-            const adminUser = await User.findById(adminId);
-            if (!adminUser) {
-                return next(createError(404, 'Specified admin user not found'));
-            }
-
-            // Check if name already exist
-            const existingClub = await Club.findOne({ name: new RegExp(`^${name}$`, 'i') });
+            // Check if name already exists
+            const existingClub = await Club.findOne({ 
+                name: new RegExp(`^${name}$`, 'i') 
+            });
+            
             if (existingClub) {
-                return next(createError(400, 'Club with this name already exists'));
+                return res.render('clubs/create', { 
+                    error: 'Club with this name already exists',
+                    user: req.user 
+                });
             }
 
             // Create Club
@@ -64,55 +76,118 @@ module.exports = {
                 name,
                 description,
                 logo,
-                admin: adminId
+                clubAdmin: req.user._id
             });
             await club.save();
 
             // Update admin's clubsManaged
-            adminUser.clubsManaged.push(club._id);
-            await adminUser.save();
+            req.user.clubsManaged.push(club._id);
+            await req.user.save();
 
-            res.status(201).json({
-                message: 'Club created.',
-                club: formatClubResponse(club)
+            res.redirect(`/clubs/${club._id}`);
+        } catch (err) {
+            console.error(err);
+            res.render('clubs/create', { 
+                error: err.message,
+                user: req.user 
+            });
+        }
+    },
+
+    // Render club edit form
+    renderEditClubForm: async (req, res) => {
+        try {
+            const club = await Club.findById(req.params.clubId);
+            
+            if (!club) {
+                return res.status(404).render('error', { 
+                    message: 'Club not found',
+                    user: req.user 
+                });
+            }
+
+            res.render('clubs/edit', { 
+                club,
+                user: req.user 
             });
         } catch (err) {
-            next(createError(400, err.message));
+            console.error(err);
+            res.status(500).render('error', { 
+                message: 'Error loading edit form',
+                user: req.user 
+            });
         }
     },
 
     // Update a club's details
-    updateClub: async (req, res, next) => {
+    updateClub: async (req, res) => {
         try {
-            // Check if name already exist
-            const { name } = req.body;
+            const { name, description, logo } = req.body;
+            
+            // Check if name already exists
             const existingClub = await Club.findOne({ 
                 name: new RegExp(`^${name}$`, 'i'),
                 _id: { $ne: req.params.clubId } // Exclude the current club from the search
             });
+
             if (existingClub) {
-                return next(createError(400, 'Club with this name already exists'));
+                return res.render('clubs/edit', { 
+                    club: { _id: req.params.clubId, name, description, logo },
+                    error: 'Club with this name already exists',
+                    user: req.user 
+                });
             }
 
             // Update Club
             const club = await Club.findByIdAndUpdate(
                 req.params.clubId,
-                { $set: req.body },
+                { $set: { name, description, logo } },
                 { new: true, runValidators: true }
             );
 
             // Handle Club doesn't exist
             if (!club) {
-                return next(createError(404, 'Club not found'));
+                return res.status(404).render('error', { 
+                    message: 'Club not found',
+                    user: req.user 
+                });
             }
             
-            res.status(200).json({
-                message: 'Club updated.',
-                club: formatClubResponse(club)
-            });
+            res.redirect(`/clubs/${club._id}`);
             
         } catch (err) {
-            next(createError(400, err.message));
+            console.error(err);
+            res.render('clubs/edit', { 
+                club: { _id: req.params.clubId, ...req.body },
+                error: err.message,
+                user: req.user 
+            });
+        }
+    },
+
+    // Render Assign Admin
+    renderAssignAdmin: async (req, res) => {
+        try {
+            const club = await Club.findById(req.params.clubId)
+                .populate('clubAdmin', 'displayName email');
+            
+            if (!club) {
+                return res.render('error', { 
+                    message: 'Club not found',
+                    user: req.user 
+                });
+            }
+
+            res.render('clubs/assign-admin', { 
+                club,
+                user: req.user 
+            });
+        } catch (err) {
+            console.error(err);
+            res.render('error', { 
+                message: 'Error loading assign admin form',
+                user: req.user 
+            });
         }
     },
 
@@ -124,28 +199,38 @@ module.exports = {
     
             // Validate provided email
             if (!email || !/.+\@.+\..+/.test(email)) {
-                return next(createError(400, 'Valid email is required'));
+                return res.render('error', { 
+                    message: 'Email not valid',
+                    user: req.user 
+                });
             }
     
             // Find the club
             const club = await Club.findById(clubId);
             if (!club) {
-                return next(createError(404, 'Club not found'));
+                return res.render('error', { 
+                    message: 'Club not found',
+                    user: req.user 
+                });
             }
     
             // Find the new admin by email
             const newAdmin = await User.findOne({ email: email });
             if (!newAdmin) {
-                return next(createError(404, 'User with this email not found'));
+                return res.render('clubs/assign-admin', {
+                    club,
+                    error: 'User with this email not found',
+                    user: req.user
+                });
             }
     
             // Check if new admin is already admin of this club
-            if (club.admin.toString() === newAdmin._id.toString()) {
+            if (club.clubAdmin.toString() === newAdmin._id.toString()) {
                 return next(createError(400, 'User is already admin of this club'));
             }
     
             // Update old admin's clubsManaged
-            const oldAdmin = await User.findById(club.admin);
+            const oldAdmin = await User.findById(club.clubAdmin);
             if (oldAdmin) {
                 oldAdmin.clubsManaged = oldAdmin.clubsManaged.filter(
                     id => id.toString() !== clubId
@@ -168,20 +253,10 @@ module.exports = {
             await newAdmin.save();
     
             // Update club's admin
-            club.admin = newAdmin._id;
+            club.clubAdmin = newAdmin._id;
             await club.save();
     
-            res.status(200).json({
-                message: 'Club admin updated successfully',
-                club: {
-                    ...formatClubResponse(club),
-                    admin: {
-                        id: newAdmin._id,
-                        email: newAdmin.email,
-                        displayName: newAdmin.displayName
-                    }
-                }
-            });
+            res.redirect(`/clubs/${clubId}`);
     
         } catch (err) {
             next(createError(500, 'Error assigning club admin: ' + err.message));
