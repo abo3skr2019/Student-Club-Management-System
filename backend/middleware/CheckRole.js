@@ -2,12 +2,18 @@ const isAdmin = (req, res, next) => {
     if (req.user && req.user.role === 'Admin') {
         return next();
     }
-    res.status(403).json({ error: 'Admin access required' });
+    res.status(403).render('error', { 
+        message: 'Admin access required',
+        user: req.user 
+    });
 };
 
 const isClubAdmin = async (req, res, next) => {
     if (!req.user) {
-        return res.status(401).json({ error: 'Authentication required' });
+        return res.status(401).render('error', { 
+            message: 'Authentication required',
+            user: req.user 
+        });
     }
     
     if (req.user.role === 'Admin') {
@@ -20,7 +26,10 @@ const isClubAdmin = async (req, res, next) => {
         return next();
     }
     
-    res.status(403).json({ error: 'Club admin access required' });
+    res.status(403).render('error', { 
+        message: 'Club admin access required',
+        user: req.user 
+    });
 };
 
 module.exports = { isAdmin, isClubAdmin };
