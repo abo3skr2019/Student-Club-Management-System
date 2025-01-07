@@ -3,9 +3,7 @@ const path = require('path');
 const passport = require('passport');
 const session = require('express-session');
 const dotenv = require('dotenv');
-const connectDB = require('backend/config/db')
-const passport = require('passport');
-const session = require('express-session');
+const connectDB = require('./backend/config/db');
 const SessionDBStore = require('connect-mongo');
 
 // Initialize environment variables from .env file
