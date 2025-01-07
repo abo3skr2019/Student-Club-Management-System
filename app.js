@@ -34,12 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Connect to database
-connectDB().then(() => {
-    console.log('Connected to database');
-}).catch(err => {
-    console.log(err);
-    process.exit(1);
-});
+connectDB();
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
@@ -56,11 +51,6 @@ app.use('/api/clubs', clubRoutes);
 app.use(require('./backend/routes/auth'));
 // app.use(require('./backend/routes/profile')); # TODO: uncomment when profile route is created
 
-
-// Database connection
-mongoose.connect(process.env.MONGO_URL)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
