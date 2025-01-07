@@ -6,7 +6,12 @@ const clubRoutes = require('./backend/routes/clubRoutes');
 const passport = require('passport');
 const session = require('express-session');
 const dotenv = require('dotenv');
+const connectDB = require('./backend/config/db');
+const SessionDBStore = require('connect-mongo');
+
+// Initialize environment variables from .env file
 dotenv.config();
+
 const app = express();
 
 // Middleware
@@ -21,10 +26,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
-    saveUninitialized: false 
+    saveUninitialized: false,
+    store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    cookie: {maxAge: 86400000} // 1 day
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Connect to database
+connectDB().then(() => {
+    console.log('Connected to database');
+}).catch(err => {
+    console.log(err);
+    process.exit(1);
+});
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
@@ -39,7 +54,7 @@ app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 // API Routes
 app.use('/api/clubs', clubRoutes);
 app.use(require('./backend/routes/auth'));
-app.use(require('./backend/routes/profile'));
+// app.use(require('./backend/routes/profile')); # TODO: uncomment when profile route is created
 
 
 // Database connection
