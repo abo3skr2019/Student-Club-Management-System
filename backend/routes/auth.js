@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid'); // Import uuid
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
@@ -17,7 +16,6 @@ passport.use(new GoogleStrategy({
             providerId: profile.id
         };
         const newUser = {
-            uuid: uuidv4(), // Generate a unique id
             displayName: profile.displayName,
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
@@ -70,7 +68,6 @@ passport.use(new GitHubStrategy({
         }
 
         const newUser = {
-            uuid: uuidv4(), // Generate a unique id
             displayName: profile.displayName,
             firstName: firstName,
             lastName: lastName,
