@@ -15,7 +15,7 @@ const clubSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    admin: {
+    clubAdmin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
