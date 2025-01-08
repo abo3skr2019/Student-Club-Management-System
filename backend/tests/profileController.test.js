@@ -73,4 +73,28 @@ describe('profileController', () => {
             expect(res.send).toHaveBeenCalledWith('Server error');
         });
     });
+    
+    describe('deleteAccount', () => {
+        test('should delete user and destroy session, then redirect to /', async () => {
+            User.findByIdAndDelete.mockResolvedValue(true);
+            req.session = {
+                destroy: jest.fn().mockImplementationOnce((cb) => cb(null))
+            };
+    
+            await profileController.deleteAccount(req, res);
+    
+            expect(User.findByIdAndDelete).toHaveBeenCalledWith('user123');
+            expect(req.session.destroy).toHaveBeenCalled();
+            expect(res.redirect).toHaveBeenCalledWith('/');
+        });
+    
+        test('should handle errors and return 500', async () => {
+            User.findByIdAndDelete.mockRejectedValue(new Error('DB Error'));
+    
+            await profileController.deleteAccount(req, res);
+    
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.send).toHaveBeenCalledWith('Server error');
+        });
+    });
 });
