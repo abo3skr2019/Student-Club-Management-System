@@ -13,4 +13,11 @@ router.post('/update-profile',isAuthenticated,validateProfileInput, profileContr
 // Render the logged-in user's profile
 router.get('/profile', isAuthenticated, profileController.renderProfile);
 
+router.get('/delete-account', isAuthenticated, (req, res) => {
+    res.render('delete-account');
+});
+
+router.post('/delete-account', isAuthenticated, profileController.deleteAccount);
+
+
 module.exports = router;
