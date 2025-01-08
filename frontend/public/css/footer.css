@@ -2,17 +2,46 @@
 
 .footer {
     background-color: #f8f9fa;
-    padding: 2rem 0;
-    text-align: center;
+    padding: 3rem 0;
     border-top: 1px solid #e7e7e7;
     font-family: 'Tajawal', sans-serif;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    right: 0;
+    left: 0;
 }
 
-.footer h5 {
+.footer-brand {
     font-weight: 700;
     margin-bottom: 1rem;
+    font-size: 1.5rem;
 }
 
 .footer .text-muted {
     color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+.footer-link {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+}
+
+.footer-link:hover {
+    color: #0d6efd;
+}
+
+@media (max-width: 575.98px) {
+    .footer {
+        padding: 2rem 0;
+    }
+
+    .footer-link {
+        display: block;
+        padding: 0.75rem 1rem;
+    }
 }
