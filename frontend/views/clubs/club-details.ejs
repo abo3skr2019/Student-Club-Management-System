@@ -11,8 +11,8 @@
         <p><%= club.description %></p>
         <p>المشرف: <%= club.clubAdmin.displayName %></p>
         
-        <% if (user && (user.role === 'Admin' || user.clubsManaged.includes(club._id))) { %>
-            <a href="/clubs/<%= club._id %>/edit">تعديل النادي</a>
+        <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
+            <a href="/clubs/<%= club.uuid %>/edit">تعديل النادي</a>
         <% } %>
     </div>
 </body>
