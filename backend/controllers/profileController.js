@@ -32,3 +32,16 @@ exports.renderProfile = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+exports.deleteAccount = async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.user.id);
+        req.session.destroy(error => {
+            if (error) console.log(error);
+            res.redirect('/');
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+};
