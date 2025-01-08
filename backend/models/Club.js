@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
-const clubSchema = new mongoose.Schema({
+const ClubSchema = new mongoose.Schema({
+    uuid: {
+        type: String,
+        unique: true,
+        sparse: true,
+        index: true
+    },
     name: {
         type: String,
         required: true,
@@ -29,4 +36,11 @@ const clubSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('Club', clubSchema);
+ClubSchema.pre('save', function(next) {
+    if (this.isNew && !this.uuid) {
+        this.uuid = uuidv4();
+    }
+    next();
+});
+
+module.exports = mongoose.model('Club', ClubSchema);
