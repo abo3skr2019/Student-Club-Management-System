@@ -24,8 +24,8 @@ const UserSchema = new Schema({
     */
     uuid: {
         type: String,
-        required: true,
         unique: true,
+        sparse: true,
         index: true
     },
     displayName: {
