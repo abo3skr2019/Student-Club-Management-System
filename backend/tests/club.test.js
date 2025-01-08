@@ -12,6 +12,7 @@ jest.mock('../models/Club', () => {
     class MockClub {
         constructor(data) {
             Object.assign(this, data);
+            this.uuid = 'club123-uuid';
             this._id = 'club123';
         }
 
@@ -20,11 +21,9 @@ jest.mock('../models/Club', () => {
         }
     }
 
-    // Add static methods to the MockClub class
     MockClub.find = jest.fn();
-    MockClub.findById = jest.fn();
     MockClub.findOne = jest.fn();
-    MockClub.findByIdAndUpdate = jest.fn();
+    MockClub.findOneAndUpdate = jest.fn();
 
     return MockClub;
 });
@@ -48,7 +47,7 @@ describe('Club Controller', () => {
                 save: jest.fn().mockResolvedValue(true)
             },
             body: { name: 'Club 1', description: 'Desc 1', logo: 'logo1.jpg' },
-            params: { clubId: 'club123' }
+            params: { clubId: 'club123-uuid' }
         };
         res = {
             render: jest.fn(),
@@ -62,8 +61,8 @@ describe('Club Controller', () => {
     describe('getAllClubs', () => {
         test('should render index view with all clubs', async () => {
             const mockClubs = [
-                { _id: '1', name: 'Club 1', description: 'Desc 1', logo: 'logo1.jpg' },
-                { _id: '2', name: 'Club 2', description: 'Desc 2', logo: 'logo2.jpg' }
+                { _id: '1', uuid: 'club1-uuid', name: 'Club 1', description: 'Desc 1', logo: 'logo1.jpg' },
+                { _id: '2', uuid: 'club2-uuid', name: 'Club 2', description: 'Desc 2', logo: 'logo2.jpg' }
             ];
 
             // Mock populate chain
@@ -99,19 +98,20 @@ describe('Club Controller', () => {
         test('should render detail view with specific club', async () => {
             const mockClub = {
                 _id: '1',
+                uuid: 'club123-uuid',
                 name: 'Test Club',
                 description: 'Test Description',
                 logo: 'test-logo.jpg'
             };
 
             // Mock populate chain
-            Club.findById.mockReturnValue({
+            Club.findOne.mockReturnValue({
                 populate: jest.fn().mockResolvedValue(mockClub)
             });
 
             await clubController.getClubById(req, res);
 
-            expect(Club.findById).toHaveBeenCalledWith('club123');
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('clubs/club-details', {
                 club: mockClub,
                 user: req.user
@@ -119,12 +119,13 @@ describe('Club Controller', () => {
         });
 
         test('should render error view for non-existent club', async () => {
-            Club.findById.mockReturnValue({
+            Club.findOne.mockReturnValue({
                 populate: jest.fn().mockResolvedValue(null)
             });
 
             await clubController.getClubById(req, res);
 
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.render).toHaveBeenCalledWith('error', {
                 message: 'Club not found',
@@ -133,12 +134,13 @@ describe('Club Controller', () => {
         });
 
         test('should render error view when fetching club fails', async () => {
-            Club.findById.mockReturnValue({
+            Club.findOne.mockReturnValue({
                 populate: jest.fn().mockRejectedValue(new Error('Database error'))
             });
 
             await clubController.getClubById(req, res);
 
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.status).toHaveBeenCalledWith(500);
             expect(res.render).toHaveBeenCalledWith('error', {
                 message: 'Error fetching club details',
@@ -170,7 +172,7 @@ describe('Club Controller', () => {
             });
 
             // Verify redirect to new club's detail page
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
 
             // Verify user's clubsManaged was updated
             expect(req.user.clubsManaged).toContain('club123');
@@ -180,6 +182,7 @@ describe('Club Controller', () => {
         test('should render create form with error for duplicate club name', async () => {
             const existingClub = {
                 _id: 'existing123',
+                uuid: 'existing123-uuid',
                 name: 'Club 1'
             };
 
@@ -215,16 +218,17 @@ describe('Club Controller', () => {
         test('should render update-club template with club data', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 name: 'Club 1',
                 description: 'Desc 1',
                 logo: 'logo1.jpg'
             };
 
-            Club.findById.mockResolvedValue(mockClub);
+            Club.findOne.mockResolvedValue(mockClub);
 
             await clubController.renderEditClubForm(req, res);
 
-            expect(Club.findById).toHaveBeenCalledWith('club123');
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('clubs/update-club', {
                 club: mockClub,
                 user: req.user
@@ -232,10 +236,11 @@ describe('Club Controller', () => {
         });
 
         test('should render error when club not found', async () => {
-            Club.findById.mockResolvedValue(null);
+            Club.findOne.mockResolvedValue(null);
 
             await clubController.renderEditClubForm(req, res);
 
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.render).toHaveBeenCalledWith('error', {
                 message: 'Club not found',
@@ -248,27 +253,29 @@ describe('Club Controller', () => {
         test('should update existing club then redirect to /clubs/detail', async () => {
             const updatedClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 name: 'Club 1',
                 description: 'Desc 1',
                 logo: 'logo1.jpg'
             };
 
-            Club.findByIdAndUpdate.mockResolvedValue(updatedClub);
+            Club.findOneAndUpdate.mockResolvedValue(updatedClub);
             Club.findOne.mockResolvedValue(null);
 
             await clubController.updateClub(req, res);
 
-            expect(Club.findByIdAndUpdate).toHaveBeenCalledWith(
-                'club123',
+            expect(Club.findOneAndUpdate).toHaveBeenCalledWith(
+                { uuid: 'club123-uuid' },
                 { $set: { name: 'Club 1', description: 'Desc 1', logo: 'logo1.jpg' } },
                 { new: true, runValidators: true }
             );
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
         });
 
         test('should prevent updating to existing club name', async () => {
             const existingClub = {
                 _id: 'different-id',
+                uuid: 'different-uuid',
                 name: 'Club 1'
             };
 
@@ -278,8 +285,21 @@ describe('Club Controller', () => {
             await clubController.updateClub(req, res);
 
             expect(res.render).toHaveBeenCalledWith('clubs/update-club', {
-                club: { _id: 'club123', ...req.body },
+                club: { uuid: 'club123-uuid', ...req.body },
                 error: 'Club with this name already exists',
+                user: req.user
+            });
+        });
+
+        test('should render error when club not found', async () => {
+            Club.findOne.mockResolvedValue(null);
+            Club.findOneAndUpdate.mockResolvedValue(null);
+            
+            await clubController.updateClub(req, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.render).toHaveBeenCalledWith('error', {
+                message: 'Club not found',
                 user: req.user
             });
         });
@@ -289,19 +309,20 @@ describe('Club Controller', () => {
         test('should render assign-admin template with club data', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 name: 'Club 1',
                 description: 'Desc 1',
                 logo: 'logo1.jpg'
             };
     
             // Mock populate chain
-            Club.findById.mockReturnValue({
+            Club.findOne.mockReturnValue({
                 populate: jest.fn().mockResolvedValue(mockClub)
             });
     
             await clubController.renderAssignAdmin(req, res);
     
-            expect(Club.findById).toHaveBeenCalledWith('club123');
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('clubs/assign-admin', {
                 club: mockClub,
                 user: req.user
@@ -309,12 +330,13 @@ describe('Club Controller', () => {
         });
     
         test('should render error when club not found', async () => {
-            Club.findById.mockReturnValue({
+            Club.findOne.mockReturnValue({
                 populate: jest.fn().mockResolvedValue(null)
             });
     
             await clubController.renderAssignAdmin(req, res);
     
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('error', {
                 message: 'Club not found',
                 user: req.user
@@ -333,7 +355,7 @@ describe('Club Controller', () => {
                     save: jest.fn().mockResolvedValue(true)
                 },
                 body: { email: 'newadmin@test.com' },
-                params: { clubId: 'club123' }
+                params: { clubId: 'club123-uuid' }
             };
             res = {
                 render: jest.fn(),
@@ -347,6 +369,7 @@ describe('Club Controller', () => {
         test('should assign new admin and redirect to club detail', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 name: 'Test Club',
                 clubAdmin: 'oldAdminId',
                 save: jest.fn().mockResolvedValue(true)
@@ -368,13 +391,13 @@ describe('Club Controller', () => {
                 save: jest.fn().mockResolvedValue(true)
             };
 
-            Club.findById.mockResolvedValue(mockClub);
+            Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(mockNewAdmin);
             User.findById.mockResolvedValue(mockOldAdmin);
     
             await clubController.assignClubAdmin(req, res);
 
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
         });
     
         test('should render error view for invalid email', async () => {
@@ -398,9 +421,10 @@ describe('Club Controller', () => {
         });
     
         test('should render error view when club not found', async () => {
-            Club.findById.mockResolvedValue(null);
+            Club.findOne.mockResolvedValue(null);
             await clubController.assignClubAdmin(req, res);
 
+            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('error', {
                 message: 'Club not found',
                 user: req.user
@@ -410,9 +434,10 @@ describe('Club Controller', () => {
         test('should render assign-admin view with error when user not found', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 name: 'Test Club'
             };
-            Club.findById.mockResolvedValue(mockClub);
+            Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(null);
     
             await clubController.assignClubAdmin(req, res);
@@ -427,6 +452,7 @@ describe('Club Controller', () => {
         test('should render assign-admin view when user is already admin', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 clubAdmin: 'adminId'
             };
     
@@ -435,14 +461,14 @@ describe('Club Controller', () => {
                 email: 'newadmin@test.com'
             };
     
-            Club.findById.mockResolvedValue(mockClub);
+            Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(mockExistingAdmin);
     
             await clubController.assignClubAdmin(req, res);
     
             expect(res.render).toHaveBeenCalledWith('clubs/assign-admin', {
                 club: mockClub,
-                error: 'User is already an admin if this club',
+                error: 'User is already an admin of this club',
                 user: req.user
             });
         });
@@ -450,6 +476,7 @@ describe('Club Controller', () => {
         test('should handle missing old admin gracefully', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 clubAdmin: 'oldAdminId',
                 save: jest.fn().mockResolvedValue(true)
             };
@@ -462,7 +489,7 @@ describe('Club Controller', () => {
                 save: jest.fn().mockResolvedValue(true)
             };
         
-            Club.findById.mockResolvedValue(mockClub);
+            Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(mockNewAdmin);
             User.findById.mockResolvedValue(null);
         
@@ -470,12 +497,13 @@ describe('Club Controller', () => {
         
             expect(mockNewAdmin.save).toHaveBeenCalled();
             expect(mockClub.save).toHaveBeenCalled();
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
         });
     
         test('should update role to Visitor for old admin with no other clubs', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 clubAdmin: 'oldAdminId',
                 save: jest.fn().mockResolvedValue(true)
             };
@@ -495,7 +523,7 @@ describe('Club Controller', () => {
                 save: jest.fn().mockResolvedValue(true)
             };
         
-            Club.findById.mockResolvedValue(mockClub);
+            Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(mockNewAdmin);
             User.findById.mockResolvedValue(mockOldAdmin);
         
@@ -503,12 +531,13 @@ describe('Club Controller', () => {
         
             expect(mockOldAdmin.role).toBe('Visitor');
             expect(mockOldAdmin.save).toHaveBeenCalled();
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
         });
 
         test('should preserve Admin role during reassignment', async () => {
             const mockClub = {
                 _id: 'club123',
+                uuid: 'club123-uuid',
                 clubAdmin: 'oldAdminId',
                 save: jest.fn().mockResolvedValue(true)
             };
@@ -528,14 +557,14 @@ describe('Club Controller', () => {
                 save: jest.fn().mockResolvedValue(true)
             };
         
-            Club.findById.mockResolvedValue(mockClub);
+            Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(mockNewAdmin);
             User.findById.mockResolvedValue(mockOldAdmin);
         
             await clubController.assignClubAdmin(req, res);
         
             expect(mockOldAdmin.role).toBe('Admin');
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
         });
     });
 });
