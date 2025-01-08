@@ -1,6 +1,5 @@
 const Club = require('../models/Club');
 const User = require('../models/User');
-const { createError } = require('../utils/errors');
 
 module.exports = {
     // Render all clubs
