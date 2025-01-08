@@ -7,12 +7,11 @@ module.exports = {
     getAllClubs: async (req, res) => {
         try {
             const clubs = await Club.find().populate('clubAdmin', 'displayName email');
-            res.render('clubs/index', { 
+            res.render('clubs/club-list', { 
                 clubs,
                 user: req.user 
             });
         } catch (err) {
-            console.error(err);
             res.status(500).render('error', { 
                 message: 'Error fetching clubs',
                 user: req.user 
@@ -34,12 +33,11 @@ module.exports = {
                 });
             }
 
-            res.render('clubs/detail', { 
+            res.render('clubs/club-details', { 
                 club,
                 user: req.user 
             });
         } catch (err) {
-            console.error(err);
             res.status(500).render('error', { 
                 message: 'Error fetching club details',
                 user: req.user 
@@ -49,7 +47,7 @@ module.exports = {
 
     // Render club creation form
     renderCreateClubForm: async (req, res) => {
-        res.render('clubs/create', { 
+        res.render('clubs/create-club', { 
             user: req.user 
         });
     },
@@ -65,7 +63,7 @@ module.exports = {
             });
             
             if (existingClub) {
-                return res.render('clubs/create', { 
+                return res.render('clubs/create-club', { 
                     error: 'Club with this name already exists',
                     user: req.user 
                 });
@@ -86,8 +84,7 @@ module.exports = {
 
             res.redirect(`/clubs/${club._id}`);
         } catch (err) {
-            console.error(err);
-            res.render('clubs/create', { 
+            res.render('clubs/create-club', { 
                 error: err.message,
                 user: req.user 
             });
@@ -106,12 +103,11 @@ module.exports = {
                 });
             }
 
-            res.render('clubs/edit', { 
+            res.render('clubs/update-club', { 
                 club,
                 user: req.user 
             });
         } catch (err) {
-            console.error(err);
             res.status(500).render('error', { 
                 message: 'Error loading edit form',
                 user: req.user 
@@ -131,7 +127,7 @@ module.exports = {
             });
 
             if (existingClub) {
-                return res.render('clubs/edit', { 
+                return res.render('clubs/update-club', { 
                     club: { _id: req.params.clubId, name, description, logo },
                     error: 'Club with this name already exists',
                     user: req.user 
@@ -156,8 +152,7 @@ module.exports = {
             res.redirect(`/clubs/${club._id}`);
             
         } catch (err) {
-            console.error(err);
-            res.render('clubs/edit', { 
+            res.render('clubs/update-club', { 
                 club: { _id: req.params.clubId, ...req.body },
                 error: err.message,
                 user: req.user 
@@ -183,7 +178,6 @@ module.exports = {
                 user: req.user 
             });
         } catch (err) {
-            console.error(err);
             res.render('error', { 
                 message: 'Error loading assign admin form',
                 user: req.user 
@@ -192,7 +186,7 @@ module.exports = {
     },
 
     // Assign a club admin
-    assignClubAdmin: async (req, res, next) => {
+    assignClubAdmin: async (req, res) => {
         try {
             const { clubId } = req.params;
             const { email } = req.body;  // New admin's email
@@ -226,7 +220,11 @@ module.exports = {
     
             // Check if new admin is already admin of this club
             if (club.clubAdmin.toString() === newAdmin._id.toString()) {
-                return next(createError(400, 'User is already admin of this club'));
+                return res.render('clubs/assign-admin', {
+                    club,
+                    error: 'User is already an admin if this club',
+                    user: req.user
+                });
             }
     
             // Update old admin's clubsManaged
@@ -259,7 +257,10 @@ module.exports = {
             res.redirect(`/clubs/${clubId}`);
     
         } catch (err) {
-            next(createError(500, 'Error assigning club admin: ' + err.message));
+            res.render('error', { 
+                message: 'Error loading assign admin form',
+                user: req.user 
+            });
         }
     },
 };
