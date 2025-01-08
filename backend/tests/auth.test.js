@@ -31,8 +31,8 @@ describe('Authentication Routes', () => {
         test('should initialize Google strategy with correct credentials', () => {
             const googleStrategy = passport._strategies.google;
 
-            expect(googleStrategy._oauth2._clientId).toBe('test-google-client-id');
-            expect(googleStrategy._oauth2._clientSecret).toBe('test-google-client-secret');
+            expect(googleStrategy._oauth2._clientId).toBe(process.env.GOOGLE_CLIENT_ID||'test-google-client-id');
+            expect(googleStrategy._oauth2._clientSecret).toBe(process.env.GOOGLE_CLIENT_SECRET||'test-google-client-secret');
             expect(googleStrategy._callbackURL).toBe('http://localhost:5000/google/callback');
         });
 
