@@ -16,6 +16,8 @@
     font-weight: 700;
     margin-bottom: 1rem;
     font-size: 1.5rem;
+    color: #333333;
+    text-decoration: none;
 }
 
 .footer .text-muted {
