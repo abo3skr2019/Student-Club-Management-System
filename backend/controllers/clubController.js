@@ -221,7 +221,7 @@ exports.assignClubAdmin = async (req, res) => {
         if (club.clubAdmin.toString() === newAdmin._id.toString()) {
             return res.render('clubs/assign-admin', {
                 club,
-                error: 'User is already an admin if this club',
+                error: 'User is already an admin of this club',
                 user: req.user
             });
         }
