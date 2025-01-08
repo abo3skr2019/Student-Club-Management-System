@@ -17,7 +17,7 @@
                 <h2><%= club.name %></h2>
                 <p><%= club.description %></p>
                 <p>المشرف: <%= club.clubAdmin.displayName %></p>
-                <a href="/clubs/<%= club._id %>">عرض التفاصيل</a>
+                <a href="/clubs/<%= club.uuid %>">عرض التفاصيل</a>
             </div>
         <% }); %>
     </div>

@@ -10,7 +10,7 @@
         <div class="error"><%= error %></div>
     <% } %>
 
-    <form action="/clubs/<%= club._id %>/edit" method="POST">
+    <form action="/clubs/<%= club.uuid %>/edit" method="POST">
         <div>
             <label for="name">اسم النادي:</label>
             <input type="text" id="name" name="name" value="<%= club.name %>" required>
