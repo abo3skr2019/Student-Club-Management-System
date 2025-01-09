@@ -39,7 +39,6 @@ connectDB().then(() => {
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
 app.get('/login', (req, res) => res.render('login'));
-app.get('/profile', (req, res) => res.render('profile'));
 app.get('/club-dashboard', (req, res) => res.render('club-dashboard'));
 app.get('/event-creation', (req, res) => res.render('event-creation'));
 app.get('/feed', (req, res) => res.render('feed'));
@@ -48,7 +47,7 @@ app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
 // Include authentication routes
 app.use(require('./backend/routes/auth'));
-// app.use(require('./backend/routes/profile')); # TODO: uncomment when profile route is created
+app.use(require('./backend/routes/profile'));
 
 // Start the server
 const PORT = process.env.PORT || 3000;

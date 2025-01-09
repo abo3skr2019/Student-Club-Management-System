@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حذف حساب</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/delete-account.css" rel="stylesheet">
+    <link href="/css/partials/header.css" rel="stylesheet">
+    <link href="/css/partials/footer.css" rel="stylesheet">
+    <link href="/css/partials/background.css" rel="stylesheet">
+    <link href="/css/delete-account.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body class="background">
+
+<%- include('partials/header', { currentPage: 'delete-account' }) %>
+
+
+<br>
+<div class="container main-container">
+    <div class="delete-container">
+        <div class="delete-warning">
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle warning-icon"></i>
+                <h1>حذف الحساب</h1>
+                <p class="mb-0">هذا الإجراء نهائي ولا يمكن التراجع عنه</p>
+            </div>
+        </div>
+
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">تنبيه مهم!</h4>
+            <p>عند حذف حسابك:</p>
+            <ul>
+                <li>سيتم حذف جميع بياناتك بشكل نهائي</li>
+                <li>لن تتمكن من استرجاع حسابك مرة أخرى</li>
+            </ul>
+        </div>
+
+        <form id="delete-account-form" action="/delete-account" method="POST">
+            <div class="confirmation-checkbox">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                    <label class="form-check-label" for="confirmDelete">
+                        نعم، أنا متأكد من أنني أريد حذف حسابي نهائياً
+                    </label>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-danger" id="deleteButton">
+                    <i class="fas fa-trash-alt"></i>
+                    حذف الحساب نهائياً
+                </button>
+                <a href="/profile" class="btn btn-secondary">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
