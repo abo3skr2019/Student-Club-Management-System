@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 
 // Render all clubs
-exports.getAllClubs = async (req, res) => {
+const getAllClubs = async (req, res) => {
     try {
         const clubs = await Club.find().populate('clubAdmin', 'displayName email');
         res.render('clubs/club-list', { 
@@ -19,7 +19,7 @@ exports.getAllClubs = async (req, res) => {
 }
 
 // Render specific club details
-exports.getClubById = async (req, res) => {
+const getClubById = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
         .populate('clubAdmin', 'displayName email');
@@ -45,7 +45,7 @@ exports.getClubById = async (req, res) => {
 }
 
 // Render club creation form
-exports.renderCreateClubForm = async (req, res) => {
+const renderCreateClubForm = async (req, res) => {
     try {
         res.render('clubs/create-club', { 
             user: req.user 
@@ -59,7 +59,7 @@ exports.renderCreateClubForm = async (req, res) => {
 }
 
 // Create a new club
-exports.createClub = async (req, res) => {
+const createClub = async (req, res) => {
     try {
         const { name, description, logo } = req.body;
 
@@ -98,7 +98,7 @@ exports.createClub = async (req, res) => {
 }
 
 // Render club edit form
-exports.renderEditClubForm = async (req, res) => {
+const renderEditClubForm = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId });
         
@@ -122,7 +122,7 @@ exports.renderEditClubForm = async (req, res) => {
 }
 
 // Update a club's details
-exports.updateClub = async (req, res) => {
+const updateClub = async (req, res) => {
     try {
         const { name, description, logo } = req.body;
         
@@ -166,8 +166,8 @@ exports.updateClub = async (req, res) => {
     }
 }
 
-// Render Assign Admin
-exports.renderAssignAdmin = async (req, res) => {
+// Render Assign ClubAdmin
+const renderAssignClubAdmin = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
             .populate('clubAdmin', 'displayName email');
@@ -192,7 +192,7 @@ exports.renderAssignAdmin = async (req, res) => {
 }
 
 // Assign a club admin
-exports.assignClubAdmin = async (req, res) => {
+const assignClubAdmin = async (req, res) => {
     try {
         const { clubId } = req.params;
         const { email } = req.body;  // New admin's email
@@ -268,4 +268,15 @@ exports.assignClubAdmin = async (req, res) => {
             user: req.user 
         });
     }
+}
+
+module.exports = {
+    getAllClubs,
+    getClubById,
+    renderCreateClubForm,
+    createClub,
+    renderEditClubForm,
+    updateClub,
+    renderAssignClubAdmin,
+    assignClubAdmin
 }
