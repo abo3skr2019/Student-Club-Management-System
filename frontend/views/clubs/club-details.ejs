@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= club.name %></title>
+</head>
+<body>
+    <h1><%= club.name %></h1>
+    
+    <div class="club-details">
+        <img src="<%= club.logo %>" alt="<%= club.name %>">
+        <p><%= club.description %></p>
+        <p>المشرف: <%= club.clubAdmin.displayName %></p>
+        
+        <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
+            <a href="/clubs/<%= club.uuid %>/edit">تعديل النادي</a>
+        <% } %>
+    </div>
+</body>
+</html>
