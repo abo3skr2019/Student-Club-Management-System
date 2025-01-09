@@ -1,5 +1,11 @@
 const Club = require('../models/Club');
-
+/**
+ * Check if user is an admin
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @param {Function} next - The next middleware function
+ * @returns {void}
+ */
 const isAdmin = (req, res, next) => {
     if (req.user && req.user.role === 'Admin') {
         return next();
@@ -9,7 +15,13 @@ const isAdmin = (req, res, next) => {
         user: req.user 
     });
 };
-
+/**
+ * Check if user is an admin of the club
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @param {Function} next - The next middleware function
+ * @returns {void}
+ */
 const isClubAdmin = async (req, res, next) => {
     try {
         // Check if user is authenticated
@@ -26,6 +38,10 @@ const isClubAdmin = async (req, res, next) => {
         }
 
         // check if user is admin of the club
+        /**
+         * Find the club
+         * @type {string}
+         */
         const club = await Club.findOne({
             uuid: req.params.clubId,
             _id: { $in: req.user.clubsManaged }
