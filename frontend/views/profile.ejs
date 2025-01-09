@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/profile.css" rel="stylesheet">
+    <link href="/css/partials/header.css" rel="stylesheet">
+    <link href="/css/partials/footer.css" rel="stylesheet">
+    <link href="/css/partials/background.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body class="background">
+
+<%- include('partials/header', { currentPage: 'profile' }) %>
+
+<div class="container main-container">
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-image-container">
+                <img src="<%= user.profileImage %>" alt="صورة الملف الشخصي" class="profile-image">
+                <button class="edit-photo-btn" title="تغيير الصورة">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <h1 class="profile-name"><%= user.firstName %> <%= user.lastName %></h1>
+            <p class="profile-email"><%= user.email %></p>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <div class="profile-section">
+                <h3 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    المعلومات الشخصية
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>الاسم الأول</label>
+                        <p><%= user.firstName %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>الاسم الأخير</label>
+                        <p><%= user.lastName %></p>
+                    </div>
+                    <div class="info-item">
+                        <label>البريد الإلكتروني</label>
+                        <p><%= user.email %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Sections -->
+            <div class="events-section">
+                <h3 class="section-title">
+                    <i class="fas fa-calendar-check"></i>
+                    الفعاليات المسجل فيها
+                </h3>
+
+                <% if (false) { /* Replace with actual check for registered events */ %>
+                <!-- Events display will go here when implemented -->
+                <% } else { %>
+                    <div class="coming-soon">
+                        <i class="fas fa-clock coming-soon-icon"></i>
+                        <h4>قريباً</h4>
+                        <p>سيتم إضافة هذه الميزة قريباً</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="events-section">
+                <h3 class="section-title">
+                    <i class="fas fa-history"></i>
+                    الفعاليات السابقة
+                </h3>
+
+                <% if (false) { /* Replace with actual check for past events */ %>
+                <!-- Past events display will go here when implemented -->
+                <% } else { %>
+                    <div class="coming-soon">
+                        <i class="fas fa-clock coming-soon-icon"></i>
+                        <h4>قريباً</h4>
+                        <p>سيتم إضافة هذه الميزة قريباً</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="profile-actions">
+                <a href="/update-profile" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                    تعديل الملف الشخصي
+                </a>
+                <a href="/delete-account" class="btn btn-outline-danger">
+                    <i class="fas fa-trash-alt"></i>
+                    حذف الحساب
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
