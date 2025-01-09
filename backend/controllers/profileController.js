@@ -1,12 +1,24 @@
 const User = require('../models/User');
 
 // Render the profile update form
-exports.renderUpdateProfileForm = (req, res) => {
+/** 
+ * Render the profile update form
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @returns {void}
+ */
+const renderUpdateProfileForm = (req, res) => {
     res.render('update-profile', { user: req.user });
 };
 
 // Handle the profile update form submission
-exports.updateProfile = async (req, res) => {
+/** 
+ * Update the logged-in user's profile
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @returns {void}
+ */
+const updateProfile = async (req, res) => {
     const { firstName, lastName } = req.body;
     try {
         const user = await User.findById(req.user.id);
@@ -20,8 +32,13 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
-// Render the logged-in user's profile
-exports.renderProfile = async (req, res) => {
+/** 
+ * Render the logged-in user's profile
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @returns {void}
+ */
+const renderProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user) {
@@ -32,8 +49,13 @@ exports.renderProfile = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
-
-exports.deleteAccount = async (req, res) => {
+/** 
+ * Delete the logged-in user's account
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @returns {void}
+ */
+const deleteAccount = async (req, res) => {
     try {
         await User.findByIdAndDelete(req.user.id);
         req.session.destroy(error => {
@@ -44,4 +66,11 @@ exports.deleteAccount = async (req, res) => {
         console.error(err);
         res.status(500).send('Server error');
     }
+};
+
+module.exports = {
+    renderUpdateProfileForm,
+    updateProfile,
+    renderProfile,
+    deleteAccount
 };
