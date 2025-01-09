@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>النوادي</title>
+</head>
+<body>
+    <h1>النوادي</h1>
+    
+    <% if (user && user.role === 'Admin') { %>
+        <a href="/clubs/create">إنشاء نادي جديد</a>
+    <% } %>
+
+    <div class="clubs-list">
+        <% clubs.forEach(club => { %>
+            <div class="club-card">
+                <img src="<%= club.logo %>" alt="<%= club.name %>">
+                <h2><%= club.name %></h2>
+                <p><%= club.description %></p>
+                <p>المشرف: <%= club.clubAdmin.displayName %></p>
+                <a href="/clubs/<%= club.uuid %>">عرض التفاصيل</a>
+            </div>
+        <% }); %>
+    </div>
+</body>
+</html>
