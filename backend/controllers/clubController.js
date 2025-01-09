@@ -46,9 +46,16 @@ exports.getClubById = async (req, res) => {
 
 // Render club creation form
 exports.renderCreateClubForm = async (req, res) => {
-    res.render('clubs/create-club', { 
-        user: req.user 
-    });
+    try {
+        res.render('clubs/create-club', { 
+            user: req.user 
+        });
+    } catch (err) {
+        res.status(500).render('error', {
+            message: 'Error loading form',
+            user: req.user
+        });
+    }
 }
 
 // Create a new club
