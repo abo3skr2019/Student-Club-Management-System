@@ -1,26 +1,19 @@
-<nav class="navbar navbar-expand-lg fixed-top">
+<header class="header navbar navbar-expand-lg fixed-top bg-white">
     <div class="container">
-        <a class="navbar-brand gradient-text " href="/">وصل</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <a class="navbar-brand gradient-text" href="/">وصل</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link <%= currentPage === 'home' ? 'active' : '' %>" href="/">الرئيسة</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <%= currentPage === 'events' ? 'active' : '' %>" href="/events">الفعاليات</a>
+                    <a class="nav-link <%= currentPage === 'events' ? 'active' : '' %>" aria-current="<%= currentPage === 'events' ? 'page' : 'false' %>" href="/events">الفعاليات</a>
                 </li>
             </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="btn btn-outline-primary me-2" href="/login">تسجيل الدخول</a>
-                </li>
-                <li class="nav-item">
-                    <a class="btn btn-primary" href="/login">إنشاء حساب</a>
-                </li>
-            </ul>
+            <div class="navbar-nav gap-2">
+                <a class="btn btn-outline-primary" href="/login">تسجيل الدخول</a>
+                <a class="btn btn-primary" href="/login">إنشاء حساب</a>
+            </div>
         </div>
     </div>
-</nav>
+</header>
