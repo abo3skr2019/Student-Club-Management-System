@@ -85,7 +85,7 @@ body {
     padding: 2rem;
 }
 
-.profile-section {
+.profile-section, .events-section {
     margin-bottom: 2rem;
     padding-bottom: 2rem;
     border-bottom: 1px solid #eee;
@@ -98,6 +98,32 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Coming Soon styles */
+.coming-soon {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    color: #6c757d;
+}
+
+.coming-soon-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #2962ff;
+}
+
+.coming-soon h4 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #2962ff;
+}
+
+.coming-soon p {
+    margin: 0;
+    opacity: 0.8;
 }
 
 /* Info grid */
@@ -199,5 +225,9 @@ body {
 
     .info-grid {
         grid-template-columns: 1fr;
+    }
+
+    .coming-soon {
+        padding: 2rem 1rem;
     }
 }
