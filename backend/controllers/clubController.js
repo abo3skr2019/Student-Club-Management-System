@@ -2,7 +2,12 @@ const Club = require('../models/Club');
 const User = require('../models/User');
 
 
-// Render all clubs
+/**
+ * Render all clubs
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
 const getAllClubs = async (req, res) => {
     try {
         const clubs = await Club.find().populate('clubAdmin', 'displayName email');
@@ -18,7 +23,12 @@ const getAllClubs = async (req, res) => {
     }
 }
 
-// Render specific club details
+/**
+ * Render a club by its ID
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
 const getClubById = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
@@ -44,7 +54,12 @@ const getClubById = async (req, res) => {
     }
 }
 
-// Render club creation form
+/**
+ * Render Club Creation Form
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
 const renderCreateClubForm = async (req, res) => {
     try {
         res.render('clubs/create-club', { 
@@ -58,7 +73,12 @@ const renderCreateClubForm = async (req, res) => {
     }
 }
 
-// Create a new club
+/**
+ * Create a new club
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
 const createClub = async (req, res) => {
     try {
         const { name, description, logo } = req.body;
@@ -96,8 +116,14 @@ const createClub = async (req, res) => {
         });
     }
 }
-
-// Render club edit form
+/**
+ * Render Edit Club Form
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If club not found
+ * @throws {Error} - If error loading form
+ */
 const renderEditClubForm = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId });
@@ -121,7 +147,14 @@ const renderEditClubForm = async (req, res) => {
     }
 }
 
-// Update a club's details
+/**
+ * Update a club
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If club not found
+ * @throws {Error} - If club name already exists
+ */
 const updateClub = async (req, res) => {
     try {
         const { name, description, logo } = req.body;
@@ -166,7 +199,14 @@ const updateClub = async (req, res) => {
     }
 }
 
-// Render Assign ClubAdmin
+/**
+ * Render Assign Club Admin Form
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If club not found
+ * @throws {Error} - If error loading form
+ */
 const renderAssignClubAdmin = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
@@ -191,7 +231,16 @@ const renderAssignClubAdmin = async (req, res) => {
     }
 }
 
-// Assign a club admin
+/**
+ * Assign a new club admin
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If email not valid
+ * @throws {Error} - If club not found
+ * @throws {Error} - If user not found
+ * @throws {Error} - If user is already an admin of this club
+*/
 const assignClubAdmin = async (req, res) => {
     try {
         const { clubId } = req.params;
