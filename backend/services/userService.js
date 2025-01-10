@@ -14,7 +14,7 @@ async function findByEmail(email) {
 async function findByClubsJoined(clubId) {
     return await User.find({ 
         clubsJoined: clubId 
-    })
+    }).populate('clubsJoined');
 }
 
 // Find all users who manage a specific club
@@ -49,7 +49,7 @@ async function joinClub(userId, clubId) {
         userId,
         { $addToSet: { clubsJoined: clubId } },
         { new: true }
-    );
+    ).populate('clubsJoined');
 }
 
 // Remove user from club
@@ -58,7 +58,7 @@ async function leaveClub(userId, clubId) {
         userId,
         { $pull: { clubsJoined: clubId } },
         { new: true }
-    );
+    ).populate('clubsJoined');
 }
 
 module.exports = {
