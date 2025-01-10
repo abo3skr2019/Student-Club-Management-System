@@ -24,16 +24,11 @@ async function findByClubsManaged(clubId) {
     }).populate('clubsManaged');
 }
 
-/*
-* Events are not yet implemented in the application so this function is commented out
 // Find All Users who have joined a specific event
-
 async function findByEventsJoined(eventId) {
-    return await User.find({ 
-        eventsJoined: eventId 
-    }).populate('eventsJoined');
+    // since events are not implemented yet, this function will not do anything
+    return
 }
-*/
 // Find users by role
 async function findByRole(role) {
     return await User.find({ role });
