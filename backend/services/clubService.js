@@ -1,24 +1,40 @@
 const Club = require('../models/club');
 
+/**
+ * Find club by ID 
+ * @param {String} clubId
+ * @returns {Promise<Object>} Club object
+ */
+async function findById(clubId) {
+    return await Club.findById(clubId).lean();
+}
+/**
+ * Find club by UUID
+ * @param {String} UUID 
+ * @returns {Promise<Object>} Club object
+ */
+async function findByUUID(uuid) {
+    return await Club.findOne({ uuid }).lean();
+}
+
+/**
+ * Find club by name
+ * @param {String} name
+ * @returns {Promise<Object>} Club object
+ */
+async function findByName(name) {
+    return await Club.findOne({ name }).lean();
+}
+
+// Find clubs by their admin
+async function findByAdmin(adminId) {
+    return await Club.find({ clubAdmin: adminId });
+}
+
 // Create new club
 async function createClub(clubData) {
     const club = new Club(clubData);
     return await club.save();
-}
-
-// Find club by UUID
-async function findByUUID(uuid) {
-    return await Club.findOne({ uuid });
-}
-
-// Find club by name
-async function findByName(name) {
-    return await Club.findOne({ name });
-}
-
-// Find club by admin
-async function findByAdmin(adminId) {
-    return await Club.find({ clubAdmin: adminId });
 }
 
 // Update club details
@@ -29,6 +45,7 @@ async function updateClub(clubId, updateData) {
         { new: true, runValidators: true }
     );
 }
+
 
 // Delete club
 async function deleteClub(clubId) {
@@ -62,10 +79,11 @@ async function updateClubAdmin(clubId, newAdminId) {
 }
 
 module.exports = {
-    createClub,
+    findById,
     findByUUID,
     findByName,
     findByAdmin,
+    createClub,
     updateClub,
     deleteClub,
     addEvent,
