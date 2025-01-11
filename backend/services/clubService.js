@@ -163,12 +163,34 @@ async function addEvent(clubId, eventId) {
 // Remove event from club
 async function removeEvent(clubId, eventId) {
   // since events are not implemented yet, this function will not do anything
+  throw new Error("Events are not implemented yet");
+  try {
+    if (!clubId) {
+      throw new Error("clubId and eventId are required");
+    }
+    if (!eventId) {
+      throw new Error("eventId is required");
+    }
+  } catch (error) {
+    console.error("Error in clubService.addEvent: ", error);
+    throw error;
+  }
+
   return;
 }
 
 // Find clubs by event
 async function findByEvent(eventId) {
   // since events are not implemented yet, this function will not do anything
+  throw new Error("Events are not implemented yet");
+  try {
+    if (!eventId) {
+      throw new Error("eventId is required");
+    }
+  } catch (error) {
+    console.error("Error in clubService.findByEvent: ", error);
+    throw error;
+  }
   return;
 }
 /**
