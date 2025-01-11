@@ -1,4 +1,5 @@
 const Club = require("../models/Club");
+const User = require("../models/User");  
 
 /**
  * Find club by ID
