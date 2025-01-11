@@ -190,7 +190,7 @@ async function updateClubAdmin(clubId, newClubAdminId) {
         oldClubAdmin.role === "ClubAdmin"
       )
       {
-        oldClubAdmin.role = "Visitor";
+        oldClubAdmin.role = "Member";
       }
       await oldClubAdmin.save();
     }
