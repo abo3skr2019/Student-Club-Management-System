@@ -100,16 +100,41 @@ async function createClub(clubData) {
  * @returns {Promise<Object>} Club object
  */
 async function updateClub(clubId, updateData) {
-  return await Club.findByIdAndUpdate(
-    clubId,
-    { $set: updateData },
-    { new: true, runValidators: true }
-  );
+    try {
+        if (!clubId) {
+            throw new Error("clubId is required");
+        }
+        if (!updateData) {
+            throw new Error("updateData is required");
+        }
+        return await Club.findByIdAndUpdate(
+            clubId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+    }
+    catch (error) {
+        console.error("Error in clubService.updateClub: ", error);
+        throw error;
+    }
 }
 
-// Delete club
+/**
+ * Delete club by ID
+ * @param {String} clubId
+ * @returns {Promise<Object>} Club object
+ */
 async function deleteClub(clubId) {
-  return await Club.findByIdAndDelete(clubId);
+    try {
+        if (!clubId) {
+            throw new Error("clubId is required");
+        }
+        return await Club.findByIdAndDelete(clubId);
+    }
+    catch (error) {
+        console.error("Error in clubService.deleteClub: ", error);
+        throw error;
+    }
 }
 
 // Add event to club
@@ -129,7 +154,16 @@ async function findByEvent(eventId) {
   // since events are not implemented yet, this function will not do anything
   return;
 }
-// Update club admin
+/**
+ * Update club admin
+ * @param {String} clubId
+ * @param {String} newClubAdminId
+ * @returns {Promise<Object>} Club object
+ * @throws {Error} If clubId or newClubAdminId is not provided
+ * @throws {Error} If club not found
+ * @throws {Error} If newClubAdmin not found
+ * @throws {Error} If user is already this club's admin
+ */
 async function updateClubAdmin(clubId, newClubAdminId) {
   try {
     const club = await Club.findById(clubId);
