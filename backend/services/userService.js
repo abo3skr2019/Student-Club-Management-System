@@ -1,13 +1,38 @@
 const User = require('../models/User');
 
-// Find user by UUID
+/**
+ * Find user by ID and return user object
+ * @param {String} userId
+ * @returns {Promise<Object>} User object
+ */
+async function FindById(userId)
+{
+    return await User.findById(userId).lean();
+}
+/**
+ * 
+ * @param {String} uuid
+ * @returns {Promise<Object>} User object
+ */
 async function findByUUID(uuid) {
-    return await User.findOne({ uuid });
+    return await User.findOne({ uuid }).lean();
 }
 
-// Find user by email
+/**
+ * 
+ * @param {String} email
+ * @returns {Promise<Object>} User object
+ */
 async function findByEmail(email) {
-    return await User.findOne({ email });
+    return await User.findOne({ email }).lean();
+}
+/**
+ * 
+ * @param {String} role
+ * @returns {Promise<Object>} User object
+ */
+async function findByRole(role) {
+    return await User.find({ role }).lean();
 }
 
 // Find all users who have joined a specific club
@@ -29,10 +54,7 @@ async function findByEventsJoined(eventId) {
     // since events are not implemented yet, this function will not do anything
     return
 }
-// Find users by role
-async function findByRole(role) {
-    return await User.find({ role });
-}
+
 
 // Update user profile
 async function updateProfile(userId, updateData) {
@@ -62,6 +84,7 @@ async function leaveClub(userId, clubId) {
 }
 
 module.exports = {
+    FindById,
     findByUUID,
     findByEmail,
     findByClubsJoined,
