@@ -7,7 +7,20 @@ const User = require('../models/User');
  */
 async function FindById(userId)
 {
-    return await User.findById(userId).lean();
+    try
+    {
+        if(!userId)
+        {
+            throw new Error("userId is required");
+        }
+        return await User.findById(userId).lean();
+    }
+    catch(error)
+    {
+        console.error("Error in userService.FindById: ", error);
+        throw error;
+    }
+    
 }
 /**
  * 
@@ -78,7 +91,20 @@ async function findByClubsManaged(clubId) {
 // Find All Users who have joined a specific event
 async function findByEventsJoined(eventId) {
     // since events are not implemented yet, this function will not do anything
-    return
+    try
+    {
+        throw new Error("Events are not implemented yet");
+        if(!eventId)
+        {
+            throw new Error("eventId is required");
+        }
+    }
+    catch(error)
+    {
+        console.error("Error in userService.findByEventsJoined: ", error);
+        throw error;
+    }
+    
 }
 
 
