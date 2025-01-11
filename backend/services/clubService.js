@@ -83,7 +83,12 @@ async function createClub(clubData) {
     if (!clubData) {
       throw new Error("clubData is required");
     }
-    const club = new Club(clubData);
+    const requiredFields = ["name", "description", "logo", "clubAdmin"];
+    for (const field of requiredFields) {
+      if (!clubData[field]) {
+        throw new Error(`${field} is required`);
+      }
+    }    const club = new Club(clubData);
     return await club.save();
   } catch (error) {
     console.error("Error in clubService.createClub: ", error);
