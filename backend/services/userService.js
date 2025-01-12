@@ -28,7 +28,16 @@ async function FindById(userId)
  * @returns {Promise<Object>} User object
  */
 async function findByUUID(uuid) {
-    return await User.findOne({ uuid }).lean();
+    try {
+        if (!uuid) {
+            throw new Error("UUID is required");
+        }
+        return await User.findOne({ uuid }).lean();
+    } catch (error) {
+        console.error("Error in userService.findByUUID: ", error);
+        throw error;
+        
+    }
 }
 
 /**
@@ -37,7 +46,15 @@ async function findByUUID(uuid) {
  * @returns {Promise<Object>} User object
  */
 async function findByEmail(email) {
-    return await User.findOne({ email }).lean();
+    try {
+        if (!email) {
+            throw new Error("Email is required");
+        }
+        return await User.findOne({ email }).lean();
+    } catch (error) {
+        console.error("Error in userService.findByEmail: ", error);
+        throw error
+    }
 }
 /**
  * 
