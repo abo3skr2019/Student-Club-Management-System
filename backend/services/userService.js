@@ -5,7 +5,7 @@ const User = require('../models/User');
  * @param {String} userId
  * @returns {Promise<Object>} User object
  */
-async function FindById(userId)
+async function findById(userId)
 {
     try
     {
@@ -62,7 +62,15 @@ async function findByEmail(email) {
  * @returns {Promise<Object>} User object
  */
 async function findByRole(role) {
-    return await User.find({ role }).lean();
+    try {
+        if (!role) {
+            throw new Error("Role is required");
+        }
+        return await User.find({ role }).lean();
+    } catch (error) {
+        console.error("Error in userService.findByRole: ", error);
+        throw error;
+    }
 }
 
 /**
@@ -214,7 +222,7 @@ async function leaveClub(userId, clubId) {
 }
 
 module.exports = {
-    FindById,
+    findById,
     findByUUID,
     findByEmail,
     findByClubsJoined,
