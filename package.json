@@ -4,6 +4,7 @@
   "description": "Lorem Ipsum",
   "main": "app.js",
   "scripts": {
+    "dev": "node --watch app.js",
     "test": "jest"
   },
   "keywords": [],
