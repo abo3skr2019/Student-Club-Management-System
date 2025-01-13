@@ -165,6 +165,42 @@ async function updateProfile(userId, updateData) {
     }
 }
 
+const VALID_ROLES = ['Admin', 'ClubAdmin', 'Member', 'Visitor'];
+
+/**
+ * Change user role
+ * @param {String} userId
+ * @param {String} role
+ * @throws {Error} If userId or role is not provided
+ * @throws {Error} If role is not valid
+ * @returns {Promise<Object>} User object
+ */
+async function ChangeRole(userId, role) {
+    try
+    {
+        if (!userId) {
+            throw new Error("userId is required");
+        }
+        if (!role) {
+            throw new Error("role is required");
+        }
+        if (!VALID_ROLES.includes(role)) 
+        {
+            throw new Error("Invalid role ", role);
+        }
+        return await User.findByIdAndUpdate(
+            userId,
+            { $set: { role: role } },
+            { new: true }
+        );
+    }
+    catch(error)
+    {
+        console.error("Error in userService.ChangeRole: ", error);
+        throw error;
+    }
+}
+
 /**
  * Add user to club
  * @param {String} userId
@@ -230,6 +266,7 @@ module.exports = {
     findByEventsJoined,
     findByRole,
     updateProfile,
+    ChangeRole,
     joinClub,
     leaveClub
 };
