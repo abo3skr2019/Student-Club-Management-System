@@ -19,5 +19,7 @@ router.get('/delete-account', isAuthenticated, (req, res) => {
 
 router.post('/delete-account', isAuthenticated, profileController.deleteAccount);
 
-
+// Change user role routes , Use only for testing remove in production!
+router.get('/change-role', isAuthenticated,profileController.renderChangeRoleForm);
+router.post('/change-role', isAuthenticated, profileController.changeRole);
 module.exports = router;

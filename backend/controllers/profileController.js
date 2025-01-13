@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const userService = require('../services/userService');
 
 // Render the profile update form
 exports.renderUpdateProfileForm = (req, res) => {
@@ -45,3 +46,27 @@ exports.deleteAccount = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+exports.changeRole = async (req, res) => {
+    const { role } = req.body;
+    try {
+        await userService.ChangeRole(req.user.id, role);
+        res.redirect('/profile');
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', {
+            message: 'Error changing role',
+            user: req.user
+        });
+    }
+};
+
+exports.renderChangeRoleForm = (req, res) => {
+    //HTML
+    res.send(`
+        <form action="/change-role" method="POST">
+            <input type="text" name="role" placeholder="Enter new role">
+            <button type="submit">Change Role</button>
+        </form>
+    `);
+}
