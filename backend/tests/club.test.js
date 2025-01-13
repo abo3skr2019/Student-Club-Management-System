@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Club = require('../models/Club');
 const User = require('../models/User');
 const clubController = require('../controllers/clubController');
-
+const ClubService = require('../services/clubService');
 
 // Club model mock
 jest.mock('../models/Club', () => {
@@ -32,6 +32,11 @@ jest.mock('../models/Club', () => {
 jest.mock('../models/User', () => ({
     findById: jest.fn(),
     findOne: jest.fn(),
+}));
+
+jest.mock('../services/clubService', () => ({
+    getAllClubs: jest.fn(),
+    // TODO: Add more mocks as needed
 }));
 
 describe('Club Controller', () => {
@@ -65,14 +70,11 @@ describe('Club Controller', () => {
                 { _id: '2', uuid: 'club2-uuid', name: 'Club 2', description: 'Desc 2', logo: 'logo2.jpg' }
             ];
 
-            // Mock populate chain
-            Club.find.mockReturnValue({
-                populate: jest.fn().mockResolvedValue(mockClubs)
-            });
+            ClubService.getAllClubs.mockResolvedValue(mockClubs);
 
             await clubController.getAllClubs(req, res);
 
-            expect(Club.find).toHaveBeenCalled();
+            expect(ClubService.getAllClubs).toHaveBeenCalled();
             expect(res.render).toHaveBeenCalledWith('clubs/club-list', {
                 clubs: mockClubs,
                 user: req.user
@@ -80,9 +82,7 @@ describe('Club Controller', () => {
         });
 
         test('should render error view when fetching clubs fails', async () => {
-            Club.find.mockReturnValue({
-                populate: jest.fn().mockRejectedValue(new Error('Database error'))
-            });
+            ClubService.getAllClubs.mockRejectedValue(new Error('Database error'));
 
             await clubController.getAllClubs(req, res);
 
