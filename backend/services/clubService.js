@@ -69,6 +69,19 @@ async function findByAdmin(adminId) {
 }
 
 /**
+ * Get all clubs in the database
+ * @returns {Promise<Array>} Array of Club objects
+ */
+async function getAllClubs() {
+  try {
+    return await Club.find().populate("clubAdmin", "displayName email").lean();
+  } catch (error) {
+    console.error("Error in clubService.getAllClubs: ", error);
+    throw error;
+  }
+}
+
+/**
  * Create a new club
  * @param {Object} clubData
  * @param {String} clubData.name
@@ -255,6 +268,7 @@ module.exports = {
   findByUUID,
   findByName,
   findByAdmin,
+  getAllClubs,
   createClub,
   updateClub,
   deleteClub,
