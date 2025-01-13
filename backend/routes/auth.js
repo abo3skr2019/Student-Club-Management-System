@@ -98,7 +98,10 @@ passport.use(new GitHubStrategy({
 
 // Google auth routes
 router.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] }));
+    passport.authenticate('google', { 
+        scope: ['profile', 'email'],
+        prompt: 'select_account'
+    }));
 
 router.get('/google/callback',
     passport.authenticate('google', {
