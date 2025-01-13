@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clubController = require('../controllers/clubController');
-const { isAuthenticated } = require('../middleware/CheckAuth');
+const isAuthenticated = require('../middleware/CheckAuth');
 const { isAdmin, isClubAdmin } = require('../middleware/CheckRole');
 
 // Protected routes - require authentication
