@@ -1,11 +1,12 @@
 const Club = require('../models/Club');
 const User = require('../models/User');
+const ClubService = require('../services/clubService');
 
 
 // Render all clubs
 exports.getAllClubs = async (req, res) => {
     try {
-        const clubs = await Club.find().populate('clubAdmin', 'displayName email');
+        const clubs = await ClubService.getAllClubs();
         res.render('clubs/club-list', { 
             clubs,
             user: req.user 
