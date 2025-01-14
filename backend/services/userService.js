@@ -244,11 +244,13 @@ async function leaveClub(userId, clubId) {
         if (!clubId) {
             throw new Error("clubId is required");
         }
-        return await User.findByIdAndUpdate(
-            userId,
-            { $pull: { clubsJoined: clubId } },
-            { new: true }
-        ).populate('clubsJoined');
+        const leavingUser = await User.findById(userId)
+        if (!leavingUser.clubsJoined.includes(clubId))
+            {
+                throw new Error("User is not a Member of this Club");
+            }
+        leavingUser.clubsJoined.pull(clubId);
+        return await leavingUser.save().then(user => user.populate('clubsJoined'))
     }
     catch(error){
         console.error("Error in userService.leaveClub: ", error);
