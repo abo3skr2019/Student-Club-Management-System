@@ -2,8 +2,13 @@ const Club = require('../models/Club');
 const User = require('../models/User');
 
 
-// Render all clubs
-exports.getAllClubs = async (req, res) => {
+/**
+ * Render all clubs
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
+const getAllClubs = async (req, res) => {
     try {
         const clubs = await Club.find().populate('clubAdmin', 'displayName email');
         res.render('clubs/club-list', { 
@@ -18,8 +23,13 @@ exports.getAllClubs = async (req, res) => {
     }
 }
 
-// Render specific club details
-exports.getClubById = async (req, res) => {
+/**
+ * Render a club by its ID
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
+const getClubById = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
         .populate('clubAdmin', 'displayName email');
@@ -44,8 +54,13 @@ exports.getClubById = async (req, res) => {
     }
 }
 
-// Render club creation form
-exports.renderCreateClubForm = async (req, res) => {
+/**
+ * Render Club Creation Form
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
+const renderCreateClubForm = async (req, res) => {
     try {
         res.render('clubs/create-club', { 
             user: req.user 
@@ -58,8 +73,13 @@ exports.renderCreateClubForm = async (req, res) => {
     }
 }
 
-// Create a new club
-exports.createClub = async (req, res) => {
+/**
+ * Create a new club
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ */
+const createClub = async (req, res) => {
     try {
         const { name, description, logo } = req.body;
 
@@ -96,9 +116,15 @@ exports.createClub = async (req, res) => {
         });
     }
 }
-
-// Render club edit form
-exports.renderEditClubForm = async (req, res) => {
+/**
+ * Render Edit Club Form
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If club not found
+ * @throws {Error} - If error loading form
+ */
+const renderEditClubForm = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId });
         
@@ -121,8 +147,15 @@ exports.renderEditClubForm = async (req, res) => {
     }
 }
 
-// Update a club's details
-exports.updateClub = async (req, res) => {
+/**
+ * Update a club
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If club not found
+ * @throws {Error} - If club name already exists
+ */
+const updateClub = async (req, res) => {
     try {
         const { name, description, logo } = req.body;
         
@@ -166,8 +199,15 @@ exports.updateClub = async (req, res) => {
     }
 }
 
-// Render Assign Admin
-exports.renderAssignAdmin = async (req, res) => {
+/**
+ * Render Assign Club Admin Form
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If club not found
+ * @throws {Error} - If error loading form
+ */
+const renderAssignClubAdmin = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
             .populate('clubAdmin', 'displayName email');
@@ -191,8 +231,17 @@ exports.renderAssignAdmin = async (req, res) => {
     }
 }
 
-// Assign a club admin
-exports.assignClubAdmin = async (req, res) => {
+/**
+ * Assign a new club admin
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {void}
+ * @throws {Error} - If email not valid
+ * @throws {Error} - If club not found
+ * @throws {Error} - If user not found
+ * @throws {Error} - If user is already an admin of this club
+*/
+const assignClubAdmin = async (req, res) => {
     try {
         const { clubId } = req.params;
         const { email } = req.body;  // New admin's email
@@ -268,4 +317,15 @@ exports.assignClubAdmin = async (req, res) => {
             user: req.user 
         });
     }
+}
+
+module.exports = {
+    getAllClubs,
+    getClubById,
+    renderCreateClubForm,
+    createClub,
+    renderEditClubForm,
+    updateClub,
+    renderAssignClubAdmin,
+    assignClubAdmin
 }

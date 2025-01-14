@@ -305,7 +305,7 @@ describe('Club Controller', () => {
         });
     });
 
-    describe('renderAssignAdmin', () => {
+    describe('renderAssignClubAdmin', () => {
         test('should render assign-admin template with club data', async () => {
             const mockClub = {
                 _id: 'club123',
@@ -320,7 +320,7 @@ describe('Club Controller', () => {
                 populate: jest.fn().mockResolvedValue(mockClub)
             });
     
-            await clubController.renderAssignAdmin(req, res);
+            await clubController.renderAssignClubAdmin(req, res);
     
             expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('clubs/assign-admin', {
@@ -334,7 +334,7 @@ describe('Club Controller', () => {
                 populate: jest.fn().mockResolvedValue(null)
             });
     
-            await clubController.renderAssignAdmin(req, res);
+            await clubController.renderAssignClubAdmin(req, res);
     
             expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('error', {

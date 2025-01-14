@@ -1,3 +1,10 @@
+/**
+ * This file is used to validate the profile input fields.
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @param {Function} next - The next middleware function
+ * @returns {void}
+ */
 const validateProfileInput = (req, res, next) => {  
     const { firstName, lastName } = req.body;  
     if (!firstName || firstName.trim().length === 0) {  
@@ -5,4 +12,4 @@ const validateProfileInput = (req, res, next) => {
     }  
     next();  
 };  
-module.exports = validateProfileInput;
+module.exports = { validateProfileInput };
