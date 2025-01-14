@@ -72,7 +72,7 @@ const deleteAccount = async (req, res) => {
 const changeRole = async (req, res) => {
     const { role } = req.body;
     try {
-        await userService.ChangeRole(req.user.id, role);
+        await userService.changeRole(req.user.id, role);
         res.redirect('/profile');
     } catch (error) {
         console.error(error);
