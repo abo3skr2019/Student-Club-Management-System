@@ -167,17 +167,17 @@ async function changeRole(userId, role) {
       throw new Error("role is required");
     }
     if (!VALID_ROLES.includes(role)) {
-      throw new Error("Invalid role ", role);
+      throw new Error(`Invalid role: ${role} `);
     }
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not Found");
     }
-    user.role.set(role);
+    user.role= role;
 
-    return await user.save().then((user) => user.lean());
+    return (await user.save()).toObject
   } catch (error) {
-    console.error("Error in userService.ChangeRole: ", error);
+    console.error("Error in userService.changeRole: ", error);
     throw error;
   }
 }
@@ -223,6 +223,14 @@ async function leaveClub(userId, clubId) {
       throw new Error("clubId is required");
     }
     const leavingUser = await User.findById(userId);
+    if (!leavingUser)
+      {
+        throw new Error("User not Found")
+      }
+    if (!leavingUser.clubsJoined)
+    {
+      throw new Error("User is not a Member of Any Club")
+    }
     if (!leavingUser.clubsJoined.includes(clubId)) {
       throw new Error("User is not a Member of this Club");
     }
