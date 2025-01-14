@@ -1,11 +1,11 @@
 {
-  "name": "webdevcourseproject",
+  "name": "wasl",
   "version": "1.0.0",
-  "description": "Lorem Ipsum",
+  "description": "A Management System for Student Clubs",
   "main": "app.js",
   "scripts": {
-    "dev": "node --watch app.js",
-    "test": "jest"
+    "test": "jest",
+    "dev": "node --watch app.js"
   },
   "keywords": [],
   "author": "",

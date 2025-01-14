@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const isAuthenticated  = require('../middleware/CheckAuth');
-const validateProfileInput = require('../middleware/ProfileValidation');
+const {isAuthenticated}  = require('../middleware/CheckAuth');
+const {validateProfileInput} = require('../middleware/ProfileValidation');
 const profileController = require('../controllers/profileController');
 
 // Render the profile update form

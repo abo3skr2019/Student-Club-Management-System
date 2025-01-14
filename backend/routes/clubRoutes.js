@@ -9,7 +9,7 @@ router.get('/create', isAuthenticated, isAdmin, clubController.renderCreateClubF
 router.post('/create', isAuthenticated, isAdmin, clubController.createClub);
 router.get('/:clubId/edit', isAuthenticated, isClubAdmin, clubController.renderEditClubForm);
 router.post('/:clubId/edit', isAuthenticated, isClubAdmin, clubController.updateClub);
-router.get('/:clubId/assign-admin', isAuthenticated, isClubAdmin, clubController.renderAssignAdmin);
+router.get('/:clubId/assign-admin', isAuthenticated, isClubAdmin, clubController.renderAssignClubAdmin);
 router.post('/:clubId/assign-admin', isAuthenticated, isClubAdmin, clubController.assignClubAdmin);
 
 // Public Routes
