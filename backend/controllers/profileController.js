@@ -84,13 +84,7 @@ const changeRole = async (req, res) => {
 };
 
 const renderChangeRoleForm = (req, res) => {
-    //HTML
-    res.send(`
-        <form action="/change-role" method="POST">
-            <input type="text" name="role" placeholder="Enter new role">
-            <button type="submit">Change Role</button>
-        </form>
-    `);
+    res.render("change-role",{ user: req.user })
 }
 
 module.exports = {

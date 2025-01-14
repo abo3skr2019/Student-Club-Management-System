@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Role</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/delete-account.css" rel="stylesheet">
+    <link href="/css/partials/header.css" rel="stylesheet">
+    <link href="/css/partials/footer.css" rel="stylesheet">
+    <link href="/css/partials/background.css" rel="stylesheet">
+    <link href="/css/delete-account.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="background">
+<%- include('partials/header') %>  
+<form action="/change-role" method="POST">  
+    <select name="role" required>  
+        <option value="">Select Role</option>  
+        <% ['Admin', 'ClubAdmin', 'Member', 'Visitor'].forEach(role => { %>  
+            <option value="<%= role %>"><%= role %></option>  
+        <% }) %>  
+    </select>  
+    <button type="submit">Change Role</button>  
+</form>  
+<%- include('partials/footer') %>  
+</body>
+</html>
