@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require("../models/User");
 
 /**
  * Find user by ID and return user object
@@ -6,70 +6,64 @@ const User = require('../models/User');
  * @returns {Promise<Object>} User object
  */
 async function findById(userId) {
-    try
-    {
-        if(!userId)
-        {
-            throw new Error("userId is required");
-        }
-        return await User.findById(userId).lean();
+  try {
+    if (!userId) {
+      throw new Error("userId is required");
     }
-    catch(error)
-    {
-        console.error("Error in userService.findById: ", error);
-        throw error;
-    }
-    
+    return await User.findById(userId).lean();
+  } catch (error) {
+    console.error("Error in userService.findById: ", error);
+    throw error;
+  }
 }
 /**
- * 
+ *
  * @param {String} uuid
  * @returns {Promise<Object>} User object
  */
 async function findByUUID(uuid) {
-    try {
-        if (!uuid) {
-            throw new Error("UUID is required");
-        }
-        return await User.findOne({ uuid }).lean();
-    } catch (error) {
-        console.error("Error in userService.findByUUID: ", error);
-        throw error;
-        
+  try {
+    if (!uuid) {
+      throw new Error("UUID is required");
     }
+    return await User.findOne({ uuid }).lean();
+  } catch (error) {
+    console.error("Error in userService.findByUUID: ", error);
+    throw error;
+  }
 }
 
 /**
- * 
+ *
  * @param {String} email
  * @returns {Promise<Object>} User object
  */
 async function findByEmail(email) {
-    try {
-        if (!email) {
-            throw new Error("Email is required");
-        }
-        return await User.findOne({ email }).lean();
-    } catch (error) {
-        console.error("Error in userService.findByEmail: ", error);
-        throw error
+  try {
+    if (!email) {
+      throw new Error("Email is required");
     }
+    return await User.findOne({ email }).lean();
+  } catch (error) {
+    console.error("Error in userService.findByEmail: ", error);
+    throw error;
+  }
 }
 /**
- * 
+ *
  * @param {String} role
  * @returns {Promise<Object>} User object
  */
 async function findByRole(role) {
-    try {
-        if (!role) {
-            throw new Error("Role is required");
-        }
-        return await User.find({ role }).lean();
-    } catch (error) {
-        console.error("Error in userService.findByRole: ", error);
-        throw error;
+  try {
+    if (!role) {
+      throw new Error("Role is required");
     }
+    return await User.find({ role }).lean();
+  } catch (error) {
+    console.error("Error in userService.findByRole: ", error);
+    throw error;
+  }
 }
 
 /**
@@ -78,59 +72,49 @@ async function findByRole(role) {
  * @returns {Promise<Array>} Array of User objects
  */
 async function findByClubsJoined(clubId) {
-    try{
-        if(!clubId){
-            throw new Error("clubId is required");
-        }
-        return await User.find({ 
-            clubsJoined: clubId 
-        }).populate('clubsJoined');    
-    }catch(error){
-        console.error("Error in userService.findByClubsJoined: ", error);
-        throw error;
+  try {
+    if (!clubId) {
+      throw new Error("clubId is required");
     }
+    return await User.find({
+      clubsJoined: clubId,
+    }).populate("clubsJoined");
+  } catch (error) {
+    console.error("Error in userService.findByClubsJoined: ", error);
+    throw error;
+  }
 }
 
 /**
  * TODO: Implement Multiple ClubAdmins
- * Find all users who manage a specific club 
+ * Find all users who manage a specific club
  * @param {String} clubId
  * @returns {Promise<Array>} Array of User objects
  */
 async function findByClubsManaged(clubId) {
-    try
-    {
-        if(!clubId)
-        {
-            throw new Error("clubId is required");
-        }
-        return await User.find({clubsManaged: clubId }).populate('clubsManaged');
+  try {
+    if (!clubId) {
+      throw new Error("clubId is required");
     }
-    catch(error)
-    {
+    return await User.find({ clubsManaged: clubId }).populate("clubsManaged");
+  } catch (error) {
     console.error("Error in userService.findByClubsManaged: ", error);
     throw error;
-    }
+  }
 }
 // Find All Users who have joined a specific event
 async function findByEventsJoined(eventId) {
-    // since events are not implemented yet, this function will not do anything
-    try
-    {
-        throw new Error("Events are not implemented yet");
-        if(!eventId)
-        {
-            throw new Error("eventId is required");
-        }
+  // since events are not implemented yet, this function will not do anything
+  try {
+    throw new Error("Events are not implemented yet");
+    if (!eventId) {
+      throw new Error("eventId is required");
     }
-    catch(error)
-    {
-        console.error("Error in userService.findByEventsJoined: ", error);
-        throw error;
-    }
-    
+  } catch (error) {
+    console.error("Error in userService.findByEventsJoined: ", error);
+    throw error;
+  }
 }
-
 
 /**
  * Update user profile
@@ -143,28 +127,25 @@ async function findByEventsJoined(eventId) {
  * @returns {Promise<Object>} User object
  */
 async function updateProfile(userId, updateData) {
-    try
-    {
-        if (!userId) {
-            throw new Error("userId is required");
-        }
-        if (!updateData) {
-            throw new Error("updateData is required");
-        }   
-        return await User.findByIdAndUpdate(
-            userId,
-            { $set: updateData },
-            { new: true, runValidators: true }
-        );
+  try {
+    if (!userId) {
+      throw new Error("userId is required");
     }
-    catch(error)
-    {
-        console.error("Error in userService.updateProfile: ", error);
-        throw error;
+    if (!updateData) {
+      throw new Error("updateData is required");
     }
+    return await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+  } catch (error) {
+    console.error("Error in userService.updateProfile: ", error);
+    throw error;
+  }
 }
 
-const VALID_ROLES = ['Admin', 'ClubAdmin', 'Member', 'Visitor'];
+const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
 
 /**
  * Change user role
@@ -175,29 +156,25 @@ const VALID_ROLES = ['Admin', 'ClubAdmin', 'Member', 'Visitor'];
  * @returns {Promise<Object>} User object
  */
 async function changeRole(userId, role) {
-    try
-    {
-        if (!userId) {
-            throw new Error("userId is required");
-        }
-        if (!role) {
-            throw new Error("role is required");
-        }
-        if (!VALID_ROLES.includes(role)) 
-        {
-            throw new Error("Invalid role ", role);
-        }
-        return await User.findByIdAndUpdate(
-            userId,
-            { $set: { role: role } },
-            { new: true }
-        );
+  try {
+    if (!userId) {
+      throw new Error("userId is required");
     }
-    catch(error)
-    {
-        console.error("Error in userService.ChangeRole: ", error);
-        throw error;
+    if (!role) {
+      throw new Error("role is required");
     }
+    if (!VALID_ROLES.includes(role)) {
+      throw new Error("Invalid role ", role);
+    }
+    return await User.findByIdAndUpdate(
+      userId,
+      { $set: { role: role } },
+      { new: true }
+    );
+  } catch (error) {
+    console.error("Error in userService.ChangeRole: ", error);
+    throw error;
+  }
 }
 
 /**
@@ -207,25 +184,22 @@ async function changeRole(userId, role) {
  * @returns {Promise<Object>} User object
  */
 async function joinClub(userId, clubId) {
-    try
-    {
-        if (!userId) {
-            throw new Error("userId is required");
-        }
-        if (!clubId) {
-            throw new Error("clubId is required");
-        }
-        return await User.findByIdAndUpdate(
-            userId,
-            { $addToSet: { clubsJoined: clubId } },
-            { new: true }
-        ).populate('clubsJoined');
+  try {
+    if (!userId) {
+      throw new Error("userId is required");
     }
-    catch(error)
-    {
-        console.error("Error in userService.joinClub: ", error);
-        throw error;
+    if (!clubId) {
+      throw new Error("clubId is required");
     }
+    return await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { clubsJoined: clubId } },
+      { new: true }
+    ).populate("clubsJoined");
+  } catch (error) {
+    console.error("Error in userService.joinClub: ", error);
+    throw error;
+  }
 }
 
 /**
@@ -236,38 +210,38 @@ async function joinClub(userId, clubId) {
  * @throws {Error} If userId or clubId is not provided
  */
 async function leaveClub(userId, clubId) {
-    try
-    {
-        if (!userId) {
-            throw new Error("userId is required");
-        }
-        if (!clubId) {
-            throw new Error("clubId is required");
-        }
-        const leavingUser = await User.findById(userId)
-        if (!leavingUser.clubsJoined.includes(clubId))
-            {
-                throw new Error("User is not a Member of this Club");
-            }
-        leavingUser.clubsJoined.pull(clubId);
-        return await leavingUser.save().then(user => user.populate('clubsJoined')).then(user => user.lean());
+  try {
+    if (!userId) {
+      throw new Error("userId is required");
     }
-    catch(error){
-        console.error("Error in userService.leaveClub: ", error);
-        throw error;
-    }   
+    if (!clubId) {
+      throw new Error("clubId is required");
+    }
+    const leavingUser = await User.findById(userId);
+    if (!leavingUser.clubsJoined.includes(clubId)) {
+      throw new Error("User is not a Member of this Club");
+    }
+    leavingUser.clubsJoined.pull(clubId);
+    return await leavingUser
+      .save()
+      .then((user) => user.populate("clubsJoined"))
+      .then((user) => user.lean());
+  } catch (error) {
+    console.error("Error in userService.leaveClub: ", error);
+    throw error;
+  }
 }
 
 module.exports = {
-    findById,
-    findByUUID,
-    findByEmail,
-    findByClubsJoined,
-    findByClubsManaged,
-    findByEventsJoined,
-    findByRole,
-    updateProfile,
-    changeRole,
-    joinClub,
-    leaveClub
+  findById,
+  findByUUID,
+  findByEmail,
+  findByClubsJoined,
+  findByClubsManaged,
+  findByEventsJoined,
+  findByRole,
+  updateProfile,
+  changeRole,
+  joinClub,
+  leaveClub,
 };
