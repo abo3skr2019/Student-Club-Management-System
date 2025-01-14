@@ -1,9 +1,10 @@
 const User = require("../models/User");
+const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
 
 /**
  * Find user by ID and return user object
  * @param {String} userId
- * @returns {Promise<Object>} User object
+ * @returns {Promise<Object>} leaned User object
  */
 async function findById(userId) {
   try {
@@ -19,7 +20,7 @@ async function findById(userId) {
 /**
  *
  * @param {String} uuid
- * @returns {Promise<Object>} User object
+ * @returns {Promise<Object>} leaned User object
  */
 async function findByUUID(uuid) {
   try {
@@ -36,7 +37,7 @@ async function findByUUID(uuid) {
 /**
  *
  * @param {String} email
- * @returns {Promise<Object>} User object
+ * @returns {Promise<Object>} leaned User object
  */
 async function findByEmail(email) {
   try {
@@ -52,7 +53,7 @@ async function findByEmail(email) {
 /**
  *
  * @param {String} role
- * @returns {Promise<Object>} User object
+ * @returns {Promise<Object>} leaned User object
  */
 async function findByRole(role) {
   try {
@@ -69,7 +70,7 @@ async function findByRole(role) {
 /**
  * Find all users who have joined a specific club
  * @param {String} clubId
- * @returns {Promise<Array>} Array of User objects
+ * @returns {Promise<Array<User>>} Array of User objects
  */
 async function findByClubsJoined(clubId) {
   try {
@@ -89,7 +90,7 @@ async function findByClubsJoined(clubId) {
  * TODO: Implement Multiple ClubAdmins
  * Find all users who manage a specific club
  * @param {String} clubId
- * @returns {Promise<Array>} Array of User objects
+ * @returns {Promise<Array<User>>} Array of User objects
  */
 async function findByClubsManaged(clubId) {
   try {
@@ -124,7 +125,7 @@ async function findByEventsJoined(eventId) {
  * @param {String} updateData.lastName
  * @param {String} updateData.email
  * @param {String} updateData.profilePicture
- * @returns {Promise<Object>} User object
+ * @returns {Promise<Object>} leaned User object 
  */
 async function updateProfile(userId, updateData) {
   try {
@@ -134,18 +135,17 @@ async function updateProfile(userId, updateData) {
     if (!updateData) {
       throw new Error("updateData is required");
     }
-    return await User.findByIdAndUpdate(
-      userId,
-      { $set: updateData },
-      { new: true, runValidators: true }
-    );
+    const updatedUser = await User.findById(userId);
+    if (!updatedUser) {
+      throw new Error("User not Found");
+    }
+    updatedUser.set(updateData);
+    return updatedUser.save().then((user) => user.lean());
   } catch (error) {
     console.error("Error in userService.updateProfile: ", error);
     throw error;
   }
 }
-
-const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
 
 /**
  * Change user role
@@ -153,7 +153,7 @@ const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
  * @param {String} role
  * @throws {Error} If userId or role is not provided
  * @throws {Error} If role is not valid
- * @returns {Promise<Object>} User object
+ * @returns {Promise<User>} User object
  */
 async function changeRole(userId, role) {
   try {
@@ -166,11 +166,14 @@ async function changeRole(userId, role) {
     if (!VALID_ROLES.includes(role)) {
       throw new Error("Invalid role ", role);
     }
-    return await User.findByIdAndUpdate(
-      userId,
-      { $set: { role: role } },
-      { new: true }
-    );
+    const user = await User.findById(userId)
+    if (!user)
+    {
+      throw new Error("User not Found")
+    }
+    user.role.set(role)
+    
+    return await user.save().then((user)=> user.lean());
   } catch (error) {
     console.error("Error in userService.ChangeRole: ", error);
     throw error;
@@ -181,7 +184,7 @@ async function changeRole(userId, role) {
  * Add user to club
  * @param {String} userId
  * @param {String} clubId
- * @returns {Promise<Object>} User object
+ * @returns {Promise<User>} User object
  */
 async function joinClub(userId, clubId) {
   try {
@@ -206,7 +209,7 @@ async function joinClub(userId, clubId) {
  * Remove user from club
  * @param {String} userId
  * @param {String} clubId
- * @returns {Promise<Object>} User object
+ * @returns {Promise<Object>} leaned User object
  * @throws {Error} If userId or clubId is not provided
  */
 async function leaveClub(userId, clubId) {
