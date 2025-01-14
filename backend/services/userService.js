@@ -11,7 +11,10 @@ async function findById(userId) {
     if (!userId) {
       throw new Error("userId is required");
     }
-    return await User.findById(userId).lean();
+    return await User.findById(userId)
+      .populate("clubsManaged")
+      .populate("clubsJoined")
+      .lean();
   } catch (error) {
     console.error("Error in userService.findById: ", error);
     throw error;
@@ -125,7 +128,7 @@ async function findByEventsJoined(eventId) {
  * @param {String} updateData.lastName
  * @param {String} updateData.email
  * @param {String} updateData.profilePicture
- * @returns {Promise<Object>} leaned User object 
+ * @returns {Promise<Object>} leaned User object
  */
 async function updateProfile(userId, updateData) {
   try {
@@ -166,14 +169,13 @@ async function changeRole(userId, role) {
     if (!VALID_ROLES.includes(role)) {
       throw new Error("Invalid role ", role);
     }
-    const user = await User.findById(userId)
-    if (!user)
-    {
-      throw new Error("User not Found")
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not Found");
     }
-    user.role.set(role)
-    
-    return await user.save().then((user)=> user.lean());
+    user.role.set(role);
+
+    return await user.save().then((user) => user.lean());
   } catch (error) {
     console.error("Error in userService.ChangeRole: ", error);
     throw error;
