@@ -5,8 +5,7 @@ const User = require('../models/User');
  * @param {String} userId
  * @returns {Promise<Object>} User object
  */
-async function findById(userId)
-{
+async function findById(userId) {
     try
     {
         if(!userId)
@@ -17,7 +16,7 @@ async function findById(userId)
     }
     catch(error)
     {
-        console.error("Error in userService.FindById: ", error);
+        console.error("Error in userService.findById: ", error);
         throw error;
     }
     
@@ -175,7 +174,7 @@ const VALID_ROLES = ['Admin', 'ClubAdmin', 'Member', 'Visitor'];
  * @throws {Error} If role is not valid
  * @returns {Promise<Object>} User object
  */
-async function ChangeRole(userId, role) {
+async function changeRole(userId, role) {
     try
     {
         if (!userId) {
@@ -266,7 +265,7 @@ module.exports = {
     findByEventsJoined,
     findByRole,
     updateProfile,
-    ChangeRole,
+    changeRole,
     joinClub,
     leaveClub
 };
