@@ -69,7 +69,7 @@ const deleteAccount = async (req, res) => {
     }
 };
 
-exports.changeRole = async (req, res) => {
+const changeRole = async (req, res) => {
     const { role } = req.body;
     try {
         await userService.ChangeRole(req.user.id, role);
@@ -83,7 +83,7 @@ exports.changeRole = async (req, res) => {
     }
 };
 
-exports.renderChangeRoleForm = (req, res) => {
+const renderChangeRoleForm = (req, res) => {
     //HTML
     res.send(`
         <form action="/change-role" method="POST">
@@ -97,5 +97,7 @@ module.exports = {
     renderUpdateProfileForm,
     updateProfile,
     renderProfile,
-    deleteAccount
+    deleteAccount,
+    changeRole,
+    renderChangeRoleForm
 };
