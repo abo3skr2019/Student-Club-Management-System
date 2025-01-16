@@ -6,7 +6,7 @@ const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
  * @param {String} userId
  * @returns {Promise<Object>} leaned User object
  */
-async function findById(userId) {
+const findById = async (userId)=> {
   try {
     if (!userId) {
       throw new Error("userId is required");
@@ -25,7 +25,7 @@ async function findById(userId) {
  * @param {String} uuid
  * @returns {Promise<Object>} leaned User object
  */
-async function findByUUID(uuid) {
+const findByUUID = async (uuid)=> {
   try {
     if (!uuid) {
       throw new Error("UUID is required");
@@ -42,7 +42,7 @@ async function findByUUID(uuid) {
  * @param {String} email
  * @returns {Promise<Object>} leaned User object
  */
-async function findByEmail(email) {
+const findByEmail=async (email) =>{
   try {
     if (!email) {
       throw new Error("Email is required");
@@ -58,7 +58,7 @@ async function findByEmail(email) {
  * @param {String} role
  * @returns {Promise<Object>} leaned User object
  */
-async function findByRole(role) {
+const findByRole = async (role) => {
   try {
     if (!role) {
       throw new Error("Role is required");
@@ -68,14 +68,14 @@ async function findByRole(role) {
     console.error("Error in userService.findByRole: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Find all users who have joined a specific club
  * @param {String} clubId
  * @returns {Promise<Array<User>>} Array of User objects
  */
-async function findByClubsJoined(clubId) {
+const findByClubsJoined = async (clubId) => {
   try {
     if (!clubId) {
       throw new Error("clubId is required");
@@ -87,7 +87,7 @@ async function findByClubsJoined(clubId) {
     console.error("Error in userService.findByClubsJoined: ", error);
     throw error;
   }
-}
+};
 
 /**
  * TODO: Implement Multiple ClubAdmins
@@ -95,7 +95,7 @@ async function findByClubsJoined(clubId) {
  * @param {String} clubId
  * @returns {Promise<Array<User>>} Array of User objects
  */
-async function findByClubsManaged(clubId) {
+const findByClubsManaged = async (clubId) => {
   try {
     if (!clubId) {
       throw new Error("clubId is required");
@@ -105,9 +105,9 @@ async function findByClubsManaged(clubId) {
     console.error("Error in userService.findByClubsManaged: ", error);
     throw error;
   }
-}
+};
 // Find All Users who have joined a specific event
-async function findByEventsJoined(eventId) {
+const findByEventsJoined = async (eventId) => {
   // since events are not implemented yet, this function will not do anything
   try {
     throw new Error("Events are not implemented yet");
@@ -118,7 +118,7 @@ async function findByEventsJoined(eventId) {
     console.error("Error in userService.findByEventsJoined: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Update user profile
@@ -130,7 +130,7 @@ async function findByEventsJoined(eventId) {
  * @param {String} updateData.profilePicture
  * @returns {Promise<Object>} leaned User object
  */
-async function updateProfile(userId, updateData) {
+const updateProfile = async (userId, updateData) => {
   try {
     if (!userId) {
       throw new Error("userId is required");
@@ -142,13 +142,13 @@ async function updateProfile(userId, updateData) {
     if (!updatedUser) {
       throw new Error("User not Found");
     }
-    Object.assign(updatedUser,updateData)
+    Object.assign(updatedUser, updateData);
     return (await updatedUser.save()).toObject;
   } catch (error) {
     console.error("Error in userService.updateProfile: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Change user role
@@ -158,7 +158,7 @@ async function updateProfile(userId, updateData) {
  * @throws {Error} If role is not valid
  * @returns {Promise<User>} User object
  */
-async function changeRole(userId, role) {
+const changeRole = async (userId, role) => {
   try {
     if (!userId) {
       throw new Error("userId is required");
@@ -175,12 +175,12 @@ async function changeRole(userId, role) {
     }
     user.role = role;
 
-    return (await user.save()).toObject()
+    return (await user.save()).toObject();
   } catch (error) {
     console.error("Error in userService.changeRole: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Add user to club
@@ -188,7 +188,7 @@ async function changeRole(userId, role) {
  * @param {String} clubId
  * @returns {Promise<User>} User object
  */
-async function joinClub(userId, clubId) {
+const joinClub = async (userId, clubId) => {
   try {
     if (!userId) {
       throw new Error("userId is required");
@@ -196,21 +196,21 @@ async function joinClub(userId, clubId) {
     if (!clubId) {
       throw new Error("clubId is required");
     }
-    const joiningUser = User.findById(userId)
+    const joiningUser = User.findById(userId);
     if (!joiningUser) {
       throw new Error("User not Found");
     }
-    const club = Club.findById(clubId)
+    const club = Club.findById(clubId);
     if (!club) {
       throw new Error("Club not Found");
     }
-    joiningUser.clubsJoined.push(clubId)
-    return  (await joiningUser.save()).toObject()
+    joiningUser.clubsJoined.push(clubId);
+    return (await joiningUser.save()).toObject();
   } catch (error) {
     console.error("Error in userService.joinClub: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Remove user from club
@@ -219,7 +219,7 @@ async function joinClub(userId, clubId) {
  * @returns {Promise<Object>} leaned User object
  * @throws {Error} If userId or clubId is not provided
  */
- const leaveClub = async (userId, clubId) => {
+const leaveClub = async (userId, clubId) => {
   try {
     if (!userId) {
       throw new Error("userId is required");
@@ -228,13 +228,11 @@ async function joinClub(userId, clubId) {
       throw new Error("clubId is required");
     }
     const leavingUser = await User.findById(userId);
-    if (!leavingUser)
-      {
-        throw new Error("User not Found")
-      }
-    if (!leavingUser.clubsJoined)
-    {
-      throw new Error("User is not a Member of Any Club")
+    if (!leavingUser) {
+      throw new Error("User not Found");
+    }
+    if (!leavingUser.clubsJoined) {
+      throw new Error("User is not a Member of Any Club");
     }
     if (!leavingUser.clubsJoined.includes(clubId)) {
       throw new Error("User is not a Member of this Club");
@@ -248,7 +246,7 @@ async function joinClub(userId, clubId) {
     console.error("Error in userService.leaveClub: ", error);
     throw error;
   }
-}
+};
 
 module.exports = {
   findById,
@@ -261,5 +259,5 @@ module.exports = {
   updateProfile,
   changeRole,
   joinClub,
-  leaveClub
+  leaveClub,
 };
