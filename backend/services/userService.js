@@ -6,7 +6,7 @@ const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
  * @param {String} userId
  * @returns {Promise<Object>} leaned User object
  */
-const findById = async (userId)=> {
+const findById = async (userId) => {
   try {
     if (!userId) {
       throw new Error("userId is required");
@@ -19,13 +19,13 @@ const findById = async (userId)=> {
     console.error("Error in userService.findById: ", error);
     throw error;
   }
-}
+};
 /**
  *
  * @param {String} uuid
  * @returns {Promise<Object>} leaned User object
  */
-const findByUUID = async (uuid)=> {
+const findByUUID = async (uuid) => {
   try {
     if (!uuid) {
       throw new Error("UUID is required");
@@ -35,14 +35,14 @@ const findByUUID = async (uuid)=> {
     console.error("Error in userService.findByUUID: ", error);
     throw error;
   }
-}
+};
 
 /**
  *
  * @param {String} email
  * @returns {Promise<Object>} leaned User object
  */
-const findByEmail=async (email) =>{
+const findByEmail = async (email) => {
   try {
     if (!email) {
       throw new Error("Email is required");
@@ -52,7 +52,7 @@ const findByEmail=async (email) =>{
     console.error("Error in userService.findByEmail: ", error);
     throw error;
   }
-}
+};
 /**
  *
  * @param {String} role
@@ -175,7 +175,7 @@ const changeRole = async (userId, role) => {
     }
     user.role = role;
 
-    return (await user.save()).toObject();
+    return (await user.save()).toObject;
   } catch (error) {
     console.error("Error in userService.changeRole: ", error);
     throw error;
@@ -205,7 +205,7 @@ const joinClub = async (userId, clubId) => {
       throw new Error("Club not Found");
     }
     joiningUser.clubsJoined.push(clubId);
-    return (await joiningUser.save()).toObject();
+    return (await joiningUser.save()).toObject;
   } catch (error) {
     console.error("Error in userService.joinClub: ", error);
     throw error;
