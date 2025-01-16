@@ -269,6 +269,7 @@ module.exports = {
   findByClubsJoined,
   findByClubsManaged,
   findByEventsJoined,
+  findUserEvents,
   findByRole,
   updateProfile,
   changeRole,
