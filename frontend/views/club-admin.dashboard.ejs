@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/club-admin-dashboard.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <div class="dashboard-container">
+        <h1>Club Admin Dashboard</h1>
+        <div class="actions">
+            <button onclick="location.href='/events/create'">Create Event</button>
+            <button onclick="location.href='/events/update'">Update Event</button>
+            <button onclick="location.href='/events/view'">View Events</button>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+    <script src="/js/club-admin-dashboard.js"></script>
+</body>
+</html>
