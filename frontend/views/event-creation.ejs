@@ -16,10 +16,23 @@
 <body>
     <%- include('partials/header', { currentPage: 'event-creation' }) %>
 
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <nav class="col-lg-2 sidebar p-3">
+                    <h4 class="text-center fw-bold">لوحة التحكم</h4>
+                    <a href="/index" class="<%= currentPage === 'home' ? 'active' : '' %>"><i class="fas fa-home"></i>
+                        الرئيسية</a>
+                    <a href="/event-creation" class="<%= currentPage === 'create-event' ? 'active' : '' %>"><i
+                            class="fas fa-calendar-plus"></i> إنشاء فعالية</a>
+                    <a href="/settings" class="<%= currentPage === 'settings' ? 'active' : '' %>"><i
+                            class="fas fa-cogs"></i> الإعدادات</a>
+                </nav>
 
-        <%- include('partials/footer') %>
 
-            <script src="/js/event-creation.js"></script>
+                <%- include('partials/footer') %>
+
+                    <script src="/js/event-creation.js"></script>
 </body>
 
 </html>
