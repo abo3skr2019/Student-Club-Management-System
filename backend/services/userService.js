@@ -246,6 +246,9 @@ const joinClub = async (userId, clubId) => {
     if (!club) {
       throw new Error("Club not Found");
     }
+    if (joiningUser.clubsJoined.includes(clubId)) {
+      throw new Error("User is already a Member of this Club");
+    } 
     joiningUser.clubsJoined.push(clubId);
     return await joiningUser.save();
   } catch (error) {
