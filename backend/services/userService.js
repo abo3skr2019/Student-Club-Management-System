@@ -120,6 +120,23 @@ async function findByEventsJoined(eventId) {
   }
 }
 
+async function findUserEvents(userId) {
+  try {
+    throw new Error("Events are not implemented yet");
+    if (!userId) {
+      throw new Error("userId is required");
+    }
+    const user = await User.findById(userId).populate("eventsJoined");
+    if (!user) {
+      throw new Error("User not Found");
+    }
+    return user.eventsJoined;
+  }
+    catch(error) {
+      console.error("Error in userService.findUserEvents: ", error);
+      throw error;
+    }
+  }
 /**
  * Update user profile
  * @param {String} userId
