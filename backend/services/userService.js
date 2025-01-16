@@ -139,12 +139,16 @@ const updateProfile = async (userId, updateData) => {
     if (!updateData) {
       throw new Error("updateData is required");
     }
-    const updatedUser = await User.findById(userId);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+    
     if (!updatedUser) {
       throw new Error("User not Found");
     }
-    Object.assign(updatedUser, updateData);
-    return (await updatedUser.save()).toObject;
+    return updatedUser;
   } catch (error) {
     console.error("Error in userService.updateProfile: ", error);
     throw error;
@@ -176,7 +180,7 @@ const changeRole = async (userId, role) => {
     }
     user.role = role;
 
-    return (await user.save()).toObject;
+    return await user.save();
   } catch (error) {
     console.error("Error in userService.changeRole: ", error);
     throw error;
@@ -206,7 +210,7 @@ const joinClub = async (userId, clubId) => {
       throw new Error("Club not Found");
     }
     joiningUser.clubsJoined.push(clubId);
-    return (await joiningUser.save()).toObject;
+    return await joiningUser.save();
   } catch (error) {
     console.error("Error in userService.joinClub: ", error);
     throw error;
