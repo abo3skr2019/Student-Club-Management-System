@@ -36,6 +36,7 @@ jest.mock('../models/User', () => ({
 
 jest.mock('../services/clubService', () => ({
     getAllClubs: jest.fn(),
+    updateClub: jest.fn(),  // Add this mock
     // TODO: Add more mocks as needed
 }));
 
@@ -250,26 +251,70 @@ describe('Club Controller', () => {
     });
 
     describe('updateClub', () => {
-        test('should update existing club then redirect to /clubs/detail', async () => {
+        let req, res;
+
+        beforeEach(() => {
+            req = {
+                params: { clubId: 'club123-uuid' },
+                body: {
+                    name: 'Club 1',
+                    description: 'Desc 1',
+                    logo: 'logo1.jpg'
+                },
+                user: { 
+                    _id: 'user123',
+                    role: 'Admin'
+                }
+            };
+            res = {
+                redirect: jest.fn(),
+                render: jest.fn(),  // Add this mock
+                status: jest.fn().mockReturnThis()
+            };
+            // Clear all mocks before each test
+            jest.clearAllMocks();
+        });
+
+        it('should update existing club then redirect to /clubs/detail', async () => {
             const updatedClub = {
-                _id: 'club123',
                 uuid: 'club123-uuid',
                 name: 'Club 1',
                 description: 'Desc 1',
                 logo: 'logo1.jpg'
             };
 
-            Club.findOneAndUpdate.mockResolvedValue(updatedClub);
+            // Mock the Club.findOne to return null (no duplicate name)
+            Club.findOne.mockResolvedValue(null);
+            
+            ClubService.updateClub.mockResolvedValue(updatedClub);
+
+            await clubController.updateClub(req, res);
+
+            expect(ClubService.updateClub).toHaveBeenCalledWith(
+                'club123-uuid',
+                {
+                    name: 'Club 1',
+                    description: 'Desc 1',
+                    logo: 'logo1.jpg'
+                }
+            );
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+        });
+
+        test('should render error when club not found', async () => {
+            // Mock ClubService.updateClub to return null
+            ClubService.updateClub.mockResolvedValue(null);
+
+            // Mock that no existing club with same name exists
             Club.findOne.mockResolvedValue(null);
 
             await clubController.updateClub(req, res);
 
-            expect(Club.findOneAndUpdate).toHaveBeenCalledWith(
-                { uuid: 'club123-uuid' },
-                { $set: { name: 'Club 1', description: 'Desc 1', logo: 'logo1.jpg' } },
-                { new: true, runValidators: true }
-            );
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.render).toHaveBeenCalledWith('error', {
+                message: 'Club not found',
+                user: req.user
+            });
         });
 
         test('should prevent updating to existing club name', async () => {
