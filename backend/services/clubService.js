@@ -1,5 +1,7 @@
 const Club = require("../models/Club");
 const User = require("../models/User");
+const mongoose = require('mongoose');
+const { v4: uuidv4, validate: validateUUID } = require('uuid');
 
 /**
  * Find club by ID
@@ -127,11 +129,25 @@ async function updateClub(clubId, updateData) {
     if (!updateData) {
       throw new Error("updateData is required");
     }
+    const isObjectId = mongoose.Types.ObjectId.isValid(clubId);
+    const isUUID = validateUUID(clubId);
+    if (!isObjectId && !isUUID) {
+      throw new Error("clubId must be a valid ObjectId or UUID");
+    }
+    if (isObjectId){
     return await Club.findByIdAndUpdate(
       clubId,
       { $set: updateData },
       { new: true, runValidators: true }
     );
+  }
+  if (isUUID){
+    return await Club.findOneAndUpdate(
+      { uuid: clubId },
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+  }
   } catch (error) {
     console.error("Error in clubService.updateClub: ", error);
     throw error;
