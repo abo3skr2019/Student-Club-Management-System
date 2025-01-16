@@ -1,5 +1,5 @@
 const Club = require("../models/Club");
-const User = require("../models/User");  
+const User = require("../models/User");
 
 /**
  * Find club by ID
@@ -101,7 +101,8 @@ async function createClub(clubData) {
       if (!clubData[field]) {
         throw new Error(`${field} is required`);
       }
-    }    const club = new Club(clubData);
+    }
+    const club = new Club(clubData);
     return await club.save();
   } catch (error) {
     console.error("Error in clubService.createClub: ", error);
@@ -119,23 +120,22 @@ async function createClub(clubData) {
  * @returns {Promise<Object>} Club object
  */
 async function updateClub(clubId, updateData) {
-    try {
-        if (!clubId) {
-            throw new Error("clubId is required");
-        }
-        if (!updateData) {
-            throw new Error("updateData is required");
-        }
-        return await Club.findByIdAndUpdate(
-            clubId,
-            { $set: updateData },
-            { new: true, runValidators: true }
-        );
+  try {
+    if (!clubId) {
+      throw new Error("clubId is required");
     }
-    catch (error) {
-        console.error("Error in clubService.updateClub: ", error);
-        throw error;
+    if (!updateData) {
+      throw new Error("updateData is required");
     }
+    return await Club.findByIdAndUpdate(
+      clubId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+  } catch (error) {
+    console.error("Error in clubService.updateClub: ", error);
+    throw error;
+  }
 }
 
 /**
@@ -144,16 +144,15 @@ async function updateClub(clubId, updateData) {
  * @returns {Promise<Object>} Club object
  */
 async function deleteClub(clubId) {
-    try {
-        if (!clubId) {
-            throw new Error("clubId is required");
-        }
-        return await Club.findByIdAndDelete(clubId);
+  try {
+    if (!clubId) {
+      throw new Error("clubId is required");
     }
-    catch (error) {
-        console.error("Error in clubService.deleteClub: ", error);
-        throw error;
-    }
+    return await Club.findByIdAndDelete(clubId);
+  } catch (error) {
+    console.error("Error in clubService.deleteClub: ", error);
+    throw error;
+  }
 }
 
 // Add event to club
@@ -240,8 +239,7 @@ async function updateClubAdmin(clubId, newClubAdminId) {
       if (
         oldClubAdmin.clubsManaged.length === 0 &&
         oldClubAdmin.role === "ClubAdmin"
-      )
-      {
+      ) {
         oldClubAdmin.role = "Member";
       }
       await oldClubAdmin.save();
