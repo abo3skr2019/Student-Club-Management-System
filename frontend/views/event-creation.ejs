@@ -29,10 +29,106 @@
                             class="fas fa-cogs"></i> الإعدادات</a>
                 </nav>
 
+                <!-- Main Content -->
+                <main class="col-lg-10 p-4">
+                    <h2 class="fw-bold mb-4">إنشاء فعالية</h2>
+                    <div class="card p-4">
+                        <form id="create-event-form">
+                            <!-- Event Name -->
+                            <div class="mb-3">
+                                <label for="eventName" class="form-label">أدخل اسم الفعالية</label>
+                                <input type="text" id="eventName" class="form-control" placeholder="أدخل اسم الفعالية"
+                                    required>
+                            </div>
 
-                <%- include('partials/footer') %>
+                            <!-- Event Description -->
+                            <div class="mb-3">
+                                <label for="eventDescription" class="form-label">وصف الفعالية</label>
+                                <textarea id="eventDescription" class="form-control" rows="4" required></textarea>
+                            </div>
 
-                    <script src="/js/event-creation.js"></script>
+                            <!-- Poster Upload -->
+                            <div class="mb-3">
+                                <label for="eventPoster" class="form-label">صورة/خلفية</label>
+                                <input type="file" id="eventPoster" class="form-control"
+                                    accept="image/jpeg, image/png, image/gif" required>
+                                <small class="form-text text-muted">الأنواع المقبولة: JPEG, PNG, GIF</small>
+                            </div>
+
+                            <div class="row">
+                                <!-- Seats Available -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="eventSeats" class="form-label">عدد المقاعد</label>
+                                    <input type="number" id="eventSeats" class="form-control" min="1" required>
+                                </div>
+
+                                <!-- Event Category -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="eventCategory" class="form-label">نوع الفعالية</label>
+                                    <select id="eventCategory" class="form-control" required>
+                                        <option value="" disabled selected>اختر نوع الفعالية</option>
+                                        <option value="bootcamp">معسكر - Bootcamp</option>
+                                        <option value="workshop">ورشة عمل - Workshop</option>
+                                        <option value="meeting">اجتماع - Meeting</option>
+                                        <option value="hackathon">هاكاثون - Hackathon</option>
+                                    </select>
+                                </div>
+
+                                <!-- Registration Start Date -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="registerStartDate" class="form-label">بداية التسجيل</label>
+                                    <input type="date" id="registerStartDate" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Registration End Date -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="registerEndDate" class="form-label">نهاية التسجيل</label>
+                                    <input type="date" id="registerEndDate" class="form-control" required>
+                                </div>
+
+                                <!-- Event Date -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="eventDate" class="form-label">تاريخ الفعالية</label>
+                                    <input type="date" id="eventDate" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <!-- Event Time -->
+                            <div class="mb-3">
+                                <label for="eventTime" class="form-label">وقت الفعالية</label>
+                                <input type="time" id="eventTime" class="form-control" required>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary w-100">إنشاء الفعالية</button>
+                        </form>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">نجاح</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        تم إنشاء الفعالية بنجاح!!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">إغلاق</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%- include('partials/footer') %>
+
+            <script src="/js/event-creation.js"></script>
 </body>
 
 </html>
