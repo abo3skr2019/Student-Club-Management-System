@@ -1,8 +1,10 @@
 const userService = require('../services/userService');
 const User = require('../models/User');
+const Club = require('../models/Club');
 const mongoose = require('mongoose');
 
 jest.mock('../models/User');
+jest.mock('../models/Club');
 
 describe('userService.changeRole', () => {
     beforeEach(() => {
@@ -179,10 +181,17 @@ describe('userService.joinClub', () => {
             })
         };
 
+        const mockClub = {
+            _id: 'clubId',
+            name: 'Test Club'
+        };
+
         User.findById.mockResolvedValueOnce(mockUser);
+        Club.findById.mockResolvedValueOnce(mockClub);
 
         const result = await userService.joinClub('userId', 'clubId');
         expect(mockUser.save).toHaveBeenCalled();
+        expect(Club.findById).toHaveBeenCalledWith('clubId');
         expect(result).toEqual({ _id: 'userId', clubsJoined: ['clubId'] });
     });
 
