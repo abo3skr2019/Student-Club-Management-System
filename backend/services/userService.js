@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Club = require("../models/Club");
 const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
 
 /**
@@ -196,11 +197,11 @@ const joinClub = async (userId, clubId) => {
     if (!clubId) {
       throw new Error("clubId is required");
     }
-    const joiningUser = User.findById(userId);
+    const joiningUser = await User.findById(userId);
     if (!joiningUser) {
       throw new Error("User not Found");
     }
-    const club = Club.findById(clubId);
+    const club = await Club.findById(clubId);
     if (!club) {
       throw new Error("Club not Found");
     }
