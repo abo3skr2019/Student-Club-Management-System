@@ -1,11 +1,9 @@
 const Club = require("../models/Club");
 const User = require("../models/User");
-const mongoose = require('mongoose');
-const { v4: uuidv4, validate: validateUUID } = require('uuid');
-
+const {getIdType} = require("../utils/IdValidators");
 /**
  * Find club by ID
- * @param {String} clubId
+ * @param {String} club Object ID
  * @returns {Promise<Object>} Club object
  */
 async function findById(clubId) {
@@ -21,7 +19,7 @@ async function findById(clubId) {
 }
 /**
  * Find club by UUID
- * @param {String} UUID
+ * @param {String} Club UUID
  * @returns {Promise<Object>} Club object
  */
 async function findByUUID(uuid) {
@@ -114,7 +112,7 @@ async function createClub(clubData) {
 
 /**
  *
- * @param {String} clubId
+ * @param {String} clubId Object ID or UUID
  * @param {Object} updateData
  * @param {String} updateData.name
  * @param {String} updateData.description
@@ -129,19 +127,18 @@ async function updateClub(clubId, updateData) {
     if (!updateData) {
       throw new Error("updateData is required");
     }
-    const isObjectId = mongoose.Types.ObjectId.isValid(clubId);
-    const isUUID = validateUUID(clubId);
-    if (!isObjectId && !isUUID) {
+    const clubIdType = getIdType(clubId);
+    if (!clubIdType) {
       throw new Error("clubId must be a valid ObjectId or UUID");
     }
-    if (isObjectId){
+    if (clubIdType === "ObjectId") {
     return await Club.findByIdAndUpdate(
       clubId,
       { $set: updateData },
       { new: true, runValidators: true }
     );
   }
-  if (isUUID){
+  if (clubIdType === "UUID") {
     return await Club.findOneAndUpdate(
       { uuid: clubId },
       { $set: updateData },
