@@ -142,8 +142,8 @@ async function updateProfile(userId, updateData) {
     if (!updatedUser) {
       throw new Error("User not Found");
     }
-    updatedUser.set(updateData);
-    return updatedUser.save().then((user) => user.lean());
+    Object.assign(updatedUser,updateData)
+    return (await updatedUser.save()).toObject;
   } catch (error) {
     console.error("Error in userService.updateProfile: ", error);
     throw error;
@@ -173,9 +173,9 @@ async function changeRole(userId, role) {
     if (!user) {
       throw new Error("User not Found");
     }
-    user.role= role;
+    user.role = role;
 
-    return (await user.save()).toObject
+    return (await user.save()).toObject()
   } catch (error) {
     console.error("Error in userService.changeRole: ", error);
     throw error;
@@ -196,11 +196,16 @@ async function joinClub(userId, clubId) {
     if (!clubId) {
       throw new Error("clubId is required");
     }
-    return await User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { clubsJoined: clubId } },
-      { new: true }
-    ).populate("clubsJoined");
+    const joiningUser = User.findById(userId)
+    if (!joiningUser) {
+      throw new Error("User not Found");
+    }
+    const club = Club.findById(clubId)
+    if (!club) {
+      throw new Error("Club not Found");
+    }
+    joiningUser.clubsJoined.push(clubId)
+    return  (await joiningUser.save()).toObject()
   } catch (error) {
     console.error("Error in userService.joinClub: ", error);
     throw error;
@@ -214,7 +219,7 @@ async function joinClub(userId, clubId) {
  * @returns {Promise<Object>} leaned User object
  * @throws {Error} If userId or clubId is not provided
  */
-async function leaveClub(userId, clubId) {
+ const leaveClub = async (userId, clubId) => {
   try {
     if (!userId) {
       throw new Error("userId is required");
@@ -256,5 +261,5 @@ module.exports = {
   updateProfile,
   changeRole,
   joinClub,
-  leaveClub,
+  leaveClub
 };
