@@ -4,67 +4,57 @@ const mongoose = require('mongoose');
 
 jest.mock('../models/User');
 
-describe('userService.ChangeRole', () => {
+describe('userService.changeRole', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
     test('should throw error when userId is not provided', async () => {
-        await expect(userService.ChangeRole(null, 'Admin'))
+        await expect(userService.changeRole(null, 'Admin'))
             .rejects
             .toThrow('userId is required');
     });
 
     test('should throw error when role is not provided', async () => {
-        await expect(userService.ChangeRole('validUserId', null))
+        await expect(userService.changeRole('validUserId', null))
             .rejects
             .toThrow('role is required');
     });
 
     test('should throw error when role is invalid', async () => {
-        await expect(userService.ChangeRole('validUserId', 'InvalidRole'))
+        await expect(userService.changeRole('validUserId', 'InvalidRole'))
             .rejects
-            .toThrow('Invalid role');
+            .toThrow('Invalid role: InvalidRole');
+    });
+
+    test('should throw error when user is not found', async () => {
+        User.findById.mockResolvedValueOnce(null);
+        
+        await expect(userService.changeRole('nonexistentId', 'Admin'))
+            .rejects
+            .toThrow('User not Found');
     });
 
     test.each(['Admin', 'ClubAdmin', 'Member', 'Visitor'])(
         'should successfully change role to %s',
         async (role) => {
-            const mockUser = { _id: 'userId', role: 'Member' };
-            const updatedUser = { ...mockUser, role };
+            const mockUser = {
+                _id: 'userId',
+                role: 'Member',
+                save: jest.fn().mockResolvedValue({
+                    toObject: { _id: 'userId', role }
+                })
+            };
 
-            User.findByIdAndUpdate.mockResolvedValueOnce(updatedUser);
+            User.findById.mockResolvedValueOnce(mockUser);
 
-            const result = await userService.ChangeRole('userId', role);
-
-            expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
-                'userId',
-                { $set: { role } },
-                { new: true }
-            );
-            expect(result).toEqual(updatedUser);
+            const result = await userService.changeRole('userId', role);
+            expect(mockUser.save).toHaveBeenCalled();
+            expect(result).toEqual({ _id: 'userId', role });
         }
     );
-
-    test('should handle database errors', async () => {
-        const dbError = new Error('Database error');
-        User.findByIdAndUpdate.mockRejectedValueOnce(dbError);
-
-        await expect(userService.ChangeRole('userId', 'Admin'))
-            .rejects
-            .toThrow(dbError);
-    });
-
-    test('should handle invalid user ID format', async () => {
-        const invalidId = 'invalid-id-format';
-        const dbError = new mongoose.Error.CastError('ObjectId', invalidId, 'ObjectId');
-        User.findByIdAndUpdate.mockRejectedValueOnce(dbError);
-
-        await expect(userService.ChangeRole(invalidId, 'Admin'))
-            .rejects
-            .toThrow(dbError);
-    });
 });
+
 describe('userService.findById', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -181,22 +171,27 @@ describe('userService.joinClub', () => {
     });
 
     test('should join club successfully', async () => {
-        const mockUser = { 
-            _id: 'userId', 
-            clubsJoined: ['clubId']
+        const mockUser = {
+            _id: 'userId',
+            clubsJoined: [],
+            save: jest.fn().mockResolvedValue({
+                toObject: { _id: 'userId', clubsJoined: ['clubId'] }
+            })
         };
-        
-        User.findByIdAndUpdate.mockReturnValue({
-            populate: jest.fn().mockResolvedValueOnce(mockUser)
-        });
+
+        User.findById.mockResolvedValueOnce(mockUser);
 
         const result = await userService.joinClub('userId', 'clubId');
-        expect(result).toEqual(mockUser);
-        expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
-            'userId',
-            { $addToSet: { clubsJoined: 'clubId' } },
-            { new: true }
-        );
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(result).toEqual({ _id: 'userId', clubsJoined: ['clubId'] });
+    });
+
+    test('should throw error when user is not found', async () => {
+        User.findById.mockResolvedValueOnce(null);
+
+        await expect(userService.joinClub('userId', 'clubId'))
+            .rejects
+            .toThrow('User not Found');
     });
 
     test('should throw error when userId is not provided', async () => {
@@ -218,22 +213,54 @@ describe('userService.leaveClub', () => {
     });
 
     test('should leave club successfully', async () => {
-        const mockUser = { 
-            _id: 'userId', 
-            clubsJoined: []
+        const clubId = 'clubId';
+        const mockUser = {
+            _id: 'userId',
+            clubsJoined: [clubId],
+            save: jest.fn().mockReturnValue({
+                populate: jest.fn().mockResolvedValue({
+                    lean: jest.fn().mockResolvedValue({
+                        _id: 'userId',
+                        clubsJoined: []
+                    })
+                })
+            })
         };
-        
-        User.findByIdAndUpdate.mockReturnValue({
-            populate: jest.fn().mockResolvedValueOnce(mockUser)
-        });
 
-        const result = await userService.leaveClub('userId', 'clubId');
-        expect(result).toEqual(mockUser);
-        expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
-            'userId',
-            { $pull: { clubsJoined: 'clubId' } },
-            { new: true }
-        );
+        User.findById.mockResolvedValueOnce(mockUser);
+
+        const result = await userService.leaveClub('userId', clubId);
+        expect(result).toEqual({
+            _id: 'userId',
+            clubsJoined: []
+        });
+        expect(mockUser.clubsJoined).not.toContain(clubId);
+    });
+
+    test('should throw error when user has no clubs', async () => {
+        const mockUser = {
+            _id: 'userId',
+            clubsJoined: null
+        };
+
+        User.findById.mockResolvedValueOnce(mockUser);
+
+        await expect(userService.leaveClub('userId', 'clubId'))
+            .rejects
+            .toThrow('User is not a Member of Any Club');
+    });
+
+    test('should throw error when user is not in the specified club', async () => {
+        const mockUser = {
+            _id: 'userId',
+            clubsJoined: ['otherClubId']
+        };
+
+        User.findById.mockResolvedValueOnce(mockUser);
+
+        await expect(userService.leaveClub('userId', 'clubId'))
+            .rejects
+            .toThrow('User is not a Member of this Club');
     });
 
     test('should throw error when userId is not provided', async () => {

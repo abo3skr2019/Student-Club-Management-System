@@ -237,11 +237,9 @@ const leaveClub = async (userId, clubId) => {
     if (!leavingUser.clubsJoined.includes(clubId)) {
       throw new Error("User is not a Member of this Club");
     }
-    leavingUser.clubsJoined.pull(clubId);
-    return await leavingUser
-      .save()
-      .then((user) => user.populate("clubsJoined"))
-      .then((user) => user.lean());
+    leavingUser.clubsJoined = leavingUser.clubsJoined.filter(id => id.toString() !== clubId);
+    const savedUser = await leavingUser.save();
+    return (await savedUser.populate('clubsJoined')).lean();
   } catch (error) {
     console.error("Error in userService.leaveClub: ", error);
     throw error;
