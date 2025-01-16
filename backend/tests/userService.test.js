@@ -83,12 +83,15 @@ describe('userService', () => {
 
   describe('updateProfile', () => {
     it('should update user profile', async () => {
-      const mockUser = { _id: '123', name: 'Updated User' };
+      const mockUser = { _id: '123', firstName: 'John', lastName: 'Doe' };
       User.findByIdAndUpdate.mockReturnValue({
         lean: jest.fn().mockResolvedValue(mockUser)
       });
 
-      const result = await userService.updateProfile('123', { name: 'Updated User' });
+      const result = await userService.updateProfile('123', { 
+        firstName: 'John',
+        lastName: 'Doe'
+      });
       expect(result).toEqual(mockUser);
     });
 
@@ -96,7 +99,7 @@ describe('userService', () => {
       User.findByIdAndUpdate.mockReturnValue({
         lean: jest.fn().mockResolvedValue(null)
       });
-      await expect(userService.updateProfile('123', {})).rejects.toThrow('User not Found');
+      await expect(userService.updateProfile('123', { firstName: 'John' })).rejects.toThrow('User not Found');
     });
   });
 
