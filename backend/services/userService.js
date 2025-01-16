@@ -156,11 +156,26 @@ const updateProfile = async (userId, updateData) => {
     if (!updateData) {
       throw new Error("updateData is required");
     }
+    
+    // Validate updateData fields
+    const allowedFields = ['firstName', 'lastName', 'email', 'profilePicture'];
+    const invalidFields = Object.keys(updateData).filter(field => !allowedFields.includes(field));
+    
+    if (invalidFields.length > 0) {
+      throw new Error(`Invalid fields: ${invalidFields.join(', ')}`);
+    }
+
+    // Only set displayName if both firstName and lastName are provided and not empty
+    if (updateData.firstName && updateData.lastName && 
+        updateData.firstName.trim() && updateData.lastName.trim()) {
+      updateData.displayName = `${updateData.firstName} ${updateData.lastName}`;
+    }
+    
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updateData },
       { new: true, runValidators: true }
-    );
+    ).lean();
     
     if (!updatedUser) {
       throw new Error("User not Found");
