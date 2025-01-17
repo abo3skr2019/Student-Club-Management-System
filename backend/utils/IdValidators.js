@@ -7,12 +7,13 @@ const isObjectId = (id) => {
     return mongoose.Types.ObjectId.isValid(id);
 }
 const getIdType = (id) => {
-    let clubIdType
-    if (isUUID(id))
-      clubIdType = "UUID";
-    if (isObjectId(id))
-      clubIdType = "ObjectId";
-    return clubIdType;
+    if (isUUID(id)) {
+        return "UUID";
+    }
+    if (isObjectId(id)) {
+        return "ObjectId";
+    }
+    throw new Error("Invalid ID format");
 }
 module.exports = {
     isUUID,
