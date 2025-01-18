@@ -1,5 +1,4 @@
-<!-- Sidebar -->
-<div class="sidebar bg-white vh-100 position-fixed top-0 end-0 border-start">
+<div class="sidebar bg-white vh-100 position-fixed top-0 end-0 border-start" role="navigation" aria-label="القائمة الجانبية">
     <div class="text-center p-4 border-bottom">
         <a class="sidebar-brand gradient-text text-decoration-none" href="/">وصل</a>
     </div>
@@ -22,25 +21,9 @@
             </li>
         </ul>
     </div>
-
-    <div class="mt-auto p-3 border-top">
-        <div class="d-flex flex-column gap-2 mb-4">
-            <a href="https://github.com/abo3skr2019/Student-Club-Management-System"
-               class="nav-link d-flex align-items-center gap-3 rounded-3" target="_blank" rel="noopener noreferrer">
-                <i class="bi bi-github"></i>
-                <span>رابط المشروع على Github</span>
-            </a>
-            <a href="/privacy-policy" class="nav-link d-flex align-items-center gap-3 rounded-3">
-                <i class="bi bi-shield-check"></i>
-                <span>سياسة الخصوصية</span>
-            </a>
-            <a href="/contact" class="nav-link d-flex align-items-center gap-3 rounded-3">
-                <i class="bi bi-envelope"></i>
-                <span>تواصل معنا</span>
-            </a>
-        </div>
-        <div class="text-center text-muted small">
-            <p class="mb-0">© 2025 وصل. جميع الحقوق محفوظة.</p>
-        </div>
-    </div>
 </div>
+<style>
+    .sidebar {
+        overflow: hidden; /* Remove scroll */
+    }
+</style>
