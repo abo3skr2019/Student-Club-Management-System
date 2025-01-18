@@ -1,1 +1,3 @@
-console.log("Club Admin Dashboard loaded.");
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Dashboard loaded successfully!");
+});

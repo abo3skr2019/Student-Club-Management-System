@@ -1,26 +1,165 @@
-/* Custom overrides and enhancements for Club Admin Dashboard */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
 
-/* Center the dashboard container (if needed) */
-.dashboard-container {
+/* Layout wrapper for sidebar and content */
+.layout {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Sidebar styling */
+.sidebar {
+    font-family: 'Tajawal', sans-serif;
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: -2px 0 20px rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Sidebar header styling */
+.sidebar-header {
+    padding: 2rem 1.5rem;
     text-align: center;
-    margin-top: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Adjust the header (optional styling for h1) */
-.dashboard-container h1 {
-    font-size: 2.5rem; /* Override default Bootstrap heading size */
-    margin-bottom: 1.5rem;
+.sidebar-brand {
+    font-size: 2rem;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
 }
 
-/* Style enhancements for Bootstrap buttons */
-.dashboard-container .actions .btn {
-    font-size: 1rem; /* Ensure uniform button text size */
-    padding: 0.75rem 1.5rem; /* Consistent padding */
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+.sidebar-brand:after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(45deg, #2962ff, #3d5afe);
+    border-radius: 3px;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
-/* Add hover effects for buttons */
-.dashboard-container .actions .btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+.sidebar-brand:hover:after {
+    transform: scaleX(1);
 }
+
+/* Sidebar content area */
+.sidebar-content {
+    padding: 1.5rem 1rem;
+    flex: 1;
+}
+
+.sidebar .nav-item {
+    margin: 0.5rem 0;
+}
+
+.sidebar .nav-link {
+    color: #4a5568;
+    font-weight: 500;
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar .nav-link-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.25rem;
+    transition: transform 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(41, 98, 255, 0.04);
+    color: #2962ff;
+}
+
+.sidebar .nav-link:hover i {
+    transform: scale(1.1);
+}
+
+.sidebar .nav-link.active {
+    background: linear-gradient(45deg, rgba(41, 98, 255, 0.1), rgba(61, 90, 254, 0.1));
+    color: #2962ff;
+    font-weight: 600;
+}
+
+.sidebar .nav-link.active i {
+    color: #2962ff;
+}
+
+.sidebar .nav-link::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: linear-gradient(45deg, #2962ff, #3d5afe);
+    transform: scaleY(0);
+    transition: transform 0.2s ease;
+}
+
+.sidebar .nav-link.active::before {
+    transform: scaleY(1);
+}
+
+.sidebar .nav-link:hover i {
+    animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+/* Main content adjusts based on sidebar */
+.main-content {
+    flex-grow: 1;
+    margin-right: 280px; /* Matches the sidebar width */
+    transition: margin-right 0.3s ease;
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-right: 0; /* Reset for smaller screens */
+    }
+}ؤم
