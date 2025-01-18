@@ -1,0 +1,34 @@
+<div class="sidebar bg-white">
+    <div class="sidebar-header">
+        <a class="sidebar-brand gradient-text" href="/">وصل</a>
+    </div>
+    <div class="sidebar-content">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link <%= currentPage === 'home' ? 'active' : '' %>"
+                   href="/"
+                   aria-current="<%= currentPage === 'home' ? 'page' : 'false' %>">
+                    <div class="nav-link-content">
+                        <i class="bi bi-house-door"></i>
+                        <span>الرئيسية</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <%= currentPage === 'create-event' ? 'active' : '' %>"
+                   href="/events/create"
+                   aria-current="<%= currentPage === 'create-event' ? 'page' : 'false' %>">
+                    <div class="nav-link-content">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>إنشاء فعالية</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="sidebar-footer">
+        <div class="footer-copyright">
+            <p>© 2025 وصل</p>
+        </div>
+    </div>
+</div>
