@@ -1,34 +1,46 @@
-<div class="sidebar bg-white">
-    <div class="sidebar-header">
-        <a class="sidebar-brand gradient-text" href="/">وصل</a>
+<!-- Sidebar -->
+<div class="sidebar bg-white vh-100 position-fixed top-0 end-0 border-start">
+    <div class="text-center p-4 border-bottom">
+        <a class="sidebar-brand gradient-text text-decoration-none" href="/">وصل</a>
     </div>
-    <div class="sidebar-content">
-        <ul class="nav flex-column">
+
+    <div class="p-3">
+        <ul class="nav flex-column gap-2">
             <li class="nav-item">
-                <a class="nav-link <%= currentPage === 'home' ? 'active' : '' %>"
-                   href="/club-dashboard"
-                   aria-current="<%= currentPage === 'home' ? 'page' : 'false' %>">
-                    <div class="nav-link-content">
-                        <i class="bi bi-house-door"></i>
-                        <span>لوحة التحكم</span>
-                    </div>
+                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'club-admin-dashboard' ? 'active' : '' %>"
+                   href="/" aria-current="<%= currentPage === 'club-admin-dashboard' ? 'page' : 'false' %>">
+                    <i class="bi bi-house-door"></i>
+                    <span>الرئيسية</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <%= currentPage === 'event-creation' ? 'active' : '' %>"
-                   href="/event-creation"
-                   aria-current="<%= currentPage === 'event-creation' ? 'page' : 'false' %>">
-                    <div class="nav-link-content">
-                        <i class="bi bi-plus-circle"></i>
-                        <span>إنشاء فعالية</span>
-                    </div>
+                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'event-creation' ? 'active' : '' %>"
+                   href="/event-creation" aria-current="<%= currentPage === 'event-creation' ? 'page' : 'false' %>">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>إنشاء فعالية</span>
                 </a>
             </li>
         </ul>
     </div>
-    <div class="sidebar-footer">
-        <div class="footer-copyright">
-            <p>© 2025 وصل</p>
+
+    <div class="mt-auto p-3 border-top">
+        <div class="d-flex flex-column gap-2 mb-4">
+            <a href="https://github.com/abo3skr2019/Student-Club-Management-System"
+               class="nav-link d-flex align-items-center gap-3 rounded-3" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-github"></i>
+                <span>رابط المشروع على Github</span>
+            </a>
+            <a href="/privacy-policy" class="nav-link d-flex align-items-center gap-3 rounded-3">
+                <i class="bi bi-shield-check"></i>
+                <span>سياسة الخصوصية</span>
+            </a>
+            <a href="/contact" class="nav-link d-flex align-items-center gap-3 rounded-3">
+                <i class="bi bi-envelope"></i>
+                <span>تواصل معنا</span>
+            </a>
+        </div>
+        <div class="text-center text-muted small">
+            <p class="mb-0">© 2025 وصل. جميع الحقوق محفوظة.</p>
         </div>
     </div>
 </div>
