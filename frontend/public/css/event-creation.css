@@ -5,29 +5,6 @@ body {
     color: #495057;
 }
 
-/* Sidebar Styling */
-.sidebar {
-    background-color: #ffffff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 100vh;
-    padding: 1.5rem 1rem;
-}
-
-.sidebar a {
-    text-decoration: none;
-    color: #495057;
-    padding: 0.75rem 1rem;
-    display: block;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s ease;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-    background-color: #2962ff;
-    color: #ffffff;
-}
-
 /* Form Styling */
 .card {
     border-radius: 0.75rem;
