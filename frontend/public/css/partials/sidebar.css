@@ -107,7 +107,6 @@
     transform: scaleY(1);
 }
 
-
 .sidebar .nav-link:hover i {
     animation: bounce 0.5s ease;
 }
