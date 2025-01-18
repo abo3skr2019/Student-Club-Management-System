@@ -7,7 +7,7 @@
         <ul class="nav flex-column gap-2">
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'club-admin-dashboard' ? 'active' : '' %>"
-                   href="/" aria-current="<%= currentPage === 'club-admin-dashboard' ? 'page' : 'false' %>">
+                   href="/club-dashboard" aria-current="<%= currentPage === 'club-admin-dashboard' ? 'page' : 'false' %>">
                     <i class="bi bi-house-door"></i>
                     <span>لوحة التحكم</span>
                 </a>
@@ -17,6 +17,13 @@
                    href="/event-creation" aria-current="<%= currentPage === 'event-creation' ? 'page' : 'false' %>">
                     <i class="bi bi-plus-circle"></i>
                     <span>إنشاء فعالية</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'user-management' ? 'active' : '' %>"
+                   href="/user-management" aria-current="<%= currentPage === 'user-management' ? 'page' : 'false' %>">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>إدارة الأعضاء (قريبا)</span>
                 </a>
             </li>
         </ul>
