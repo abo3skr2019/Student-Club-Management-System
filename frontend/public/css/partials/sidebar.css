@@ -1,4 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+/* Layout wrapper for sidebar and content */
+.layout {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Sidebar styling */
 .sidebar {
+    font-family: 'Tajawal', sans-serif;
     width: 280px;
     height: 100vh;
     position: fixed;
@@ -9,8 +19,11 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
 }
 
+/* Sidebar header styling */
 .sidebar-header {
     padding: 2rem 1.5rem;
     text-align: center;
@@ -42,6 +55,7 @@
     transform: scaleX(1);
 }
 
+/* Sidebar content area */
 .sidebar-content {
     padding: 1.5rem 1rem;
     flex: 1;
@@ -112,10 +126,29 @@
 }
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
 }
 
+/* Sidebar footer */
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+/* Main content adjusts based on sidebar */
+.main-content {
+    flex-grow: 1;
+    margin-right: 280px; /* Matches the sidebar width */
+    transition: margin-right 0.3s ease;
+}
+
+/* Responsive Design for smaller screens */
 @media (max-width: 991.98px) {
     .sidebar {
         transform: translateX(100%);
@@ -125,15 +158,8 @@
     .sidebar.show {
         transform: translateX(0);
     }
-}
 
-.sidebar {
-    background-color: #ffffff;
-    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-.sidebar-footer  {
-    padding: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    text-align: center;
+    .main-content {
+        margin-right: 0; /* Reset for smaller screens */
+    }
 }
