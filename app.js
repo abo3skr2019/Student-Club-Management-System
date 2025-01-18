@@ -27,7 +27,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
-    cookie: {maxAge: 86400000} // 1 day
+    cookie: { maxAge: 86400000 } // 1 day
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -43,6 +43,11 @@ app.get('/event-creation', (req, res) => res.render('event-creation'));
 app.get('/feed', (req, res) => res.render('feed'));
 app.get('/event-admin-view', (req, res) => res.render('event-admin-view'));
 app.get('/event-user-view', (req, res) => res.render('event-user-view'));
+
+// New route for Club Admin Dashboard
+app.get('/club-admin-dashboard', (req, res) => {
+    res.render('club-admin-dashboard');
+});
 
 // API Routes
 app.use('/clubs', require('./backend/routes/clubRoutes'));
