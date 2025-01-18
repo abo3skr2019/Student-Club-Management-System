@@ -1,0 +1,26 @@
+/* Custom overrides and enhancements for Club Admin Dashboard */
+
+/* Center the dashboard container (if needed) */
+.dashboard-container {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Adjust the header (optional styling for h1) */
+.dashboard-container h1 {
+    font-size: 2.5rem; /* Override default Bootstrap heading size */
+    margin-bottom: 1.5rem;
+}
+
+/* Style enhancements for Bootstrap buttons */
+.dashboard-container .actions .btn {
+    font-size: 1rem; /* Ensure uniform button text size */
+    padding: 0.75rem 1.5rem; /* Consistent padding */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Add hover effects for buttons */
+.dashboard-container .actions .btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+}

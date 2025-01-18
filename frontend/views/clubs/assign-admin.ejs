@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>تعيين مشرف جديد - <%= club.name %></title>
+</head>
+<body>
+    <h1>تعيين مشرف جديد - <%= club.name %></h1>
+    
+    <p>المشرف الحالي: <%= club.clubAdmin.displayName %> (<%= club.clubAdmin.email %>)</p>
+    
+    <% if (locals.error) { %>
+        <div class="error"><%= error %></div>
+    <% } %>
+
+    <form action="/clubs/<%= club.uuid %>/assign-admin" method="POST">
+        <div>
+            <label for="email">البريد الإلكتروني للمشرف الجديد:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <button type="submit">تعيين مشرف جديد</button>
+    </form>
+</body>
+</html>

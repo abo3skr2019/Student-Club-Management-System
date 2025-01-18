@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>إنشاء نادي جديد</title>
+</head>
+<body>
+    <h1>إنشاء نادي جديد</h1>
+    
+    <% if (locals.error) { %>
+        <div class="error"><%= error %></div>
+    <% } %>
+
+    <form action="/clubs/create" method="POST">
+        <div>
+            <label for="name">اسم النادي:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        
+        <div>
+            <label for="description">الوصف:</label>
+            <textarea id="description" name="description" required></textarea>
+        </div>
+        
+        <div>
+            <label for="logo">شعار النادي (URL):</label>
+            <input type="url" id="logo" name="logo" required>
+        </div>
+        
+        <button type="submit">إنشاء</button>
+    </form>
+</body>
+</html>
