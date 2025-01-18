@@ -19,5 +19,9 @@ router.get('/delete-account', isAuthenticated, (req, res) => {
 
 router.post('/delete-account', isAuthenticated, profileController.deleteAccount);
 
-
+// Test routes - only available in development environment
+if (process.env.NODE_ENV === 'development') {
+    router.get('/change-role', isAuthenticated, profileController.renderChangeRoleForm);
+    router.post('/change-role', isAuthenticated, profileController.changeRole);
+}
 module.exports = router;
