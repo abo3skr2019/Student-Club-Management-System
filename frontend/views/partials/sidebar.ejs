@@ -6,18 +6,18 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link <%= currentPage === 'home' ? 'active' : '' %>"
-                   href="/"
+                   href="/club-dashboard"
                    aria-current="<%= currentPage === 'home' ? 'page' : 'false' %>">
                     <div class="nav-link-content">
                         <i class="bi bi-house-door"></i>
-                        <span>الرئيسية</span>
+                        <span>لوحة التحكم</span>
                     </div>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <%= currentPage === 'create-event' ? 'active' : '' %>"
-                   href="/events/create"
-                   aria-current="<%= currentPage === 'create-event' ? 'page' : 'false' %>">
+                <a class="nav-link <%= currentPage === 'event-creation' ? 'active' : '' %>"
+                   href="/event-creation"
+                   aria-current="<%= currentPage === 'event-creation' ? 'page' : 'false' %>">
                     <div class="nav-link-content">
                         <i class="bi bi-plus-circle"></i>
                         <span>إنشاء فعالية</span>
