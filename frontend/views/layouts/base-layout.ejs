@@ -32,8 +32,7 @@
 </head>
 <body>
 <div class="layout-wrapper">
-    <%- include(typeof HeaderOrSidebar !== 'undefined' && HeaderOrSidebar === 'sidebar' ? '../partials/sidebar' : '../partials/header', { currentPage: currentPage }) %>
-    <div class="main-content">
+    <%- include(typeof HeaderOrSidebar !== 'undefined' ? (HeaderOrSidebar === 'sidebar' ? '../partials/sidebar' : '../partials/header') : '../partials/header', { currentPage: typeof currentPage !== 'undefined' ? currentPage : '' }) %>    <div class="main-content">
         <%- body %>
     </div>
     <%- include('../partials/footer') %>
