@@ -63,36 +63,6 @@ app.get('/login', (req, res) => {
     });
 });
 
-app.get('/profile', (req, res) => {
-    res.render('profile', {
-        title: "وصل - الملف الشخصي",
-        HeaderOrSidebar: 'header',
-        extraCSS: '<link href="/css/profile.css" rel="stylesheet">',
-        currentPage: 'profile',
-        user: req.user
-    });
-});
-
-app.get('/update-profile', (req, res) => {
-    res.render('update-profile', {
-        title: "وصل - تحديث الملف الشخصي",
-        HeaderOrSidebar: 'header',
-        extraCSS: '<link href="/css/update-profile.css" rel="stylesheet">',
-        currentPage: 'update-profile',
-        user: req.user
-    });
-});
-
-app.get('/delete-account', (req, res) => {
-    res.render('delete-account', {
-        title: "وصل - حذف الحساب",
-        HeaderOrSidebar: 'header',
-        extraCSS: '<link href="/css/delete-account.css" rel="stylesheet">',
-        currentPage: 'delete-account',
-        user: req.user
-    });
-});
-
 // sidebar-layout routes
 app.get('/club-dashboard', (req, res) => {
     res.render('club-dashboard', {
