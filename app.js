@@ -83,7 +83,7 @@ app.get('/event-creation', (req, res) => {
 });
 
 // other routes that need to be labeled under the correct layout
-app.get('/feed', (req, res) => res.render('feed'));
+app.get('/events', (req, res) => res.render('events'));
 app.get('/event-admin-view', (req, res) => res.render('event-admin-view'));
 app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
