@@ -20,9 +20,11 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'user-management' ? 'active' : '' %>"
-                   href="/user-management" aria-current="<%= currentPage === 'user-management' ? 'page' : 'false' %>">
-                    <i class="bi bi-plus-circle"></i>
+                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'user-management' ? 'active' : '' %> disabled"
+                   href="#"
+                   aria-current="<%= currentPage === 'user-management' ? 'page' : 'false' %>"
+                   aria-disabled="true">
+                    <i class="bi bi-person"></i>
                     <span>إدارة الأعضاء (قريبا)</span>
                 </a>
             </li>
