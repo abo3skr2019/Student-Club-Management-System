@@ -1,1 +1,1 @@
-console.log("Club Admin Dashboard loaded.");
+console.log("Club Admin Dashboard is working");
