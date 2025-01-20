@@ -14,13 +14,15 @@
     <%- typeof HeaderOrSidebar !== 'undefined' && HeaderOrSidebar === 'sidebar' ? '<link href="/css/partials/sidebar.css" rel="stylesheet">' : '<link href="/css/partials/header.css" rel="stylesheet">' %>
     <%- typeof extraCSS !== 'undefined' ? extraCSS : '' %>
 </head>
-<body class="overflow-hidden h-100">
+<body class="min-vh-100">
 <div class="d-flex flex-column min-vh-100">
     <%- include(typeof HeaderOrSidebar !== 'undefined' ? (HeaderOrSidebar === 'sidebar' ? '../partials/sidebar' : '../partials/header') : '../partials/header', { currentPage: typeof currentPage !== 'undefined' ? currentPage : '' }) %>
-    <div class="flex-grow-1">
+    <div class="flex-grow-1 content-wrapper">
         <%- body %>
     </div>
-    <%- include('../partials/footer') %>
+    <div class="footer">
+        <%- include('../partials/footer') %>
+    </div>
 </div>
 
 <!-- Bootstrap JS -->

@@ -8,9 +8,8 @@ body {
 }
 
 /* Content wrapper */
-body > *:not(.sidebar):not(script) {
+.content-wrapper {
     margin-right: 280px;
-    min-height: calc(100vh - 200px); /* Adjust based on your footer height */
     padding: 1rem;
 }
 
@@ -65,9 +64,8 @@ body > *:not(.sidebar):not(script) {
 
 /* Footer adjustments */
 .footer {
-    margin-right: 280px;
-    background-color: white;
-    padding: 2rem 0;
+    margin-right: 160px;
+    width: auto;
 }
 
 @media (max-width: 991.98px) {
@@ -80,7 +78,7 @@ body > *:not(.sidebar):not(script) {
         transform: translateX(0);
     }
 
-    body > *:not(.sidebar):not(script),
+    .content-wrapper,
     .footer {
         margin-right: 0;
     }
