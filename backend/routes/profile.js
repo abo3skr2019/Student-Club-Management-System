@@ -19,26 +19,10 @@ router.get('/update-profile', isAuthenticated, (req, res) => {
 router.post('/update-profile', isAuthenticated, validateProfileInput, profileController.updateProfile);
 
 // Render the logged-in user's profile
-router.get('/profile', isAuthenticated, (req, res) => {
-    res.render('profile', {
-        title: "وصل - الملف الشخصي",
-        HeaderOrSidebar: 'header',
-        extraCSS: '<link href="/css/profile.css" rel="stylesheet">',
-        currentPage: 'profile',
-        user: req.user
-    });
-});
+router.get('/profile', isAuthenticated, profileController.renderProfile);
 
 // Render delete account page
-router.get('/delete-account', isAuthenticated, (req, res) => {
-    res.render('delete-account', {
-        title: "وصل - حذف الحساب",
-        HeaderOrSidebar: 'header',
-        extraCSS: '<link href="/css/delete-account.css" rel="stylesheet">',
-        currentPage: 'delete-account',
-        user: req.user
-    });
-});
+router.get('/delete-account', isAuthenticated, profileController.renderDeleteAccount);
 
 // Handle account deletion
 router.post('/delete-account', isAuthenticated, profileController.deleteAccount);

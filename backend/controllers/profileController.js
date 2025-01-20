@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const {isAuthenticated} = require("../middleware/CheckAuth");
 
 // Render the profile update form
 /**
@@ -44,11 +45,18 @@ const renderProfile = async (req, res) => {
         if (!user) {
             return res.status(404).send('User not found');
         }
-        res.render('profile', { user });
+        res.render('profile', {
+            title: "وصل - الملف الشخصي",
+            HeaderOrSidebar: 'header',
+            extraCSS: '<link href="/css/profile.css" rel="stylesheet">',
+            currentPage: 'profile',
+            user
+        });
     } catch (err) {
         res.status(500).send('Server error');
     }
 };
+
 /**
  * Delete the logged-in user's account
  * @param {Request} req - The request object
@@ -68,9 +76,20 @@ const deleteAccount = async (req, res) => {
     }
 };
 
+const renderDeleteAccount = (req, res) => {
+    res.render('delete-account', {
+        title: "وصل - حذف الحساب",
+        HeaderOrSidebar: 'header',
+        extraCSS: '<link href="/css/delete-account.css" rel="stylesheet">',
+        currentPage: 'delete-account',
+        user: req.user
+    });
+};
+
 module.exports = {
     renderUpdateProfileForm,
     updateProfile,
     renderProfile,
+    renderDeleteAccount,
     deleteAccount
 };
