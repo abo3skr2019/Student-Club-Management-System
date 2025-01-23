@@ -10,10 +10,13 @@
 
         <!-- Navbar Content -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Left Side: Events Link -->
+            <!-- Left Side: Events and Clubs Links -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link <%= currentPage === 'events' ? 'active' : '' %>" aria-current="<%= currentPage === 'events' ? 'page' : 'false' %>" href="/events">الفعاليات</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'clubs' ? 'active' : '' %>" aria-current="<%= currentPage === 'clubs' ? 'page' : 'false' %>" href="/clubs">الأندية</a>
                 </li>
             </ul>
 
@@ -26,7 +29,7 @@
 
                 <!-- Admin Clubs Button -->
                 <% if (user && user.role === 'Admin') { %>
-                    <a class="btn btn-outline-primary" href="/clubs">إدارة النوادي</a>
+                    <a class="btn btn-outline-primary" href="/clubs">إدارة الأندية</a>
                 <% } %>
 
                 <!-- Profile Dropdown or Login/Register Buttons -->
