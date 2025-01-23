@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Error</title>
-</head>
-<body>
-    <h1>خطأ</h1>
-    <div class="error-message">
-        <%= message %>
+<div class="container py-5 mt-5">
+    <!-- Error Header -->
+    <header class="text-center mb-5">
+        <h1 class="display-3 fw-bold text-danger mb-4">
+            <i class="fas fa-exclamation-triangle me-2"></i> خطأ
+        </h1>
+        <p class="lead text-muted">حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى لاحقًا.</p>
+    </header>
+
+    <!-- Error Details -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center p-5">
+            <h2 class="h4 text-secondary mb-4">تفاصيل الخطأ:</h2>
+            <p class="text-muted mb-4"><%= message %></p>
+            </a>
+        </div>
     </div>
-    <a href="/clubs">العودة إلى صفحة النوادي</a>
-</body>
-</html>
+</div>
