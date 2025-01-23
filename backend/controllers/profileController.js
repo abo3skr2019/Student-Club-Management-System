@@ -9,7 +9,13 @@ const {isAuthenticated} = require("../middleware/CheckAuth");
  * @returns {void}
  */
 const renderUpdateProfileForm = (req, res) => {
-    res.render('update-profile', { user: req.user });
+    res.render('update-profile', {
+        title: "وصل - تحديث الملف الشخصي",
+        HeaderOrSidebar: 'header',
+        extraCSS: '<link href="/css/update-profile.css" rel="stylesheet">',
+        currentPage: 'update-profile',
+        user: req.user
+    });
 };
 
 // Handle the profile update form submission
