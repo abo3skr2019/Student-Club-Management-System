@@ -18,6 +18,11 @@ const app = express();
 
 // Middleware
 app.use(express.json());  // For parsing JSON bodies
+// Middleware used to attach user to res.locals for dynamic header changes
+app.use((req, res, next) => {
+    res.locals.user = req.user || null; // Attach user to res.locals
+    next();
+});
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'frontend', 'views'));

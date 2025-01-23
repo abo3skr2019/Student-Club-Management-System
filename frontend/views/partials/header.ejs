@@ -11,8 +11,26 @@
                 </li>
             </ul>
             <div class="navbar-nav gap-2">
-                <a class="btn btn-outline-primary" href="/login">تسجيل الدخول</a>
-                <a class="btn btn-primary" href="/login">إنشاء حساب</a>
+                <% if (user) { %>
+                    <!-- Display profile dropdown if user is logged in -->
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="<%= user.profileImage || '/path/to/default/image' %>" alt="Profile" class="rounded-circle" width="30" height="30">
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/profile">حسابي</a></li>
+                            <% if (user.role === 'clubAdmin') { %>
+                                <!-- Show club admin dashboard link for clubAdmin role -->
+                                <li><a class="dropdown-item" href="/club-admin-dashboard">لوحة تحكم النادي</a></li>
+                            <% } %>
+                            <li><a class="dropdown-item" href="/logout">تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                <% } else { %>
+                    <!-- Show login and register buttons if user is not logged in (Visitor) -->
+                    <a class="btn btn-outline-primary" href="/login">تسجيل الدخول</a>
+                    <a class="btn btn-primary" href="/register">إنشاء حساب</a>
+                <% } %>
             </div>
         </div>
     </div>
