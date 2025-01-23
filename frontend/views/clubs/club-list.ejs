@@ -1,25 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>النوادي</title>
-</head>
-<body>
-    <h1>النوادي</h1>
-    
+<div class="container py-5 mt-5"> <!-- Add mt-5 for margin-top -->
+    <!-- Page Header -->
+    <header class="text-center mb-5">
+        <h1 class="display-4 fw-bold">الأندية</h1>
+    </header>
+
+    <!-- Create Club Button (Conditional) -->
     <% if (user && user.role === 'Admin') { %>
-        <a href="/clubs/create">إنشاء نادي جديد</a>
+        <div class="text-center mb-4">
+            <a href="/clubs/create" class="btn btn-primary btn-lg">إنشاء نادي جديد</a>
+        </div>
     <% } %>
 
-    <div class="clubs-list">
+    <!-- Clubs List -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         <% clubs.forEach(club => { %>
-            <div class="club-card">
-                <img src="<%= club.logo %>" alt="<%= club.name %>">
-                <h2><%= club.name %></h2>
-                <p><%= club.description %></p>
-                <p>المشرف: <%= club.clubAdmin.displayName %></p>
-                <a href="/clubs/<%= club.uuid %>">عرض التفاصيل</a>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="<%= club.logo %>" alt="<%= club.name %>" class="card-img-top p-3" style="height: 200px; object-fit: contain;">
+                    <div class="card-body">
+                        <h2 class="card-title fw-bold"><%= club.name %></h2>
+                        <p class="card-text"><%= club.description %></p>
+                        <p class="text-muted">المشرف: <%= club.clubAdmin.displayName %></p>
+                        <a href="/clubs/<%= club.uuid %>" class="btn btn-outline-primary w-100">عرض التفاصيل</a>
+                    </div>
+                </div>
             </div>
         <% }); %>
     </div>
-</body>
-</html>
+</div>

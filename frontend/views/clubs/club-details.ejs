@@ -1,19 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title><%= club.name %></title>
-</head>
-<body>
-    <h1><%= club.name %></h1>
-    
-    <div class="club-details">
-        <img src="<%= club.logo %>" alt="<%= club.name %>">
-        <p><%= club.description %></p>
-        <p>المشرف: <%= club.clubAdmin.displayName %></p>
-        
-        <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
-            <a href="/clubs/<%= club.uuid %>/edit">تعديل النادي</a>
-        <% } %>
+<div class="container py-5 mt-5"> <!-- Add mt-5 for margin-top -->
+    <!-- Page Header -->
+    <header class="text-center mb-5">
+        <h1 class="display-4 fw-bold"><%= club.name %></h1>
+    </header>
+
+    <!-- Club Details -->
+    <div class="card shadow-sm">
+        <div class="row g-0">
+            <!-- Club Logo -->
+            <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+                <img src="<%= club.logo %>" alt="<%= club.name %>" class="img-fluid rounded-start" style="max-height: 300px; object-fit: contain;">
+            </div>
+            <!-- Club Information -->
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p class="card-text lead"><%= club.description %></p>
+                    <p class="card-text text-muted">المشرف: <%= club.clubAdmin.displayName %></p>
+
+                    <!-- Edit Button (Conditional) -->
+                    <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
+                        <div class="d-grid gap-2 d-md-block mb-3">
+                            <a href="/clubs/<%= club.uuid %>/edit" class="btn btn-outline-primary">تعديل النادي</a>
+                            <a href="/clubs/<%= club.uuid %>/assign-admin" class="btn btn-outline-secondary">تعيين مشرف جديد</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
