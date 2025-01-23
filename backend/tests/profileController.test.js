@@ -34,9 +34,15 @@ describe('profileController', () => {
     });
 
     describe('renderUpdateProfileForm', () => {
-        test('should render update-profile template with user data', () => {
+        test('should render update-profile template with user data and additional properties', () => {
             profileController.renderUpdateProfileForm(req, res);
-            expect(res.render).toHaveBeenCalledWith('update-profile', { user: req.user });
+            expect(res.render).toHaveBeenCalledWith('update-profile', {
+                title: "وصل - تحديث الملف الشخصي",
+                HeaderOrSidebar: 'header',
+                extraCSS: '<link href="/css/update-profile.css" rel="stylesheet">',
+                currentPage: 'update-profile',
+                user: req.user
+            });
         });
     });
 
