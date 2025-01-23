@@ -22,6 +22,17 @@ describe('profileController', () => {
         jest.clearAllMocks();
     });
 
+    // Mock console.log and console.error
+    beforeAll(() => {
+        jest.spyOn(console, 'log').mockImplementation(() => {});
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterAll(() => {
+        console.log.mockRestore();
+        console.error.mockRestore();
+    });
+
     describe('renderUpdateProfileForm', () => {
         test('should render update-profile template with user data', () => {
             profileController.renderUpdateProfileForm(req, res);
@@ -53,10 +64,19 @@ describe('profileController', () => {
     });
 
     describe('renderProfile', () => {
-        test('should render profile with user data', async () => {
-            User.findById.mockResolvedValue({ firstName: 'Test', lastName: 'User' });
+        test('should render profile with user data and additional properties', async () => {
+            const mockUser = { firstName: 'Test', lastName: 'User' };
+            User.findById.mockResolvedValue(mockUser);
+
             await profileController.renderProfile(req, res);
-            expect(res.render).toHaveBeenCalledWith('profile', { user: { firstName: 'Test', lastName: 'User' } });
+
+            expect(res.render).toHaveBeenCalledWith('profile', {
+                title: "وصل - الملف الشخصي",
+                HeaderOrSidebar: 'header',
+                extraCSS: '<link href="/css/profile.css" rel="stylesheet">',
+                currentPage: 'profile',
+                user: mockUser
+            });
         });
 
         test('should return 404 if user not found', async () => {
