@@ -1,18 +1,36 @@
 <header class="header navbar navbar-expand-lg fixed-top bg-white">
     <div class="container">
+        <!-- Brand Logo -->
         <a class="navbar-brand gradient-text" href="/">وصل</a>
+
+        <!-- Navbar Toggler for Mobile -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Navbar Content -->
         <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Left Side: Events Link -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link <%= currentPage === 'events' ? 'active' : '' %>" aria-current="<%= currentPage === 'events' ? 'page' : 'false' %>" href="/events">الفعاليات</a>
                 </li>
             </ul>
-            <div class="navbar-nav gap-2">
+
+            <!-- Right Side: Admin Links and Profile Dropdown -->
+            <div class="navbar-nav gap-3">
+                <!-- Club Admin Dashboard Button -->
+                <% if (user && user.role === 'ClubAdmin') { %>
+                    <a class="btn btn-outline-primary" href="/club-dashboard">لوحة تحكم النادي</a>
+                <% } %>
+
+                <!-- Admin Clubs Button -->
+                <% if (user && user.role === 'Admin') { %>
+                    <a class="btn btn-outline-primary" href="/clubs">إدارة النوادي</a>
+                <% } %>
+
+                <!-- Profile Dropdown or Login/Register Buttons -->
                 <% if (user) { %>
-                    <!-- Display profile dropdown if user is logged in -->
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="<%= user.profileImage || '/path/to/default/image' %>" alt="Profile" class="rounded-circle" width="30" height="30">
@@ -21,7 +39,7 @@
                             <li><a class="dropdown-item" href="/profile">حسابي</a></li>
                             <% if (user.role === 'clubAdmin') { %>
                                 <!-- Show club admin dashboard link for clubAdmin role -->
-                                <li><a class="dropdown-item" href="/club-admin-dashboard">لوحة تحكم النادي</a></li>
+                                <li><a class="dropdown-item" href="/club-dashboard">لوحة تحكم النادي</a></li>
                             <% } %>
                             <li><a class="dropdown-item" href="/logout">تسجيل الخروج</a></li>
                         </ul>
