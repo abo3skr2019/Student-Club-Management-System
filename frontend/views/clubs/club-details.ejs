@@ -1,4 +1,4 @@
-<div class="container py-5 mt-5"> <!-- Add mt-5 for margin-top -->
+<div class="container py-5 mt-5">
     <!-- Page Header -->
     <header class="text-center mb-5">
         <h1 class="display-4 fw-bold"><%= club.name %></h1>
@@ -21,11 +21,44 @@
                     <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
                         <div class="d-grid gap-2 d-md-block mb-3">
                             <a href="/clubs/<%= club.uuid %>/edit" class="btn btn-outline-primary">تعديل النادي</a>
-                            <a href="/clubs/<%= club.uuid %>/assign-admin" class="btn btn-outline-secondary">تعيين مشرف جديد</a>
+                            <!-- Button to trigger the modal -->
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#assignAdminModal">
+                                تعيين مشرف جديد
+                            </button>
                         </div>
                     <% } %>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Admin Modal -->
+<div class="modal fade" id="assignAdminModal" tabindex="-1" aria-labelledby="assignAdminModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignAdminModalLabel">تعيين مشرف جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/clubs/<%= club.uuid %>/assign-admin" method="POST">
+                <div class="modal-body">
+                    <p>هل أنت متأكد أنك تريد تعيين مشرف جديد لهذا النادي؟</p>
+                    <!-- New Admin Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">البريد الإلكتروني للمشرف الجديد:</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                </div>
+                <!-- Confirmation Buttons -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning">تعيين</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
