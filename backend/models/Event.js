@@ -85,9 +85,9 @@ EventSchema.pre('save', function(next) {
     next();
 });
 
-// Add index for efficient queries
 EventSchema.index({ eventStart: 1, status: 1 });
 EventSchema.index({ club: 1, status: 1 });
-EventSchema.index({ 'registeredUsers.user': 1 });
+EventSchema.index({ registeredUsers: 1, status: 1 });
+EventSchema.index({ status: 1, seatsRemaining: 1 });a
 
 module.exports = mongoose.model('Event', EventSchema);
