@@ -4,7 +4,7 @@ const clubController = require('../controllers/clubController');
 const eventController = require('../controllers/eventController');
 const { isAuthenticated } = require('../middleware/CheckAuth');
 const { isAdmin, isClubAdmin } = require('../middleware/CheckRole');
-const { validateEventDates } = require('../middleware/EventValidation');
+const { validateEventInput, validateEventDates } = require('../middleware/EventValidation');
 
 // Protected routes - require authentication
 router.get('/create', isAuthenticated, isAdmin, clubController.renderCreateClubForm);
@@ -16,7 +16,7 @@ router.post('/:clubId/assign-admin', isAuthenticated, isClubAdmin, clubControlle
 
 // Event creation routes for specific club
 router.get('/:clubId/events/create', isAuthenticated, isClubAdmin, eventController.renderCreateEventForm);
-router.post('/:clubId/events/create', isAuthenticated, isClubAdmin, validateEventDates, eventController.createEvent);
+router.post('/:clubId/events/create', isAuthenticated, isClubAdmin, validateEventInput, validateEventDates, eventController.createEvent);
 
 // Public Routes
 router.get('/', clubController.getAllClubs);
