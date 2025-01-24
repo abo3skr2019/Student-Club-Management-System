@@ -46,14 +46,38 @@
             </div>
             <form action="/clubs/<%= club.uuid %>/assign-admin" method="POST">
                 <div class="modal-body">
-                    <p>هل أنت متأكد أنك تريد تعيين مشرف جديد لهذا النادي؟</p>
-                    <!-- New Admin Email -->
+                    <!-- Error Message -->
+                    <% if (error) { %>
+                        <div class="alert alert-danger mb-3">
+                            <% switch(error) {
+                            case 'invalid_email': %>
+                            ❌ البريد الإلكتروني غير صحيح
+                            <% break;
+                            case 'user_not_found': %>
+                            ❌ المستخدم غير موجود
+                            <% break;
+                            case 'already_admin': %>
+                            ❌ المستخدم هو بالفعل مشرف لهذا النادي
+                            <% break;
+                            case 'assignment_failed': %>
+                            ❌ فشل تعيين المشرف
+                            <% break;
+                                default: %>
+                            ❌ حدث خطأ غير متوقع
+                            <% } %>
+                        </div>
+                    <% } %>
+
                     <div class="mb-3">
                         <label for="email" class="form-label">البريد الإلكتروني للمشرف الجديد:</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email"
+                               class="form-control"
+                               id="email"
+                               name="email"
+                               value="<%= email || '' %>"
+                               required>
                     </div>
                 </div>
-                <!-- Confirmation Buttons -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
                     <button type="submit" class="btn btn-warning">تعيين</button>
@@ -62,3 +86,18 @@
         </div>
     </div>
 </div>
+
+<!-- Auto-show modal script -->
+<% if (error) { %>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = new bootstrap.Modal('#assignAdminModal');
+            modal.show();
+
+            // Add red border to invalid email input
+            <% if (error === 'invalid_email' || error === 'user_not_found') { %>
+            document.getElementById('email').classList.add('is-invalid');
+            <% } %>
+        });
+    </script>
+<% } %>
