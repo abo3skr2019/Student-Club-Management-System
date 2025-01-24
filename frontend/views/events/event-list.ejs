@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">All Events</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% events.forEach(event => { %>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="<%= event.poster %>" alt="<%= event.name %>" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold mb-2"><%= event.name %></h2>
+                    <p class="text-gray-600 mb-2"><%= event.category.charAt(0).toUpperCase() + event.category.slice(1) %></p>
+                    <div class="mb-2">
+                        <span class="text-sm text-gray-500">By</span>
+                        <a href="/clubs/<%= event.club.uuid %>" class="text-blue-600 hover:text-blue-800"><%= event.club.name %></a>
+                    </div>
+                    <div class="text-sm text-gray-600 mb-2">
+                        <p>Starts: <%= new Date(event.eventStart).toLocaleDateString() %></p>
+                        <p>Available Seats: <%= event.seatsRemaining %>/<%= event.seatsAvailable %></p>
+                    </div>
+                    <a href="/events/<%= event.uuid %>" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
