@@ -106,7 +106,9 @@ describe('Club Controller', () => {
 
             // Mock populate chain
             Club.findOne.mockReturnValue({
-                populate: jest.fn().mockResolvedValue(mockClub)
+                populate: jest.fn().mockImplementation(() => ({
+                    populate: jest.fn().mockResolvedValue(mockClub)
+                }))
             });
 
             await clubController.getClubById(req, res);
@@ -120,7 +122,9 @@ describe('Club Controller', () => {
 
         test('should render error view for non-existent club', async () => {
             Club.findOne.mockReturnValue({
-                populate: jest.fn().mockResolvedValue(null)
+                populate: jest.fn().mockImplementation(() => ({
+                    populate: jest.fn().mockResolvedValue(null)
+                }))
             });
 
             await clubController.getClubById(req, res);
@@ -135,7 +139,9 @@ describe('Club Controller', () => {
 
         test('should render error view when fetching club fails', async () => {
             Club.findOne.mockReturnValue({
-                populate: jest.fn().mockRejectedValue(new Error('Database error'))
+                populate: jest.fn().mockImplementation(() => ({
+                    populate: jest.fn().mockRejectedValue(new Error('Database error'))
+                }))
             });
 
             await clubController.getClubById(req, res);
@@ -317,6 +323,7 @@ describe('Club Controller', () => {
     
             // Mock populate chain
             Club.findOne.mockReturnValue({
+                populate: jest.fn().mockReturnThis(),
                 populate: jest.fn().mockResolvedValue(mockClub)
             });
     
@@ -331,6 +338,7 @@ describe('Club Controller', () => {
     
         test('should render error when club not found', async () => {
             Club.findOne.mockReturnValue({
+                populate: jest.fn().mockReturnThis(),
                 populate: jest.fn().mockResolvedValue(null)
             });
     
