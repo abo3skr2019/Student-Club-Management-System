@@ -46,6 +46,7 @@ app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
 // API Routes
 app.use('/clubs', require('./backend/routes/clubRoutes'));
+app.use('/events', require('./backend/routes/eventRoutes'));
 app.use(require('./backend/routes/auth'));
 app.use(require('./backend/routes/profile'));
 
