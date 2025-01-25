@@ -13,7 +13,6 @@ const getAllEvents = async () => {
             .sort({ eventStart: 1 })
             .lean();
     } catch (error) {
-        console.error('Error in eventService.getAllEvents: ', error);
         throw error;
     }
 };
@@ -33,7 +32,6 @@ const findByUUID = async (uuid) => {
             .populate('registeredUsers', 'displayName email profileImage')
             .lean();
     } catch (error) {
-        console.error('Error in eventService.findByUUID: ', error);
         throw error;
     }
 };
@@ -65,7 +63,6 @@ const createEvent = async (eventData, clubId) => {
 
         return event;
     } catch (error) {
-        console.error('Error in eventService.createEvent: ', error);
         throw error;
     }
 };
@@ -101,7 +98,6 @@ const updateEvent = async (eventId, updateData) => {
             { new: true, runValidators: true }
         );
     } catch (error) {
-        console.error('Error in eventService.updateEvent: ', error);
         throw error;
     }
 };
@@ -142,7 +138,6 @@ const registerUser = async (eventId, user) => {
 
         return event;
     } catch (error) {
-        console.error('Error in eventService.registerUser: ', error);
         throw error;
     }
 };
@@ -181,7 +176,6 @@ const unregisterUser = async (eventId, user) => {
 
         return event;
     } catch (error) {
-        console.error('Error in eventService.unregisterUser: ', error);
         throw error;
     }
 };
@@ -209,7 +203,6 @@ const deleteEvent = async (eventId) => {
 
         await Event.deleteOne({ _id: event._id });
     } catch (error) {
-        console.error('Error in eventService.deleteEvent: ', error);
         throw error;
     }
 };
@@ -232,7 +225,6 @@ const isUserEventAdmin = async (user, event) => {
         
         return !!isClubAdmin;
     } catch (error) {
-        console.error('Error in eventService.isUserEventAdmin: ', error);
         throw error;
     }
 };
@@ -246,7 +238,6 @@ const findClubByUUID = async (clubId) => {
     try {
         return await Club.findOne({ uuid: clubId });
     } catch (error) {
-        console.error('Error in eventService.findClubByUUID: ', error);
         throw error;
     }
 };
