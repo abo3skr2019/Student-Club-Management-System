@@ -19,7 +19,7 @@ const getAllEvents = async () => {
 
 /**
  * Find event by UUID
- * @param {String} uuid - Event UUID
+ * @param {String} uuid Event UUID
  * @returns {Promise<Object>} Event object
  */
 const findByUUID = async (uuid) => {
@@ -38,8 +38,8 @@ const findByUUID = async (uuid) => {
 
 /**
  * Create new event
- * @param {Object} eventData - Event data
- * @param {String} clubId - Club UUID
+ * @param {Object} eventData Pre-validated event data
+ * @param {String} clubId Club UUID
  * @returns {Promise<Object>} Created event
  */
 const createEvent = async (eventData, clubId) => {
@@ -69,8 +69,8 @@ const createEvent = async (eventData, clubId) => {
 
 /**
  * Update event
- * @param {String} eventId - Event UUID
- * @param {Object} updateData - Updated event data
+ * @param {String} eventId Event UUID
+ * @param {Object} updateData Pre-validated update data
  * @returns {Promise<Object>} Updated event
  */
 const updateEvent = async (eventId, updateData) => {
@@ -104,12 +104,17 @@ const updateEvent = async (eventId, updateData) => {
 
 /**
  * Register user for event
- * @param {String} eventId - Event UUID
- * @param {Object} user - User object
+ * @param {String} eventId Event UUID
+ * @param {String} userId User ID
  * @returns {Promise<Object>} Updated event
  */
-const registerUser = async (eventId, user) => {
+const registerUser = async (eventId, userId) => {
     try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
         const event = await Event.findOne({ uuid: eventId });
         if (!event) {
             throw new Error('Event not found');
@@ -123,11 +128,11 @@ const registerUser = async (eventId, user) => {
             throw new Error('No seats available');
         }
 
-        if (event.registeredUsers.includes(user._id)) {
+        if (event.registeredUsers.includes(userId)) {
             throw new Error('User is already registered for this event');
         }
 
-        event.registeredUsers.push(user._id);
+        event.registeredUsers.push(userId);
         event.seatsRemaining--;
         await event.save();
 
@@ -144,12 +149,17 @@ const registerUser = async (eventId, user) => {
 
 /**
  * Unregister user from event
- * @param {String} eventId - Event UUID
- * @param {Object} user - User object
+ * @param {String} eventId Event UUID
+ * @param {String} userId User ID
  * @returns {Promise<Object>} Updated event
  */
-const unregisterUser = async (eventId, user) => {
+const unregisterUser = async (eventId, userId) => {
     try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
         const event = await Event.findOne({ uuid: eventId });
         if (!event) {
             throw new Error('Event not found');
@@ -159,12 +169,12 @@ const unregisterUser = async (eventId, user) => {
             throw new Error('Cannot unregister from this event at this time');
         }
 
-        if (!event.registeredUsers.includes(user._id)) {
+        if (!event.registeredUsers.includes(userId)) {
             throw new Error('User is not registered for this event');
         }
 
         event.registeredUsers = event.registeredUsers.filter(
-            userId => userId.toString() !== user._id.toString()
+            id => id.toString() !== userId
         );
         event.seatsRemaining++;
         await event.save();
@@ -182,7 +192,7 @@ const unregisterUser = async (eventId, user) => {
 
 /**
  * Delete event
- * @param {String} eventId - Event UUID
+ * @param {String} eventId Event UUID
  * @returns {Promise<void>}
  */
 const deleteEvent = async (eventId) => {
@@ -209,8 +219,8 @@ const deleteEvent = async (eventId) => {
 
 /**
  * Check if user is admin for event
- * @param {Object} user - User object 
- * @param {Object} event - Event object
+ * @param {Object} user User object
+ * @param {Object} event Event object
  * @returns {Promise<boolean>} Is admin
  */
 const isUserEventAdmin = async (user, event) => {
@@ -231,7 +241,7 @@ const isUserEventAdmin = async (user, event) => {
 
 /**
  * Find club by UUID
- * @param {String} clubId - Club UUID
+ * @param {String} clubId Club UUID
  * @returns {Promise<Object>} Club object
  */
 const findClubByUUID = async (clubId) => {

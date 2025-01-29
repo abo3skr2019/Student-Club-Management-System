@@ -1,9 +1,9 @@
 const eventService = require('../services/eventService');
 
-/**
+/** 
  * Get all events
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const getAllEvents = async (req, res) => {
@@ -23,10 +23,10 @@ const getAllEvents = async (req, res) => {
     }
 };
 
-/**
+/** 
  * Get event by ID
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const getEventById = async (req, res) => {
@@ -65,10 +65,10 @@ const getEventById = async (req, res) => {
     }
 };
 
-/**
+/** 
  * Render create event form
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const renderCreateEventForm = async (req, res) => {
@@ -96,10 +96,10 @@ const renderCreateEventForm = async (req, res) => {
     }
 };
 
-/**
+/** 
  * Create new event
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const createEvent = async (req, res) => {
@@ -116,10 +116,10 @@ const createEvent = async (req, res) => {
     }
 };
 
-/**
+/** 
  * Render edit event form
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const renderEditEventForm = async (req, res) => {
@@ -148,10 +148,10 @@ const renderEditEventForm = async (req, res) => {
     }
 };
 
-/**
+/** 
  * Update event
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const updateEvent = async (req, res) => {
@@ -168,40 +168,40 @@ const updateEvent = async (req, res) => {
     }
 };
 
-/**
- * Register user for event
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+/** 
+ * Register for event
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const registerForEvent = async (req, res) => {
     try {
-        await eventService.registerUser(req.params.eventId, req.user);
+        await eventService.registerUser(req.params.eventId, req.user._id);
         res.json({ message: 'Successfully registered' });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 };
 
-/**
- * Unregister user from event
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+/** 
+ * Unregister from event
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const unregisterFromEvent = async (req, res) => {
     try {
-        await eventService.unregisterUser(req.params.eventId, req.user);
+        await eventService.unregisterUser(req.params.eventId, req.user._id);
         res.json({ message: 'Successfully unregistered' });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 };
 
-/**
+/** 
  * Delete event
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {Request} req The request object
+ * @param {Response} res The response object
  * @returns {void}
  */
 const deleteEvent = async (req, res) => {
