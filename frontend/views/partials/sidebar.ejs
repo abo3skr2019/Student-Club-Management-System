@@ -7,14 +7,16 @@
         <ul class="nav flex-column gap-2">
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'club-dashboard' ? 'active' : '' %>"
-                   href="/club-dashboard" aria-current="<%= currentPage === 'club-dashboard' ? 'page' : 'false' %>">
+                   href="/clubs/<%= club.uuid %>/dashboard"
+                   aria-current="<%= currentPage === 'club-dashboard' ? 'page' : 'false' %>">
                     <i class="bi bi-house-door"></i>
                     <span>لوحة التحكم</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'event-creation' ? 'active' : '' %>"
-                   href="/event-creation" aria-current="<%= currentPage === 'event-creation' ? 'page' : 'false' %>">
+                   href="/clubs/<%= club.uuid %>/dashboard/event-creation"
+                   aria-current="<%= currentPage === 'event-creation' ? 'page' : 'false' %>">
                     <i class="bi bi-plus-circle"></i>
                     <span>إنشاء فعالية</span>
                 </a>

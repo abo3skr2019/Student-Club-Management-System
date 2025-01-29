@@ -40,12 +40,25 @@ app.use(passport.session());
 connectDB();
 
 // Middleware used to attach user to res.locals for dynamic header changes
-app.use((req, res, next) => {
-    res.locals.user = req.user || null; // Attach user to res.locals
+app.use(async (req, res, next) => {
+    if (req.user) {
+        try {
+            // If user is a ClubAdmin, find their club
+            if (req.user.role === 'ClubAdmin') {
+                const Club = require('./backend/models/Club');
+                const club = await Club.findOne({ clubAdmin: req.user._id });
+                if (club) {
+                    req.user.clubUUID = club.uuid;  // Add the UUID to the user object
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching club UUID:', err);
+        }
+    }
+    res.locals.user = req.user || null;
     next();
 });
 
-// Routes for EJS templates
 
 // LAYOUTS
 app.use(expressLayouts);
@@ -65,25 +78,6 @@ app.get('/login', (req, res) => {
         HeaderOrSidebar: 'header',
         extraCSS: '<link href="/css/login.css" rel="stylesheet">',
         currentPage: 'login'
-    });
-});
-
-// sidebar-layout routes
-app.get('/club-dashboard', (req, res) => {
-    res.render('club-dashboard', {
-        title: "وصل - لوحة التحكم",
-        HeaderOrSidebar: 'sidebar',
-        extraCSS: '<link href="/css/club-dashboard.css" rel="stylesheet">',
-        currentPage: 'club-dashboard'
-
-    });
-});
-app.get('/event-creation', (req, res) => {
-    res.render('event-creation', {
-        title: "وصل - إنشاء فعالية",
-        HeaderOrSidebar: 'sidebar',
-        extraCSS: '<link href="/css/event-creation.css" rel="stylesheet">',
-        currentPage: 'event-creation'
     });
 });
 

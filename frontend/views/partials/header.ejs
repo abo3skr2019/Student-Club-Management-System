@@ -23,8 +23,8 @@
             <!-- Right Side: Admin Links and Profile Dropdown -->
             <div class="navbar-nav gap-3">
                 <!-- Club Admin Dashboard Button -->
-                <% if (user && user.role === 'ClubAdmin') { %>
-                    <a class="btn btn-outline-primary" href="/club-dashboard">لوحة تحكم النادي</a>
+                <% if (user && user.role === 'ClubAdmin' && user.clubUUID) { %>
+                    <a class="btn btn-outline-primary" href="/clubs/<%= user.clubUUID %>/dashboard">لوحة تحكم النادي</a>
                 <% } %>
 
                 <!-- Admin Clubs Button -->
@@ -40,9 +40,8 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/profile">حسابي</a></li>
-                            <% if (user.role === 'clubAdmin') { %>
-                                <!-- Show club admin dashboard link for clubAdmin role -->
-                                <li><a class="dropdown-item" href="/club-dashboard">لوحة تحكم النادي</a></li>
+                            <% if (user.role === 'ClubAdmin' && user.clubUUID) { %>
+                                <li><a class="dropdown-item" href="/clubs/<%= user.clubUUID %>/dashboard">لوحة تحكم النادي</a></li>
                             <% } %>
                             <li><a class="dropdown-item" href="/logout">تسجيل الخروج</a></li>
                         </ul>
