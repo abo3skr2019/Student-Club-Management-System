@@ -1,3 +1,18 @@
+/**
+ * Validates event input fields for both creation and update
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body containing event data
+ * @param {string} req.body.name - Event name
+ * @param {string} req.body.description - Event description
+ * @param {string} req.body.poster - Event poster URL
+ * @param {string} req.body.location - Event location
+ * @param {number} req.body.seatsAvailable - Number of available seats
+ * @param {string} req.body.category - Event category
+ * @param {Object} req.user - Current user data
+ * @param {Object} res - Express response object
+ * @param {Function} next - Next middleware function
+ * @returns {void}
+ */
 const validateEventInput = (req, res, next) => {
     try {
         const { 
@@ -10,6 +25,11 @@ const validateEventInput = (req, res, next) => {
         } = req.body;
 
         const errors = [];
+
+        // UUID validation
+        if ('uuid' in req.body) {
+            errors.push('Cannot update event UUID');
+        }
 
         // Name validation
         if (!name || name.trim().length < 3 || name.trim().length > 100) {
@@ -62,6 +82,18 @@ const validateEventInput = (req, res, next) => {
     }
 };
 
+/**
+ * Validates event dates and their relationships
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body containing event dates
+ * @param {string} req.body.registrationStart - Event registration start date
+ * @param {string} req.body.registrationEnd - Event registration end date
+ * @param {string} req.body.eventStart - Event start date
+ * @param {string} req.body.eventEnd - Event end date
+ * @param {Object} res - Express response object
+ * @param {Function} next - Next middleware function
+ * @returns {void}
+ */
 const validateEventDates = (req, res, next) => {
     try {
         const { registrationStart, registrationEnd, eventStart, eventEnd } = req.body;
