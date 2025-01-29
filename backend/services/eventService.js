@@ -1,6 +1,7 @@
 const Event = require('../models/Event');
 const Club = require('../models/Club');
 const User = require('../models/User');
+const { updateEventStatus } = require('../../utils/eventScheduler');
 
 /**
  * Find all events
@@ -61,6 +62,9 @@ const createEvent = async (eventData, clubId) => {
         club.createdEvents.push(event._id);
         await club.save();
 
+        // Set initial status
+        await updateEventStatus(event.uuid);
+
         return event;
     } catch (error) {
         throw error;
@@ -87,7 +91,7 @@ const updateEvent = async (eventId, updateData) => {
         // Calculate new seatsRemaining
         const seatsRemaining = updateData.seatsAvailable - existingEvent.registeredUsers.length;
 
-        return await Event.findOneAndUpdate(
+        const updatedEvent = await Event.findOneAndUpdate(
             { uuid: eventId },
             { 
                 $set: {
@@ -97,6 +101,10 @@ const updateEvent = async (eventId, updateData) => {
             },
             { new: true, runValidators: true }
         );
+
+        await updateEventStatus(eventId);
+
+        return updatedEvent;
     } catch (error) {
         throw error;
     }
