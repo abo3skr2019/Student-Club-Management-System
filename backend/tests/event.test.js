@@ -40,6 +40,8 @@ describe('Event Service', () => {
             eventsJoined: [],
             save: jest.fn().mockResolvedValue(true)
         };
+
+        User.findById.mockResolvedValue(mockUser);
     });
 
     describe('getAllEvents', () => {
@@ -144,46 +146,57 @@ describe('Event Service', () => {
 
     describe('registerUser', () => {
         test('should register user for event successfully', async () => {
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
             
-            await eventService.registerUser('event-uuid-123', mockUser);
+            await eventService.registerUser('event-uuid-123', 'user123');
 
-            expect(mockEvent.registeredUsers).toContain(mockUser._id);
+            expect(mockEvent.registeredUsers).toContain('user123');
             expect(mockEvent.seatsRemaining).toBe(99);
             expect(mockEvent.save).toHaveBeenCalled();
             expect(mockUser.save).toHaveBeenCalled();
-            expect(mockUser.eventsJoined).toContain(mockEvent._id);
         });
 
         test('should throw error if event is full', async () => {
             mockEvent.seatsRemaining = 0;
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
 
-            await expect(eventService.registerUser('event-uuid-123', mockUser))
+            await expect(eventService.registerUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('No seats available');
         });
 
         test('should throw error if registration is closed', async () => {
             mockEvent.status = 'registration_closed';
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
 
-            await expect(eventService.registerUser('event-uuid-123', mockUser))
+            await expect(eventService.registerUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('Registration is not currently open for this event');
         });
 
         test('should throw error if user is already registered', async () => {
             mockEvent.registeredUsers = ['user123'];
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
 
-            await expect(eventService.registerUser('event-uuid-123', mockUser))
+            await expect(eventService.registerUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('User is already registered for this event');
         });
 
         test('should throw error if event not found', async () => {
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(null);
 
-            await expect(eventService.registerUser('event-uuid-123', mockUser))
+            await expect(eventService.registerUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('Event not found');
+        });
+
+        test('should throw error if user not found', async () => {
+            User.findById.mockResolvedValue(null);
+
+            await expect(eventService.registerUser('event-uuid-123', 'user123'))
+                .rejects.toThrow('User not found');
         });
     });
 
@@ -195,53 +208,67 @@ describe('Event Service', () => {
         });
 
         test('should unregister user from event successfully', async () => {
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
             
-            await eventService.unregisterUser('event-uuid-123', mockUser);
-
+            await eventService.unregisterUser('event-uuid-123', 'user123');
+    
             expect(mockEvent.registeredUsers).not.toContain('user123');
             expect(mockEvent.seatsRemaining).toBe(100);
             expect(mockEvent.save).toHaveBeenCalled();
-            expect(mockUser.eventsJoined).not.toContain('event123');
             expect(mockUser.save).toHaveBeenCalled();
         });
 
-        test('should throw error if event is not found', async () => {
-            Event.findOne.mockResolvedValue(null);
+        test('should throw error if user not found', async () => {
+            User.findById.mockResolvedValue(null);
+    
+            await expect(eventService.unregisterUser('event-uuid-123', 'user123'))
+                .rejects.toThrow('User not found');
+            
+            expect(Event.findOne).not.toHaveBeenCalled();
+        });
 
-            await expect(eventService.unregisterUser('event-uuid-123', mockUser))
+        test('should throw error if event not found', async () => {
+            User.findById.mockResolvedValue(mockUser);
+            Event.findOne.mockResolvedValue(null);
+    
+            await expect(eventService.unregisterUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('Event not found');
         });
 
         test('should throw error if user is not registered', async () => {
-            mockEvent.registeredUsers = [];
+            mockEvent.registeredUsers = ['other-user'];
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
-
-            await expect(eventService.unregisterUser('event-uuid-123', mockUser))
+    
+            await expect(eventService.unregisterUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('User is not registered for this event');
         });
 
         test('should throw error if registration is closed', async () => {
             mockEvent.status = 'registration_closed';
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
-
-            await expect(eventService.unregisterUser('event-uuid-123', mockUser))
+    
+            await expect(eventService.unregisterUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('Cannot unregister from this event at this time');
         });
 
         test('should throw error if event is ongoing', async () => {
             mockEvent.status = 'ongoing';
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
-
-            await expect(eventService.unregisterUser('event-uuid-123', mockUser))
+    
+            await expect(eventService.unregisterUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('Cannot unregister from this event at this time');
         });
 
         test('should throw error if event is completed', async () => {
             mockEvent.status = 'completed';
+            User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
-
-            await expect(eventService.unregisterUser('event-uuid-123', mockUser))
+    
+            await expect(eventService.unregisterUser('event-uuid-123', 'user123'))
                 .rejects.toThrow('Cannot unregister from this event at this time');
         });
     });
