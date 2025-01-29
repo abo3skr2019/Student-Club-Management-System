@@ -42,25 +42,6 @@ connectDB();
 
 app.use(checkClubAdmin);
 
-app.use(async (req, res, next) => {
-    if (req.user) {
-        try {
-            if (req.user.role === 'ClubAdmin') {
-                const Club = require('./backend/models/Club');
-                const club = await Club.findOne({ clubAdmin: req.user._id });
-                if (club) {
-                    req.user.clubUUID = club.uuid;
-                }
-            }
-        } catch (err) {
-            console.error('Error fetching club UUID:', err);
-        }
-    }
-    res.locals.user = req.user || null;
-    next();
-});
-
-
 // LAYOUTS
 app.use(expressLayouts);
 // Set the default layout
