@@ -42,6 +42,8 @@ connectDB();
 
 app.use(checkClubAdmin);
 
+
+
 // LAYOUTS
 app.use(expressLayouts);
 // Set the default layout
@@ -49,14 +51,12 @@ app.set('layout', 'layouts/base-layout'); // header-layout is the default layout
 // Set view engine to ejs (if not already set)
 app.set('view engine', 'ejs');
 
-// header-layout routes
 app.get('/', (req, res) => {
     res.render('index', { currentPage: 'index' });
 });
 
 
 
-// other routes that need to be labeled under the correct layout
 app.get('/events', (req, res) => res.render('events'));
 app.get('/event-admin-view', (req, res) => res.render('event-admin-view'));
 app.get('/event-user-view', (req, res) => res.render('event-user-view'));
