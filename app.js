@@ -9,6 +9,7 @@ const connectDB = require('./backend/config/db');
 const SessionDBStore = require('connect-mongo');
 
 const expressLayouts = require('express-ejs-layouts');
+const { checkClubAdmin } = require("./backend/middleware/CheckClubAdmin");
 
 
 // Initialize environment variables from .env file
@@ -39,16 +40,16 @@ app.use(passport.session());
 // Connect to database
 connectDB();
 
-// Middleware used to attach user to res.locals for dynamic header changes
+app.use(checkClubAdmin);
+
 app.use(async (req, res, next) => {
     if (req.user) {
         try {
-            // If user is a ClubAdmin, find their club
             if (req.user.role === 'ClubAdmin') {
                 const Club = require('./backend/models/Club');
                 const club = await Club.findOne({ clubAdmin: req.user._id });
                 if (club) {
-                    req.user.clubUUID = club.uuid;  // Add the UUID to the user object
+                    req.user.clubUUID = club.uuid;
                 }
             }
         } catch (err) {
@@ -72,14 +73,7 @@ app.get('/', (req, res) => {
     res.render('index', { currentPage: 'index' });
 });
 
-app.get('/login', (req, res) => {
-    res.render('login', {
-        title: "وصل - تسجيل الدخول",
-        HeaderOrSidebar: 'header',
-        extraCSS: '<link href="/css/login.css" rel="stylesheet">',
-        currentPage: 'login'
-    });
-});
+
 
 // other routes that need to be labeled under the correct layout
 app.get('/events', (req, res) => res.render('events'));
