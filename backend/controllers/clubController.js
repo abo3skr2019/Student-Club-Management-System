@@ -307,6 +307,63 @@ const assignClubAdmin = async (req, res) => {
     }
 }
 
+const renderDashboard = async (req, res) => {
+    try {
+        const club = await Club.findOne({ uuid: req.params.clubId })
+            .populate('clubAdmin', 'displayName email');
+
+        if (!club) {
+            return res.status(404).render('error', {
+                message: 'Club not found',
+                user: req.user
+            });
+        }
+
+        res.render('club-dashboard', {
+            title: `وصل - لوحة تحكم ${club.name}`,
+            HeaderOrSidebar: 'sidebar',
+            extraCSS: '<link href="/css/club-dashboard.css" rel="stylesheet">',
+            currentPage: 'club-dashboard',
+            club: club,
+            error: null
+        });
+    } catch (err) {
+        res.status(500).render('error', {
+            message: 'Error loading club dashboard',
+            user: req.user
+        });
+    }
+};
+
+const renderEventCreation = async (req, res) => {
+    try {
+        const club = await Club.findOne({ uuid: req.params.clubId })
+            .populate('clubAdmin', 'displayName email');
+
+        if (!club) {
+            return res.status(404).render('error', {
+                message: 'Club not found',
+                user: req.user
+            });
+        }
+
+        res.render('event-creation', {
+            title: `وصل - إنشاء فعالية`,
+            HeaderOrSidebar: 'sidebar',
+            extraCSS: '<link href="/css/event-creation.css" rel="stylesheet">',
+            currentPage: 'event-creation',
+            club: club,
+            error: null
+        });
+    } catch (err) {
+        res.status(500).render('error', {
+            message: 'Error loading event creation form',
+            user: req.user
+        });
+    }
+}
+
+
 module.exports = {
     getAllClubs,
     getClubById,
@@ -315,5 +372,7 @@ module.exports = {
     renderEditClubForm,
     updateClub,
     renderAssignClubAdmin,
-    assignClubAdmin
+    assignClubAdmin,
+    renderDashboard,
+    renderEventCreation
 }
