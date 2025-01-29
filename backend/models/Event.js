@@ -10,8 +10,7 @@ const EventSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: true,
-        index: true
+        required: true
     },
     description: {
         type: String,
@@ -84,10 +83,5 @@ EventSchema.pre('save', function(next) {
     }
     next();
 });
-
-EventSchema.index({ eventStart: 1, status: 1 });
-EventSchema.index({ club: 1, status: 1 });
-EventSchema.index({ registeredUsers: 1, status: 1 });
-EventSchema.index({ status: 1, seatsRemaining: 1 });
 
 module.exports = mongoose.model('Event', EventSchema);
