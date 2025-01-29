@@ -9,7 +9,6 @@ router.get('/create', isAuthenticated, isAdmin, clubController.renderCreateClubF
 router.post('/create', isAuthenticated, isAdmin, clubController.createClub);
 
 router.get('/:clubId/dashboard', isAuthenticated, isClubAdmin, clubController.renderDashboard);
-router.get('/:clubId/dashboard/event-creation', isAuthenticated, isClubAdmin, clubController.renderEventCreation);
 
 router.get('/:clubId/edit', isAuthenticated, isClubAdmin, clubController.renderEditClubForm);
 router.post('/:clubId/edit', isAuthenticated, isClubAdmin, clubController.updateClub);
