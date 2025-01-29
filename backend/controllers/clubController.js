@@ -335,35 +335,6 @@ const renderDashboard = async (req, res) => {
     }
 };
 
-const renderEventCreation = async (req, res) => {
-    try {
-        const club = await Club.findOne({ uuid: req.params.clubId })
-            .populate('clubAdmin', 'displayName email');
-
-        if (!club) {
-            return res.status(404).render('error', {
-                message: 'Club not found',
-                user: req.user
-            });
-        }
-
-        res.render('event-creation', {
-            title: `وصل - إنشاء فعالية`,
-            HeaderOrSidebar: 'sidebar',
-            extraCSS: '<link href="/css/event-creation.css" rel="stylesheet">',
-            currentPage: 'event-creation',
-            club: club,
-            error: null
-        });
-    } catch (err) {
-        res.status(500).render('error', {
-            message: 'Error loading event creation form',
-            user: req.user
-        });
-    }
-}
-
-
 module.exports = {
     getAllClubs,
     getClubById,
@@ -374,5 +345,4 @@ module.exports = {
     renderAssignClubAdmin,
     assignClubAdmin,
     renderDashboard,
-    renderEventCreation
 }
