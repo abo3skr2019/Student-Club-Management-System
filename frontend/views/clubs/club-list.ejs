@@ -1,17 +1,14 @@
-<div class="container py-5 mt-5"> <!-- Add mt-5 for margin-top -->
-    <!-- Page Header -->
+<div class="container py-5 mt-5">
     <header class="text-center mb-5">
         <h1 class="display-4 fw-bold">الأندية</h1>
     </header>
 
-    <!-- Create Club Button (Conditional) -->
     <% if (user && user.role === 'Admin') { %>
         <div class="text-center mb-4">
             <a href="/clubs/create" class="btn btn-primary btn-lg">إنشاء نادي جديد</a>
         </div>
     <% } %>
 
-    <!-- Clubs List -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         <% clubs.forEach(club => { %>
             <div class="col">

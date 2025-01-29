@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= typeof title !== 'undefined' ? title : 'وصل' %></title>
-    <!-- Bootstrap RTL CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-    <!-- Custom CSS -->
     <link href="/css/partials/footer.css" rel="stylesheet">
     <link href="/css/partials/background.css" rel="stylesheet">
     <%- typeof HeaderOrSidebar !== 'undefined' && HeaderOrSidebar === 'sidebar' ? '<link href="/css/partials/sidebar.css" rel="stylesheet">' : '<link href="/css/partials/header.css" rel="stylesheet">' %>
@@ -25,7 +23,6 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <%- typeof extraScripts !== 'undefined' ? extraScripts : '' %>

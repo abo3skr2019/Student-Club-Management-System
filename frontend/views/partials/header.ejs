@@ -20,19 +20,15 @@
                 </li>
             </ul>
 
-            <!-- Right Side: Admin Links and Profile Dropdown -->
             <div class="navbar-nav gap-3">
-                <!-- Club Admin Dashboard Button -->
                 <% if (user && user.role === 'ClubAdmin' && user.clubUUID) { %>
                     <a class="btn btn-outline-primary" href="/clubs/<%= user.clubUUID %>/dashboard">لوحة تحكم النادي</a>
                 <% } %>
 
-                <!-- Admin Clubs Button -->
                 <% if (user && user.role === 'Admin') { %>
                     <a class="btn btn-outline-primary" href="/clubs">إدارة الأندية</a>
                 <% } %>
 
-                <!-- Profile Dropdown or Login/Register Buttons -->
                 <% if (user) { %>
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -47,7 +43,6 @@
                         </ul>
                     </div>
                 <% } else { %>
-                    <!-- Show login and register buttons if user is not logged in (Visitor) -->
                     <a class="btn btn-outline-primary" href="/login">تسجيل الدخول</a>
                     <a class="btn btn-primary" href="/register">إنشاء حساب</a>
                 <% } %>
