@@ -1,6 +1,5 @@
 <div class="container main-container">
     <div class="profile-container">
-        <!-- Profile Header -->
         <div class="profile-header">
             <div class="profile-image-container">
                 <img src="<%= user.profileImage %>" alt="صورة الملف الشخصي" class="profile-image">
@@ -12,7 +11,6 @@
             <p class="profile-email"><%= user.email %></p>
         </div>
 
-        <!-- Profile Content -->
         <div class="profile-content">
             <div class="profile-section">
                 <h3 class="section-title">
@@ -35,7 +33,6 @@
                 </div>
             </div>
 
-            <!-- Events Sections -->
             <div class="events-section">
                 <h3 class="section-title">
                     <i class="fas fa-calendar-check"></i>
@@ -43,7 +40,6 @@
                 </h3>
 
                 <% if (false) { /* Replace with actual check for registered events */ %>
-                <!-- Events display will go here when implemented -->
                 <% } else { %>
                     <div class="coming-soon">
                         <i class="fas fa-clock coming-soon-icon"></i>
