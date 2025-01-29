@@ -2,11 +2,17 @@ const Event = require('../models/Event');
 const Club = require('../models/Club');
 const User = require('../models/User');
 const eventService = require('../services/eventService');
+const { updateEventStatus } = require('../../utils/eventScheduler');
 
 // Mock the models
 jest.mock('../models/Event');
 jest.mock('../models/Club');
 jest.mock('../models/User');
+
+// Mock the scheduler
+jest.mock('../../utils/eventScheduler', () => ({
+    updateEventStatus: jest.fn()
+}));
 
 describe('Event Service', () => {
     let mockEvent, mockClub, mockUser;
@@ -91,19 +97,44 @@ describe('Event Service', () => {
         const eventData = {
             name: 'New Event',
             description: 'Test Description',
-            seatsAvailable: 100
+            seatsAvailable: 100,
+            eventStart: new Date('2025-02-01'),
+            eventEnd: new Date('2025-02-02'),
+            registrationStart: new Date('2025-01-01'),
+            registrationEnd: new Date('2025-01-31')
         };
 
-        test('should create new event and update club', async () => {
+        test('should create new event, update club, and set initial status', async () => {
             Club.findOne.mockResolvedValue(mockClub);
-            const saveSpy = jest.spyOn(Event.prototype, 'save')
-                .mockResolvedValue({ ...eventData, _id: 'new-event-123' });
-
-            await eventService.createEvent(eventData, 'club-uuid-123');
-
+            
+            // Create a complete mock event with all required fields
+            const mockNewEvent = {
+                ...eventData,
+                _id: 'new-event-123',
+                uuid: 'event-uuid-123',
+                club: mockClub._id,
+                seatsRemaining: eventData.seatsAvailable,
+                status: 'upcoming',
+                save: jest.fn().mockResolvedValue(true)
+            };
+    
+            // Mock the Event constructor
+            const mockEventInstance = {
+                ...mockNewEvent,
+                save: jest.fn().mockResolvedValue(mockNewEvent)
+            };
+            Event.mockImplementation(() => mockEventInstance);
+    
+            // Mock findOne for updateEventStatus
+            Event.findOne.mockResolvedValue(mockEventInstance);
+    
+            const result = await eventService.createEvent(eventData, 'club-uuid-123');
+    
             expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club-uuid-123' });
-            expect(saveSpy).toHaveBeenCalled();
+            expect(mockEventInstance.save).toHaveBeenCalled();
             expect(mockClub.save).toHaveBeenCalled();
+            expect(updateEventStatus).toHaveBeenCalledWith('event-uuid-123');
+            expect(result).toEqual(mockEventInstance);
         });
 
         test('should throw error if club not found', async () => {
@@ -124,14 +155,15 @@ describe('Event Service', () => {
         test('should update event successfully', async () => {
             Event.findOne.mockResolvedValue(mockEvent);
             Event.findOneAndUpdate.mockResolvedValue({ ...mockEvent, ...updateData });
-
+    
             const result = await eventService.updateEvent('event-uuid-123', updateData);
-
+    
             expect(Event.findOneAndUpdate).toHaveBeenCalledWith(
                 { uuid: 'event-uuid-123' },
                 { $set: expect.objectContaining(updateData) },
                 { new: true, runValidators: true }
             );
+            expect(updateEventStatus).toHaveBeenCalledWith('event-uuid-123');
             expect(result).toMatchObject(updateData);
         });
 
