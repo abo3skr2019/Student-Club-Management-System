@@ -1,18 +1,47 @@
-<header class="header navbar navbar-expand-lg fixed-top bg-white">
+<header class="navbar navbar-expand-lg fixed-top" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
     <div class="container">
-        <a class="navbar-brand gradient-text" href="/">وصل</a>
+        <a class="navbar-brand fs-4 gradient-text" href="/">وصل</a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link <%= currentPage === 'events' ? 'active' : '' %>" aria-current="<%= currentPage === 'events' ? 'page' : 'false' %>" href="/events">الفعاليات</a>
+                    <a class="nav-link fw-500 px-3 <%= currentPage === 'events' ? 'active' : '' %>" aria-current="<%= currentPage === 'events' ? 'page' : 'false' %>" href="/events">الفعاليات</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-500 px-3 <%= currentPage === 'clubs' ? 'active' : '' %>" aria-current="<%= currentPage === 'clubs' ? 'page' : 'false' %>" href="/clubs">الأندية</a>
                 </li>
             </ul>
-            <div class="navbar-nav gap-2">
-                <a class="btn btn-outline-primary" href="/login">تسجيل الدخول</a>
-                <a class="btn btn-primary" href="/login">إنشاء حساب</a>
+
+            <div class="navbar-nav gap-3">
+                <% if (user && user.role === 'ClubAdmin' && user.clubUUID) { %>
+                    <a class="btn btn-outline-primary" href="/clubs/<%= user.clubUUID %>/dashboard">لوحة تحكم النادي</a>
+                <% } %>
+
+                <% if (user && user.role === 'Admin') { %>
+                    <a class="btn btn-outline-primary" href="/clubs">إدارة الأندية</a>
+                <% } %>
+
+                <% if (user) { %>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="<%= user.profileImage || '/path/to/default/image' %>" alt="Profile" class="rounded-circle" width="30" height="30">
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/profile">حسابي</a></li>
+                            <% if (user.role === 'ClubAdmin' && user.clubUUID) { %>
+                                <li><a class="dropdown-item" href="/clubs/<%= user.clubUUID %>/dashboard">لوحة تحكم النادي</a></li>
+                            <% } %>
+                            <li><a class="dropdown-item" href="/logout">تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                <% } else { %>
+                    <a class="btn btn-outline-primary" href="/login">تسجيل الدخول</a>
+                    <a class="btn btn-primary" href="/register">إنشاء حساب</a>
+                <% } %>
             </div>
         </div>
     </div>
