@@ -16,6 +16,12 @@
 
                     <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
                         <div class="d-grid gap-2 d-md-block mb-3">
+                            <a href="/clubs/<%= club.uuid %>/dashboard" class="btn btn-primary me-2">
+                                <i class="fas fa-tachometer-alt ms-2"></i>
+                                لوحة التحكم
+                            </a>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block mb-3">
                             <button type="button"
                                     class="btn btn-outline-secondary"
                                     data-bs-toggle="modal"
