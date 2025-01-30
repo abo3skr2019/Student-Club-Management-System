@@ -190,7 +190,7 @@ const updateClub = async (req, res) => {
             });
         }
         
-        res.redirect(`/clubs/${club.uuid}`);
+        res.redirect(`/clubs/${club.uuid}/dashboard`);
         
     } catch (err) {
         res.render('clubs/update-club', { 

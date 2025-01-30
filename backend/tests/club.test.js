@@ -278,7 +278,7 @@ describe('Club Controller', () => {
                 { $set: { name: 'Club 1', description: 'Desc 1', logo: 'logo1.jpg' } },
                 { new: true, runValidators: true }
             );
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid/dashboard');
         });
 
         test('should prevent updating to existing club name', async () => {

@@ -16,7 +16,6 @@
 
                     <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
                         <div class="d-grid gap-2 d-md-block mb-3">
-                            <a href="/clubs/<%= club.uuid %>/edit" class="btn btn-outline-primary">تعديل النادي</a>
                             <button type="button"
                                     class="btn btn-outline-secondary"
                                     data-bs-toggle="modal"
