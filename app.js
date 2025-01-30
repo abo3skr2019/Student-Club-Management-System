@@ -51,9 +51,8 @@ app.set('layout', 'layouts/base-layout'); // header-layout is the default layout
 // Set view engine to ejs (if not already set)
 app.set('view engine', 'ejs');
 
-app.get('/', (req, res) => {
-    res.render('index', { currentPage: 'index' });
-});
+// add styling for index page
+app.get('/', (req, res) => res.render('index', {extraCSS: '<link href="/css/index.css" rel="stylesheet">'}));
 
 
 

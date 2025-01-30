@@ -1,0 +1,122 @@
+
+:root {
+     --primary: #2962ff;
+     --primary-dark: #1e48cc;
+     --primary-light: #768fff;
+ }
+
+/* Utility Classes */
+.py-6 {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+}
+
+/* Hero Section */
+.hero {
+    background-color: #080c1a;
+    position: relative;
+}
+
+.hero-title {
+    background: linear-gradient(45deg, #fff, #e0e7ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-shape {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(-45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff) 0 0,
+    linear-gradient(-45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff) 20px 20px;
+    background-size: 40px 40px;
+    opacity: 0.1;
+}
+
+.floating-card {
+    left: 10%;
+    bottom: -20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Feature Icons */
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(41, 98, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+/* Stats Cards */
+.stat-card {
+    border-radius: 16px;
+    background: #fff;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+/* CTA Section */
+.cta-shape {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 49%, rgba(255,255,255,0.1) 50%, transparent 51%);
+    background-size: 20px 20px;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.8rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-outline-light:hover {
+    transform: translateY(-2px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991.98px) {
+    .py-6 {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+    }
+
+    .floating-card {
+        display: none;
+    }
+
+    .hero-image {
+        max-width: 80%;
+        margin: 0 auto;
+    }
+}
