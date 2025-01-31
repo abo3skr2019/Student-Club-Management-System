@@ -37,8 +37,8 @@ const validateEventInput = (req, res, next) => {
         }
 
         // Description validation
-        if (!description || description.trim().length < 20 || description.trim().length > 1000) {
-            errors.push('Description must be between 20 and 1000 characters');
+        if (!description || description.trim().length > 1000) {
+            errors.push('Description must be less than 1000 characters');
         }
 
         // Poster URL validation
