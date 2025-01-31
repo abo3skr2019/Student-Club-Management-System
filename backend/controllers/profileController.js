@@ -51,12 +51,18 @@ const renderProfile = async (req, res) => {
         if (!user) {
             return res.status(404).send('User not found');
         }
+
+        const userWithClubUUID = {
+            ...user.toObject(),
+            clubUUID: req.user.clubUUID
+        };
+
         res.render('profile', {
             title: "وصل - الملف الشخصي",
             HeaderOrSidebar: 'header',
             extraCSS: '<link href="/css/profile.css" rel="stylesheet">',
             currentPage: 'profile',
-            user
+            user: userWithClubUUID
         });
     } catch (err) {
         res.status(500).send('Server error');
