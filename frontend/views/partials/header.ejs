@@ -28,7 +28,7 @@
                 <% if (user) { %>
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="<%= user.profileImage || '/path/to/default/image' %>" alt="Profile" class="rounded-circle" width="30" height="30">
+                            <img src="<%= user.profileImage %>" alt="Profile" class="rounded-circle" width="30" height="30">
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/profile">حسابي</a></li>
@@ -40,7 +40,7 @@
                     </div>
                 <% } else { %>
                     <a class="btn btn-outline-primary" href="/login">تسجيل الدخول</a>
-                    <a class="btn btn-primary" href="/register">إنشاء حساب</a>
+                    <a class="btn btn-primary" href="/login">إنشاء حساب</a>
                 <% } %>
             </div>
         </div>
