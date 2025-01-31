@@ -106,12 +106,8 @@ document.getElementById('eventForm').addEventListener('submit', function(e) {
 
     let errorMessage = '';
 
-    // Check if dates are in the past
-    if (registrationStart < now) {
-        errorMessage = 'Registration start date cannot be in the past';
-    }
     // Check registration dates
-    else if (registrationEnd <= registrationStart) {
+    if (registrationEnd <= registrationStart) {
         errorMessage = 'Registration end date must be after registration start date';
     }
     // Check event dates
