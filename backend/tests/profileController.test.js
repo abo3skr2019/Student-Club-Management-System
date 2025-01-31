@@ -10,7 +10,7 @@ describe('profileController', () => {
 
     beforeEach(() => {
         req = {
-            user: { id: 'user123' },
+            user: { id: 'user123', clubUUID: 'test-club-uuid' },
             body: { firstName: 'John', lastName: 'Doe' }
         };
         res = {
@@ -71,7 +71,14 @@ describe('profileController', () => {
 
     describe('renderProfile', () => {
         test('should render profile with user data and additional properties', async () => {
-            const mockUser = { firstName: 'Test', lastName: 'User' };
+            const mockUser = {
+                firstName: 'Test',
+                lastName: 'User',
+                toObject: jest.fn().mockReturnValue({
+                    firstName: 'Test',
+                    lastName: 'User'
+                })
+            };
             User.findById.mockResolvedValue(mockUser);
 
             await profileController.renderProfile(req, res);
@@ -81,7 +88,11 @@ describe('profileController', () => {
                 HeaderOrSidebar: 'header',
                 extraCSS: '<link href="/css/profile.css" rel="stylesheet">',
                 currentPage: 'profile',
-                user: mockUser
+                user: {
+                    firstName: 'Test',
+                    lastName: 'User',
+                    clubUUID: 'test-club-uuid'
+                }
             });
         });
 
