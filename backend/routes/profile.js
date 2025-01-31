@@ -8,16 +8,15 @@ const profileController = require('../controllers/profileController');
 router.get('/update-profile', isAuthenticated, profileController.renderUpdateProfileForm);
 
 // Handle the profile update form submission
-router.post('/update-profile',isAuthenticated,validateProfileInput, profileController.updateProfile);
+router.post('/update-profile', isAuthenticated, validateProfileInput, profileController.updateProfile);
 
 // Render the logged-in user's profile
 router.get('/profile', isAuthenticated, profileController.renderProfile);
 
-router.get('/delete-account', isAuthenticated, (req, res) => {
-    res.render('delete-account');
-});
+// Render delete account page
+router.get('/delete-account', isAuthenticated, profileController.renderDeleteAccount);
 
+// Handle account deletion
 router.post('/delete-account', isAuthenticated, profileController.deleteAccount);
-
 
 module.exports = router;

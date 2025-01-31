@@ -97,14 +97,21 @@ describe('Club Controller', () => {
     describe('getClubById', () => {
         test('should render detail view with specific club', async () => {
             const mockClub = {
-                _id: '1',
+                _id: 'club123',
                 uuid: 'club123-uuid',
                 name: 'Test Club',
                 description: 'Test Description',
-                logo: 'test-logo.jpg'
+                logo: 'test-logo.jpg',
+                clubAdmin: {
+                    _id: 'admin123',
+                    displayName: 'Admin Name',
+                    email: 'admin@test.com'
+                }
             };
 
-            // Mock populate chain
+            // Setup req.query in your test
+            req.query = {}; // This ensures req.query.error and req.query.email are undefined
+
             Club.findOne.mockReturnValue({
                 populate: jest.fn().mockImplementation(() => ({
                     populate: jest.fn().mockResolvedValue(mockClub)
@@ -116,7 +123,9 @@ describe('Club Controller', () => {
             expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
             expect(res.render).toHaveBeenCalledWith('clubs/club-details', {
                 club: mockClub,
-                user: req.user
+                user: req.user,
+                error: undefined,
+                email: undefined
             });
         });
 
@@ -275,7 +284,7 @@ describe('Club Controller', () => {
                 { $set: { name: 'Club 1', description: 'Desc 1', logo: 'logo1.jpg' } },
                 { new: true, runValidators: true }
             );
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid/dashboard');
         });
 
         test('should prevent updating to existing club name', async () => {
@@ -373,7 +382,7 @@ describe('Club Controller', () => {
             };
             jest.clearAllMocks();
         });
-    
+
         test('should assign new admin and redirect to club detail', async () => {
             const mockClub = {
                 _id: 'club123',
@@ -382,7 +391,7 @@ describe('Club Controller', () => {
                 clubAdmin: 'oldAdminId',
                 save: jest.fn().mockResolvedValue(true)
             };
-    
+
             const mockNewAdmin = {
                 _id: 'newAdminId',
                 email: 'newadmin@test.com',
@@ -391,7 +400,7 @@ describe('Club Controller', () => {
                 role: 'Member',
                 save: jest.fn().mockResolvedValue(true)
             };
-    
+
             const mockOldAdmin = {
                 _id: 'oldAdminId',
                 clubsManaged: ['club123'],
@@ -402,43 +411,33 @@ describe('Club Controller', () => {
             Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(mockNewAdmin);
             User.findById.mockResolvedValue(mockOldAdmin);
-    
+
             await clubController.assignClubAdmin(req, res);
 
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?success=admin_assigned');
         });
-    
+
         test('should render error view for invalid email', async () => {
             req.body = {};
             await clubController.assignClubAdmin(req, res);
 
-            expect(res.render).toHaveBeenCalledWith('error', {
-                message: 'Email not valid',
-                user: req.user
-            });
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?error=invalid_email&email=undefined');
         });
 
         test('should render error view for invalid email format', async () => {
             req.body.email = 'invalid-email';
             await clubController.assignClubAdmin(req, res);
 
-            expect(res.render).toHaveBeenCalledWith('error', {
-                message: 'Email not valid',
-                user: req.user
-            });
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?error=invalid_email&email=invalid-email');
         });
-    
+
         test('should render error view when club not found', async () => {
             Club.findOne.mockResolvedValue(null);
             await clubController.assignClubAdmin(req, res);
 
-            expect(Club.findOne).toHaveBeenCalledWith({ uuid: 'club123-uuid' });
-            expect(res.render).toHaveBeenCalledWith('error', {
-                message: 'Club not found',
-                user: req.user
-            });
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?error=club_not_found');
         });
-    
+
         test('should render assign-admin view with error when user not found', async () => {
             const mockClub = {
                 _id: 'club123',
@@ -447,38 +446,30 @@ describe('Club Controller', () => {
             };
             Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(null);
-    
+
             await clubController.assignClubAdmin(req, res);
-    
-            expect(res.render).toHaveBeenCalledWith('clubs/assign-admin', {
-                club: mockClub,
-                error: 'User with this email not found',
-                user: req.user
-            });
+
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?error=user_not_found&email=newadmin%40test.com');
         });
-    
+
         test('should render assign-admin view when user is already admin', async () => {
             const mockClub = {
                 _id: 'club123',
                 uuid: 'club123-uuid',
                 clubAdmin: 'adminId'
             };
-    
+
             const mockExistingAdmin = {
                 _id: 'adminId',
                 email: 'newadmin@test.com'
             };
-    
+
             Club.findOne.mockResolvedValue(mockClub);
             User.findOne.mockResolvedValue(mockExistingAdmin);
-    
+
             await clubController.assignClubAdmin(req, res);
-    
-            expect(res.render).toHaveBeenCalledWith('clubs/assign-admin', {
-                club: mockClub,
-                error: 'User is already an admin of this club',
-                user: req.user
-            });
+
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?error=already_admin&email=newadmin%40test.com');
         });
     
         test('should handle missing old admin gracefully', async () => {
@@ -505,7 +496,7 @@ describe('Club Controller', () => {
         
             expect(mockNewAdmin.save).toHaveBeenCalled();
             expect(mockClub.save).toHaveBeenCalled();
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?success=admin_assigned');
         });
     
         test('should update role to Visitor for old admin with no other clubs', async () => {
@@ -539,7 +530,7 @@ describe('Club Controller', () => {
         
             expect(mockOldAdmin.role).toBe('Visitor');
             expect(mockOldAdmin.save).toHaveBeenCalled();
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?success=admin_assigned');
         });
 
         test('should preserve Admin role during reassignment', async () => {
@@ -572,7 +563,7 @@ describe('Club Controller', () => {
             await clubController.assignClubAdmin(req, res);
         
             expect(mockOldAdmin.role).toBe('Admin');
-            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid');
+            expect(res.redirect).toHaveBeenCalledWith('/clubs/club123-uuid?success=admin_assigned');
         });
     });
 });

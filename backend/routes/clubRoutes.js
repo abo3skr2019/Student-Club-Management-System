@@ -9,6 +9,9 @@ const { validateEventInput, validateEventDates } = require('../middleware/EventV
 // Protected routes - require authentication
 router.get('/create', isAuthenticated, isAdmin, clubController.renderCreateClubForm);
 router.post('/create', isAuthenticated, isAdmin, clubController.createClub);
+
+router.get('/:clubId/dashboard', isAuthenticated, isClubAdmin, clubController.renderDashboard);
+
 router.get('/:clubId/edit', isAuthenticated, isClubAdmin, clubController.renderEditClubForm);
 router.post('/:clubId/edit', isAuthenticated, isClubAdmin, clubController.updateClub);
 router.get('/:clubId/assign-admin', isAuthenticated, isClubAdmin, clubController.renderAssignClubAdmin);
