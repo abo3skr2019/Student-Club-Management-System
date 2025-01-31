@@ -28,11 +28,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Initialize session and passport
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secret',
-    resave: false,
-    saveUninitialized: false,
-    store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
-    cookie: {maxAge: 86400000} // 1 day
+secret: process.env.SESSION_SECRET || 'secret',
+resave: false,
+saveUninitialized: false,
+store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
+ cookie: {maxAge: 86400000} // 1 day
 }));
 app.use(passport.initialize());
 app.use(passport.session());
