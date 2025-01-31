@@ -38,7 +38,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Connect to database
-connectDB()
+connectDB();
 
 app.use(checkClubAdmin);
 
