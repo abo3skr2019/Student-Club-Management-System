@@ -33,7 +33,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Connect to database
-connectDB()
+connectDB();
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));
