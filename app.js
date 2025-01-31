@@ -56,7 +56,6 @@ app.get('/', (req, res) => res.render('index', {extraCSS: '<link href="/css/inde
 
 
 
-app.get('/events', (req, res) => res.render('events'));
 app.get('/event-admin-view', (req, res) => res.render('event-admin-view'));
 app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
