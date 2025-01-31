@@ -22,18 +22,18 @@ app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 // Initialize session and passport
-///app.use(session({
-//  secret: process.env.SESSION_SECRET || 'secret',
-//resave: false,
-//saveUninitialized: false,
-//store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
-//  cookie: {maxAge: 86400000} // 1 day
-//}));
-//app.use(passport.initialize());
-//app.use(passport.session());
+app.use(session({
+secret: process.env.SESSION_SECRET || 'secret',
+resave: false,
+saveUninitialized: false,
+store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
+ cookie: {maxAge: 86400000} // 1 day
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Connect to database
-//connectDB()
+connectDB()
 
 // Routes for EJS templates
 app.get('/', (req, res) => res.render('index'));

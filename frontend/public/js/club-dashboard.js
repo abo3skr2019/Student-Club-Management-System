@@ -1,30 +1,13 @@
-// JavaScript file for club dashboard functionality
+function toggleEdit() {
+    const form = document.getElementById('edit-club-form');
+    // Select all elements with IDs ending in "-display" or "-edit"
+    const displayElements = form.querySelectorAll('[id$="-display"]');
+    const editElements = form.querySelectorAll('[id$="-edit"]');  
+    const editButtons = document.getElementById('edit-buttons');
+    
+    // Toggle visibility of display and edit elements
+    displayElements.forEach(el => el.classList.toggle('d-none'));
+    editElements.forEach(el => el.classList.toggle('d-none'));
 
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Club dashboard script loaded");
-
-    // Function to save club info
-    function saveClubInfo() {
-        // Get data from fields
-        const clubName = document.getElementById('clubName').value;
-        const clubDescription = document.getElementById('clubDescription').value;
-        const clubSupervisor = document.getElementById('clubSupervisor').value;
-
-        // Log the data (this is where you would send it to the server via an API)
-        console.log({
-            clubName,
-            clubDescription,
-            clubSupervisor
-        });
-
-        // Close the modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('editClubModal'));
-        modal.hide();
-    }
-
-    // Attach saveClubInfo to the save button
-    const saveButton = document.querySelector("button[onclick='saveClubInfo()']");
-    if (saveButton) {
-        saveButton.addEventListener("click", saveClubInfo);
-    }
-});
+    editButtons.classList.toggle('d-none');
+}

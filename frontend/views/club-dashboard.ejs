@@ -3,130 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم النادي</title>
+    <title><%= title %></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- extraCSS %>
 </head>
-<body class="bg-light">
-    <div class="container-fluid">
-        <div class="row">
-            <!-- المحتوى الرئيسي -->
-            <div class="col-12 col-md-12 p-4">
+<body class="bg-body-tertiary">
 
-                <!-- لوحة تحكم النادي -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h2 class="card-title fw-bold">لوحة تحكم النادي</h2>
-                            <div class="btn-group">
-                                <!-- زر تعديل معلومات النادي -->
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editClubModal">
-                                    <i class="fas fa-edit ms-2"></i> تعديل معلومات النادي
-                                </button>
-                                <!-- زر تعيين مشرف جديد -->
-                                <button class="btn btn-secondary">
-                                    <i class="fas fa-user-plus ms-2"></i> تعيين مشرف جديد
-                                </button>
+<div class="bg-primary bg-opacity-10 py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            
+            <div class="col-auto">
+                <img src="<%= club.logo %>" alt="شعار النادي" class="rounded-circle border border-4 border-white shadow" width="120" height="120">
+            </div>
+            
+            <div class="col">
+                <h1 class="display-6 fw-bold mb-2"><%= club.name %></h1>
+                <p class="lead mb-0 text-muted">لوحة التحكم الإدارة</p>
+            </div>
+            
+            <div class="col-auto">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary px-4" onclick="toggleEdit()">
+                        <i class="fas fa-edit me-2"></i>
+                        تعديل معلومات النادي
+                    </button>
+                    <a href="/events/create/<%= club.uuid %>" class="btn btn-primary px-4">
+                        <i class="fas fa-plus me-2"></i>
+                        إضافة فعالية
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    
+    <div class="row g-4 mb-5">
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                            <i class="fas fa-users text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">إجمالي الأعضاء</h6>
+                            <h3 class="fw-bold mb-0"><%= membersCount %></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-3 me-3">
+                            <i class="fas fa-calendar-check text-success fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">الفعاليات النشطة</h6>
+                            <h3 class="fw-bold mb-0"><%= activeEventsCount %></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-3 me-3">
+                            <i class="fas fa-star text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">تقييم النادي</h6>
+                            <h3 class="fw-bold mb-0"><%= clubRating %></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Club information section -->
+    <div class="card border-0 shadow-sm rounded-3 mb-5">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    معلومات النادي
+                </h5>
+            </div>
+
+            
+            <form id="edit-club-form" action="/clubs/<%= club.uuid %>/edit" method="POST">
+                <div class="row g-4">
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">اسم النادي</label>
+                        <div class="bg-light rounded-3 p-3" id="club-name-display"><%= club.name %></div>
+                        <input type="text" class="form-control d-none" id="club-name-edit" name="name" value="<%= club.name %>">
+                    </div>
+
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">شعار النادي</label>
+                        <div class="bg-light rounded-3 p-3" id="club-logo-display"><%= club.logo %></div>
+                        <input type="url" class="form-control d-none" id="club-logo-edit" name="logo" value="<%= club.logo %>">
+                    </div>
+
+                    
+                    <div class="col-12">
+                        <label class="form-label fw-bold">وصف النادي</label>
+                        <div class="bg-light rounded-3 p-3" id="club-description-display"><%= club.description %></div>
+                        <textarea class="form-control d-none" id="club-description-edit" name="description" rows="3"><%= club.description %></textarea>
+                    </div>
+                </div>
+
+                
+                <div class="mt-4 d-none" id="edit-buttons">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="fas fa-check me-2"></i>
+                            حفظ التغييرات
+                        </button>
+                        <button type="button" class="btn btn-light px-4" onclick="toggleEdit()">
+                            إلغاء
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Active events section -->
+    <h5 class="fw-bold mb-4">
+        <i class="fas fa-calendar-alt text-primary me-2"></i>
+        الفعاليات النشطة
+    </h5>
+    <div class="row g-4">
+        <% if (events && events.length > 0) { %>
+            <% events.forEach(function(event) { %>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="<%= event.poster %>" class="card-img-top" alt="<%= event.name %>" style="height: 200px; object-fit: cover;">
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    <%= new Date(event.eventStart).toLocaleDateString('ar-SA') %>
+                                </span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                                <div class="d-flex justify-content-between align-items-center text-white">
+                                    <span>
+                                        <i class="fas fa-clock me-2"></i>
+                                        باقي على الفعالية
+                                    </span>
+                                    <span class="badge bg-danger px-3">
+                                        <%= Math.ceil((new Date(event.eventStart) - new Date()) / (1000 * 60 * 60 * 24)) %> يوم
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3"><%= event.name %></h5>
+                            <p class="text-muted mb-4"><%= event.description %></p>
+                            <!-- Event action buttons -->
+                            <div class="d-flex gap-2">
+                                <a href="/events/<%= event.uuid %>/edit" class="btn btn-light flex-grow-1">
+                                    <i class="fas fa-edit me-1"></i>
+                                    تعديل
+                                </a>
+                                <form action="/events/<%= event.uuid %>/delete" method="POST" class="flex-grow-1">
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        <i class="fas fa-trash me-1"></i>
+                                        حذف
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- إدارة الفعاليات -->
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2 class="card-title fw-bold">إدارة الفعاليات</h2>
-                            <!-- زر إنشاء فعالية جديدة -->
-                            <button class="btn btn-success">
-                                <i class="fas fa-plus-circle ms-2"></i> إنشاء فعالية جديدة
-                            </button>
-                        </div>
-
-                        <!-- الجدول -->
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered text-center align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>اسم الفعالية</th>
-                                        <th>التاريخ</th>
-                                        <th>المسجلون</th>
-                                        <th>الحالة</th>
-                                        <th>إجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- تكرار البيانات من خلال EJS -->
-                                    <% events.forEach(event => { %>
-                                    <tr>
-                                        <td><%= event.name %></td>
-                                        <td><%= event.date %></td>
-                                        <td><%= event.registered %> / <%= event.capacity %></td>
-                                        <td>
-                                            <% if (event.status === 'open') { %>
-                                                <span class="badge bg-success">مفتوح</span>
-                                            <% } else { %>
-                                                <span class="badge bg-danger">منتهي</span>
-                                            <% } %>
-                                        </td>
-                                        <td>
-                                            <!-- زر تعديل -->
-                                            <button class="btn btn-primary btn-sm">
-                                                <i class="fas fa-edit"></i> تعديل
-                                            </button>
-                                            <!-- زر عرض المشاركين -->
-                                            <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#participantsModal">
-                                                عرض المشاركين
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <% }) %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="col-12">
+                <p class="text-center text-muted">لا توجد فعاليات نشطة حالياً.</p>
             </div>
-        </div>
+        <% } %>
     </div>
+</div>
 
-    <!-- نافذة تعديل معلومات النادي -->
-    <div class="modal fade" id="editClubModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">تعديل معلومات النادي</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editClubForm">
-                        <div class="mb-3">
-                            <!-- اسم النادي -->
-                            <label for="clubName" class="form-label">اسم النادي</label>
-                            <input type="text" class="form-control" id="clubName" placeholder="أدخل اسم النادي" value="<%= club.name %>">
-                        </div>
-                        <div class="mb-3">
-                            <!-- وصف النادي -->
-                            <label for="clubDescription" class="form-label">وصف النادي</label>
-                            <textarea class="form-control" id="clubDescription" rows="3" placeholder="أدخل وصف النادي"><%= club.description %></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <!-- اسم المشرف -->
-                            <label for="clubSupervisor" class="form-label">اسم المشرف</label>
-                            <input type="text" class="form-control" id="clubSupervisor" placeholder="أدخل اسم المشرف" value="<%= club.supervisor %>">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                    <button type="submit" class="btn btn-primary" onclick="saveClubInfo()">حفظ التعديلات</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- فصل الجافاسكريبت إلى ملف منفصل -->
-    <script src="/js/club-dashboard.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/club-dashboard.js"></script>
 </body>
 </html>
