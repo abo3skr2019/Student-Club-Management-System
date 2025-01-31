@@ -14,6 +14,7 @@ const getAllEvents = async () => {
             .sort({ eventStart: 1 })
             .lean();
     } catch (error) {
+        console.error(error);
         throw error;
     }
 };
