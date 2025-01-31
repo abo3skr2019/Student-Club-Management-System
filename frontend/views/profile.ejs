@@ -1,0 +1,66 @@
+<div class="container py-4">
+    <div class="card shadow-lg mx-auto" style="max-width: 800px; border-radius: 1rem; overflow: hidden;">
+        <div class="card-header text-white text-center position-relative" style="background: linear-gradient(45deg, #2962ff, #3d5afe); padding: 3rem 2rem 2rem;">
+            <div class="position-relative mx-auto" style="width: 150px; height: 150px;">
+                <img src="<%= user.profileImage %>" alt="صورة الملف الشخصي" class="rounded-circle border border-3 border-white shadow-sm w-100 h-100 object-fit-cover">
+            </div>
+            <h1 class="mt-3 h4"><%= user.firstName %> <%= user.lastName %></h1>
+            <p class="opacity-75"><%= user.email %></p>
+        </div>
+        <div class="card-body p-4">
+            <div class="mb-4 border-bottom pb-3">
+                <h3 class="h5 text-primary d-flex align-items-center gap-2">
+                    <i class="fas fa-user-circle"></i> المعلومات الشخصية
+                </h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded">
+                            <label class="text-muted small">الاسم الأول</label>
+                            <p class="mb-0 fw-semibold"><%= user.firstName %></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded">
+                            <label class="text-muted small">الاسم الأخير</label>
+                            <p class="mb-0 fw-semibold"><%= user.lastName %></p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-light p-3 rounded">
+                            <label class="text-muted small">البريد الإلكتروني</label>
+                            <p class="mb-0 fw-semibold"><%= user.email %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4 border-bottom pb-3">
+                <h3 class="h5 text-primary d-flex align-items-center gap-2">
+                    <i class="fas fa-calendar-check"></i> الفعاليات المسجل فيها
+                </h3>
+                <div class="text-center bg-light p-4 rounded">
+                    <i class="fas fa-clock text-primary display-4 mb-2"></i>
+                    <h4 class="text-primary">قريباً</h4>
+                    <p class="opacity-75">سيتم إضافة هذه الميزة قريباً</p>
+                </div>
+            </div>
+            <div class="mb-4 border-bottom pb-3">
+                <h3 class="h5 text-primary d-flex align-items-center gap-2">
+                    <i class="fas fa-history"></i> الفعاليات السابقة
+                </h3>
+                <div class="text-center bg-light p-4 rounded">
+                    <i class="fas fa-clock text-primary display-4 mb-2"></i>
+                    <h4 class="text-primary">قريباً</h4>
+                    <p class="opacity-75">سيتم إضافة هذه الميزة قريباً</p>
+                </div>
+            </div>
+            <div class="d-grid gap-3 border-top pt-3">
+                <a href="/update-profile" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
+                    <i class="fas fa-edit"></i> تعديل الملف الشخصي
+                </a>
+                <a href="/delete-account" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
+                    <i class="fas fa-trash-alt"></i> حذف الحساب
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

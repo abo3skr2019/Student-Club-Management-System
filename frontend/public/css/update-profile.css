@@ -1,0 +1,42 @@
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #dfe2e3;
+}
+
+.form-control:focus {
+    border-color: #2962ff;
+    box-shadow: 0 0 0 0.2rem rgba(41, 98, 255, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #2962ff, #3d5afe);
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #3d5afe, #2962ff);
+    transform: scale(1.02);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+    background: linear-gradient(45deg, #2962ff, #3d5afe);
+}
+
+.link-primary {
+    color: #2962ff;
+}
+
+.link-primary:hover {
+    text-decoration: underline !important;
+}
+
+.fw-500 {
+    font-weight: 500;
+}
+
+.text-gray-700 {
+    color: #495057;
+}

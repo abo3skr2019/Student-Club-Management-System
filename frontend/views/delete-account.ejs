@@ -1,0 +1,40 @@
+<div class="container py-4 mb-4 position-relative overflow-auto h-100">
+    <br>
+    <div class="mx-auto my-4 p-4 bg-white rounded shadow-sm" style="max-width: 450px;">
+        <div class="p-4 rounded mb-4" style="background-color: #fff3f3; border: 1px solid #ffcdd2;">
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle fs-2 mb-3 text-danger"></i>
+                <h1>حذف الحساب</h1>
+                <p class="mb-0">هذا الإجراء نهائي ولا يمكن التراجع عنه</p>
+            </div>
+        </div>
+
+        <div class="alert alert-danger mb-4" role="alert">
+            <h4 class="alert-heading">تنبيه مهم!</h4>
+            <p>عند حذف حسابك:</p>
+            <ul class="pe-4 mb-0">
+                <li>سيتم حذف جميع بياناتك بشكل نهائي</li>
+                <li>لن تتمكن من استرجاع حسابك مرة أخرى</li>
+            </ul>
+        </div>
+
+        <form id="delete-account-form" action="/delete-account" method="POST">
+            <div class="my-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                    <label class="form-check-label" for="confirmDelete">
+                        نعم، أنا متأكد من أنني أريد حذف حسابي نهائياً
+                    </label>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-danger d-flex align-items-center gap-2" id="deleteButton">
+                    <i class="fas fa-trash-alt"></i>
+                    حذف الحساب نهائياً
+                </button>
+                <a href="/profile" class="btn btn-secondary d-flex align-items-center">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>

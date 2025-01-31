@@ -1,0 +1,99 @@
+<div class="container py-5 mt-5">
+    <!-- Page Header -->
+    <header class="text-center mb-5">
+        <h1 class="display-4 fw-bold"><%= club.name %></h1>
+    </header>
+
+    <div class="card shadow-sm">
+        <div class="row g-0">
+            <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+                <img src="<%= club.logo %>" alt="<%= club.name %>" class="img-fluid rounded-start" style="max-height: 300px; object-fit: contain;">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p class="card-text lead"><%= club.description %></p>
+                    <p class="card-text text-muted">المشرف: <%= club.clubAdmin.displayName %></p>
+
+                    <% if (user && (user.role === 'Admin' || user.clubsManaged.some(id => id.toString() === club._id.toString()))) { %>
+                        <div class="d-grid gap-2 d-md-block mb-3">
+                            <a href="/clubs/<%= club.uuid %>/dashboard" class="btn btn-primary me-2">
+                                <i class="fas fa-tachometer-alt ms-2"></i>
+                                لوحة التحكم
+                            </a>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block mb-3">
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#assignAdminModal">
+                                تعيين مشرف جديد
+                            </button>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assignAdminModal" tabindex="-1" aria-labelledby="assignAdminModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignAdminModalLabel">تعيين مشرف جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/clubs/<%= club.uuid %>/assign-admin" method="POST">
+                <div class="modal-body">
+                    <% if (error) { %>
+                        <div class="alert alert-danger mb-3">
+                            <% switch(error) {
+                            case 'invalid_email': %>
+                            ❌ البريد الإلكتروني غير صحيح
+                            <% break;
+                            case 'user_not_found': %>
+                            ❌ المستخدم غير موجود
+                            <% break;
+                            case 'already_admin': %>
+                            ❌ المستخدم هو بالفعل مشرف لهذا النادي
+                            <% break;
+                            case 'assignment_failed': %>
+                            ❌ فشل تعيين المشرف
+                            <% break;
+                                default: %>
+                            ❌ حدث خطأ غير متوقع
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">البريد الإلكتروني للمشرف الجديد:</label>
+                        <input type="email"
+                               class="form-control"
+                               id="email"
+                               name="email"
+                               value="<%= email || '' %>"
+                               required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning">تعيين</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<% if (error) { %>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = new bootstrap.Modal('#assignAdminModal');
+            modal.show();
+
+            <% if (error === 'invalid_email' || error === 'user_not_found') { %>
+            document.getElementById('email').classList.add('is-invalid');
+            <% } %>
+        });
+    </script>
+<% } %>

@@ -1,0 +1,35 @@
+<div class="sidebar bg-white vh-100 position-fixed top-0 end-0 border-start overflow-hidden" role="navigation" aria-label="القائمة الجانبية">
+    <div class="text-center p-4 border-bottom">
+        <a class="sidebar-brand gradient-text text-decoration-none" href="/">وصل</a>
+    </div>
+
+    <div class="p-3">
+        <ul class="nav flex-column gap-2">
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'club-dashboard' ? 'active' : '' %>"
+                   href="/clubs/<%= club.uuid %>/dashboard"
+                   aria-current="<%= currentPage === 'club-dashboard' ? 'page' : 'false' %>">
+                    <i class="bi bi-house-door"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'event-creation' ? 'active' : '' %>"
+                   href="/clubs/<%= club.uuid %>/dashboard/event-creation"
+                   aria-current="<%= currentPage === 'event-creation' ? 'page' : 'false' %>">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>إنشاء فعالية</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-3 rounded-3 <%= currentPage === 'user-management' ? 'active' : '' %> disabled"
+                   href="#"
+                   aria-current="<%= currentPage === 'user-management' ? 'page' : 'false' %>"
+                   aria-disabled="true">
+                    <i class="bi bi-person"></i>
+                    <span>إدارة الأعضاء (قريبا)</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

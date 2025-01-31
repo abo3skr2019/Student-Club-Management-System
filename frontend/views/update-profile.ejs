@@ -1,0 +1,25 @@
+<div class="container">
+    <br>
+    <div class="mx-auto my-5 p-4 bg-white rounded shadow-sm" style="max-width: 450px;">
+        <h1>تحديث الملف الشخصي</h1>
+        <p>حياك الله!
+            <span class="emoji">👋</sp an> اسمك مضبوط؟ إذا تبيه كذا سو تخطي. وإذا فيه شيء تبي تعدله، عدله. وخلنا نكمل <span class="emoji">🚀</span>
+        </p>
+        <% if (!user) { %>
+            <p>يرجى <a href="/login" class="text-decoration-none link-primary">تسجيل الدخول</a> لتحديث ملفك الشخصي.</p>
+        <% } else { %>
+            <form action="/update-profile" method="POST">
+                <label for="firstName" class="form-label fw-500 text-gray-700">الاسم الأول:</label>
+                <input type="text" id="firstName" name="firstName" class="form-control mb-3 py-3" value="<%= user.firstName %>">
+
+                <label for="lastName" class="form-label fw-500 text-gray-700">الاسم الأخير:</label>
+                <input type="text" id="lastName" name="lastName" class="form-control mb-3 py-3" value="<%= user.lastName %>">
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">تحديث</button>
+                    <a href="/profile" class="btn btn-secondary">تخطي</a>
+                </div>
+            </form>
+        <% } %>
+    </div>
+</div>

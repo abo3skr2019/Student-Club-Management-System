@@ -1,0 +1,42 @@
+body {
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(45deg, #c82333, #dc3545);
+    transform: scale(1.02);
+}
+
+.btn-danger:active {
+    transform: scale(0.98);
+}
+
+.btn-danger:disabled {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    opacity: 0.65;
+    transform: none;
+}
+
+.btn-secondary {
+    background: linear-gradient(45deg, #6c757d, #5a6268);
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(45deg, #5a6268, #6c757d);
+    transform: scale(1.02);
+}
