@@ -1,54 +1,19 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وصل - تسجيل الدخول</title> <!-- Static title -->
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-4 w-50">
+        <div class="card-body text-center">
+            <h2 class="fw-bold text-primary mb-3">تسجيل الدخول</h2>
+            <p class="text-muted">يرجى تسجيل الدخول باستخدام حسابك</p>
 
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+            <a href="/auth/google" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 w-100 mb-3">
+                <i class="bi bi-google"></i>
+                تسجيل الدخول باستخدام Google
+            </a>
 
-    <!-- Custom CSS -->
-    <link href="/css/login.css" rel="stylesheet">
-    <link href="/css/partials/footer.css" rel="stylesheet">
-    <link href="/css/partials/header.css" rel="stylesheet">
-    <link href="/css/partials/background.css" rel="stylesheet">
-
-
-</head>
-<body class="background">
-
-<%- include('partials/header', { currentPage: 'login' }) %>
-
-
-<div class="container">
-    <div class="login-container">
-        <div class="brand">تسجيل الدخول</div>
-        <p class="text-center mb-4">يرجى تسجيل الدخول باستخدام حسابك</p>
-
-        <!-- Google Login Button -->
-        <a href="/auth/google" class="btn btn-primary w-100 mb-3">
-            <i class="fab fa-google icon"></i>
-            تسجيل الدخول باستخدام Google
-        </a>
-
-        <!-- GitHub Login Button -->
-        <a href="/auth/github" class="btn btn-outline w-100 mb-3">
-            <i class="fab fa-github icon"></i>
-            تسجيل الدخول باستخدام GitHub
-        </a>
-
-        <hr class="my-4">
+            <a href="/auth/github" class="btn btn-outline-primary btn-lg d-flex align-items-center justify-content-center gap-2 w-100 mb-3 disabled">
+                <i class="bi bi-github"></i>
+                تسجيل الدخول باستخدام GitHub (قريبا)
+            </a>
+        </div>
     </div>
 </div>
-
-<!-- footer -->
-<%- include('partials/footer') %>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

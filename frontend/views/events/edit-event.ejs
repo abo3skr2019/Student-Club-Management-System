@@ -1,0 +1,146 @@
+<%- include('../partials/header') %>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold mb-6">Edit Event</h1>
+
+        <% if (typeof error !== 'undefined') { %>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <form action="/events/<%= event.uuid %>/edit" method="POST" id="eventForm">
+            <div class="space-y-4">
+                <div>
+                    <label for="name" class="block text-gray-700 font-medium mb-2">Event Name</label>
+                    <input type="text" id="name" name="name" value="<%= event.name %>" required
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="description" class="block text-gray-700 font-medium mb-2">Description</label>
+                    <textarea id="description" name="description" rows="4" required
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"><%= event.description %></textarea>
+                </div>
+
+                <div>
+                    <label for="poster" class="block text-gray-700 font-medium mb-2">Poster URL</label>
+                    <input type="url" id="poster" name="poster" value="<%= event.poster %>" required
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label for="location" class="block text-gray-700 font-medium mb-2">Location</label>
+                    <input type="text" id="location" name="location" value="<%= event.location %>" required
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="registrationStart" class="block text-gray-700 font-medium mb-2">Registration Start</label>
+                        <input type="datetime-local" id="registrationStart" name="registrationStart" 
+                            value="<%= new Date(event.registrationStart).toISOString().slice(0, 16) %>" required
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="registrationEnd" class="block text-gray-700 font-medium mb-2">Registration End</label>
+                        <input type="datetime-local" id="registrationEnd" name="registrationEnd" 
+                            value="<%= new Date(event.registrationEnd).toISOString().slice(0, 16) %>" required
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="eventStart" class="block text-gray-700 font-medium mb-2">Event Start</label>
+                        <input type="datetime-local" id="eventStart" name="eventStart" 
+                            value="<%= new Date(event.eventStart).toISOString().slice(0, 16) %>" required
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="eventEnd" class="block text-gray-700 font-medium mb-2">Event End</label>
+                        <input type="datetime-local" id="eventEnd" name="eventEnd" 
+                            value="<%= new Date(event.eventEnd).toISOString().slice(0, 16) %>" required
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="seatsAvailable" class="block text-gray-700 font-medium mb-2">Available Seats</label>
+                    <input type="number" id="seatsAvailable" name="seatsAvailable" min="<%= event.registeredUsers.length %>" 
+                        value="<%= event.seatsAvailable %>" required
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <p class="text-sm text-gray-500 mt-1">Currently registered: <%= event.registeredUsers.length %></p>
+                </div>
+
+                <div>
+                    <label for="category" class="block text-gray-700 font-medium mb-2">Category</label>
+                    <select id="category" name="category" required
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="bootcamp" <%= event.category === 'bootcamp' ? 'selected' : '' %>>Bootcamp</option>
+                        <option value="workshop" <%= event.category === 'workshop' ? 'selected' : '' %>>Workshop</option>
+                        <option value="meeting" <%= event.category === 'meeting' ? 'selected' : '' %>>Meeting</option>
+                        <option value="hackathon" <%= event.category === 'hackathon' ? 'selected' : '' %>>Hackathon</option>
+                        <option value="seminar" <%= event.category === 'seminar' ? 'selected' : '' %>>Seminar</option>
+                        <option value="conference" <%= event.category === 'conference' ? 'selected' : '' %>>Conference</option>
+                        <option value="networking" <%= event.category === 'networking' ? 'selected' : '' %>>Networking</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                        Update Event
+                    </button>
+                    <a href="/events/<%= event.uuid %>" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('eventForm').addEventListener('submit', function(e) {
+    const registrationStart = new Date(document.getElementById('registrationStart').value);
+    const registrationEnd = new Date(document.getElementById('registrationEnd').value);
+    const eventStart = new Date(document.getElementById('eventStart').value);
+    const eventEnd = new Date(document.getElementById('eventEnd').value);
+
+    let errorMessage = '';
+
+    // Check registration dates
+    if (registrationEnd <= registrationStart) {
+        errorMessage = 'Registration end date must be after registration start date';
+    }
+    // Check event dates
+    else if (eventEnd <= eventStart) {
+        errorMessage = 'Event end date must be after event start date';
+    }
+    // Check if event starts after registration ends
+    else if (eventStart <= registrationEnd) {
+        errorMessage = 'Event must start after registration period ends';
+    }
+
+    if (errorMessage) {
+        e.preventDefault();
+        alert(errorMessage);
+    }
+});
+
+// Update min values based on previous date selections
+document.getElementById('registrationStart').addEventListener('change', function() {
+    document.getElementById('registrationEnd').min = this.value;
+});
+
+document.getElementById('registrationEnd').addEventListener('change', function() {
+    document.getElementById('eventStart').min = this.value;
+});
+
+document.getElementById('eventStart').addEventListener('change', function() {
+    document.getElementById('eventEnd').min = this.value;
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,40 +1,6 @@
-/* General body styles */
 body {
     font-family: 'Tajawal', sans-serif;
     background-color: #dfe2e3;
-}
-
-/* Container styling */
-.login-container {
-    max-width: 450px;
-    margin: 5rem auto;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Branding */
-.brand {
-    font-weight: 700;
-    font-size: 2rem;
-    color: #2962ff;
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-/* Form inputs */
-.form-label {
-    font-weight: 500;
-    color: #495057;
-}
-
-.form-control {
-    border-radius: 0.25rem;
-    border: 1px solid #ced4da;
-    padding: 0.75rem;
-    font-size: 1rem;
-    transition: all 0.2s ease-in-out;
 }
 
 .form-control:focus {
@@ -42,16 +8,10 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(41, 98, 255, 0.25);
 }
 
-/* Buttons */
 .btn-primary {
     background: linear-gradient(45deg, #2962ff, #3d5afe);
     border: none;
-    color: #fff;
     font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
     transition: all 0.3s ease;
 }
 
@@ -65,25 +25,18 @@ body {
     background: linear-gradient(45deg, #2962ff, #3d5afe);
 }
 
-/* Responsive styles */
-@media (max-width: 576px) {
-    .login-container {
-        margin: 2rem auto;
-        padding: 1.5rem;
-    }
-
-    .brand {
-        font-size: 1.5rem;
-    }
-}
-
-/* Link styles */
-p a {
+.link-primary {
     color: #2962ff;
-    text-decoration: none;
-    transition: color 0.3s ease;
 }
 
-p a:hover {
-    text-decoration: underline;
+.link-primary:hover {
+    text-decoration: underline !important;
+}
+
+.fw-500 {
+    font-weight: 500;
+}
+
+.text-gray-700 {
+    color: #495057;
 }

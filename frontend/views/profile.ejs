@@ -1,59 +1,35 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الملف الشخصي</title>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="/css/profile.css" rel="stylesheet">
-    <link href="/css/partials/header.css" rel="stylesheet">
-    <link href="/css/partials/footer.css" rel="stylesheet">
-    <link href="/css/partials/background.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-</head>
-<body class="background">
-
-<%- include('partials/header', { currentPage: 'profile' }) %>
-
-<div class="container main-container">
-    <div class="profile-container">
-        <!-- Profile Header -->
-        <div class="profile-header">
-            <div class="profile-image-container">
-                <img src="<%= user.profileImage %>" alt="صورة الملف الشخصي" class="profile-image">
-                <button class="edit-photo-btn" title="تغيير الصورة">
-                    <i class="fas fa-camera"></i>
-                </button>
+<div class="container py-4">
+    <div class="card shadow-lg mx-auto" style="max-width: 800px; border-radius: 1rem; overflow: hidden;">
+        <div class="card-header text-white text-center position-relative" style="background: linear-gradient(45deg, #2962ff, #3d5afe); padding: 3rem 2rem 2rem;">
+            <div class="position-relative mx-auto" style="width: 150px; height: 150px;">
+                <img src="<%= user.profileImage %>" alt="صورة الملف الشخصي" class="rounded-circle border border-3 border-white shadow-sm w-100 h-100 object-fit-cover">
             </div>
-            <h1 class="profile-name"><%= user.firstName %> <%= user.lastName %></h1>
-            <p class="profile-email"><%= user.email %></p>
+            <h1 class="mt-3 h4"><%= user.firstName %> <%= user.lastName %></h1>
+            <p class="opacity-75"><%= user.email %></p>
         </div>
-
-        <!-- Profile Content -->
-        <div class="profile-content">
-            <div class="profile-section">
-                <h3 class="section-title">
-                    <i class="fas fa-user-circle"></i>
-                    المعلومات الشخصية
+        <div class="card-body p-4">
+            <div class="mb-4 border-bottom pb-3">
+                <h3 class="h5 text-primary d-flex align-items-center gap-2">
+                    <i class="fas fa-user-circle"></i> المعلومات الشخصية
                 </h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>الاسم الأول</label>
-                        <p><%= user.firstName %></p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded">
+                            <label class="text-muted small">الاسم الأول</label>
+                            <p class="mb-0 fw-semibold"><%= user.firstName %></p>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <label>الاسم الأخير</label>
-                        <p><%= user.lastName %></p>
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded">
+                            <label class="text-muted small">الاسم الأخير</label>
+                            <p class="mb-0 fw-semibold"><%= user.lastName %></p>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <label>البريد الإلكتروني</label>
-                        <p><%= user.email %></p>
+                    <div class="col-12">
+                        <div class="bg-light p-3 rounded">
+                            <label class="text-muted small">البريد الإلكتروني</label>
+                            <p class="mb-0 fw-semibold"><%= user.email %></p>
+                        </div>
                     </div>
                     <div class="info-item">
                         <label>role</label>
@@ -61,59 +37,34 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Events Sections -->
-            <div class="events-section">
-                <h3 class="section-title">
-                    <i class="fas fa-calendar-check"></i>
-                    الفعاليات المسجل فيها
+            <div class="mb-4 border-bottom pb-3">
+                <h3 class="h5 text-primary d-flex align-items-center gap-2">
+                    <i class="fas fa-calendar-check"></i> الفعاليات المسجل فيها
                 </h3>
-
-                <% if (false) { /* Replace with actual check for registered events */ %>
-                <!-- Events display will go here when implemented -->
-                <% } else { %>
-                    <div class="coming-soon">
-                        <i class="fas fa-clock coming-soon-icon"></i>
-                        <h4>قريباً</h4>
-                        <p>سيتم إضافة هذه الميزة قريباً</p>
-                    </div>
-                <% } %>
+                <div class="text-center bg-light p-4 rounded">
+                    <i class="fas fa-clock text-primary display-4 mb-2"></i>
+                    <h4 class="text-primary">قريباً</h4>
+                    <p class="opacity-75">سيتم إضافة هذه الميزة قريباً</p>
+                </div>
             </div>
-
-            <div class="events-section">
-                <h3 class="section-title">
-                    <i class="fas fa-history"></i>
-                    الفعاليات السابقة
+            <div class="mb-4 border-bottom pb-3">
+                <h3 class="h5 text-primary d-flex align-items-center gap-2">
+                    <i class="fas fa-history"></i> الفعاليات السابقة
                 </h3>
-
-                <% if (false) { /* Replace with actual check for past events */ %>
-                <!-- Past events display will go here when implemented -->
-                <% } else { %>
-                    <div class="coming-soon">
-                        <i class="fas fa-clock coming-soon-icon"></i>
-                        <h4>قريباً</h4>
-                        <p>سيتم إضافة هذه الميزة قريباً</p>
-                    </div>
-                <% } %>
+                <div class="text-center bg-light p-4 rounded">
+                    <i class="fas fa-clock text-primary display-4 mb-2"></i>
+                    <h4 class="text-primary">قريباً</h4>
+                    <p class="opacity-75">سيتم إضافة هذه الميزة قريباً</p>
+                </div>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="profile-actions">
-                <a href="/update-profile" class="btn btn-primary">
-                    <i class="fas fa-edit"></i>
-                    تعديل الملف الشخصي
+            <div class="d-grid gap-3 border-top pt-3">
+                <a href="/update-profile" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
+                    <i class="fas fa-edit"></i> تعديل الملف الشخصي
                 </a>
-                <a href="/delete-account" class="btn btn-outline-danger">
-                    <i class="fas fa-trash-alt"></i>
-                    حذف الحساب
+                <a href="/delete-account" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
+                    <i class="fas fa-trash-alt"></i> حذف الحساب
                 </a>
             </div>
         </div>
     </div>
 </div>
-
-<%- include('partials/footer') %>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

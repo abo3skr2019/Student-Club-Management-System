@@ -124,6 +124,15 @@ router.get('/github/callback',
         res.redirect(isNewUser ? '/update-profile' : '/profile');
     });
 
+router.get('/login', (req, res) => {
+    res.render('login', {
+        title: "وصل - تسجيل الدخول",
+        HeaderOrSidebar: 'header',
+        extraCSS: '<link href="/css/login.css" rel="stylesheet">',
+        currentPage: 'login'
+    });
+});
+
 router.get("/login-failure", (req, res) => {
     res.send("Something Went Wrong Try again later");
 });

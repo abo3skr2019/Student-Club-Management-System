@@ -33,19 +33,25 @@ const getAllClubs = async (req, res) => {
 const getClubById = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
-        .populate('clubAdmin', 'displayName email');
-        // populate('createdEvents'); #TODO!
+        .populate('clubAdmin', 'displayName email')
+        .populate({
+            path: 'createdEvents',
+            select: 'name description eventStart eventEnd status uuid poster category seatsAvailable seatsRemaining',
+            options: { sort: { eventStart: 1 } }
+        });
         
         if (!club) {
             return res.status(404).render('error', { 
                 message: 'Club not found',
-                user: req.user 
+                user: req.user
             });
         }
 
         res.render('clubs/club-details', { 
             club,
-            user: req.user 
+            user: req.user,
+            error: req.query.error,
+            email: req.query.email
         });
     } catch (err) {
         res.status(500).render('error', { 
@@ -186,7 +192,7 @@ const updateClub = async (req, res) => {
             });
         }
         
-        res.redirect(`/clubs/${club.uuid}`);
+        res.redirect(`/clubs/${club.uuid}/dashboard`);
         
     } catch (err) {
         res.render('clubs/update-club', { 
@@ -245,39 +251,25 @@ const assignClubAdmin = async (req, res) => {
         const { email } = req.body;  // New admin's email
 
         // Validate provided email
-        if (!email || !/.+\@.+\..+/.test(email)) {
-            return res.render('error', { 
-                message: 'Email not valid',
-                user: req.user 
-            });
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.redirect(`/clubs/${clubId}?error=invalid_email&email=${encodeURIComponent(email)}`);
         }
 
         // Find the club
         const club = await Club.findOne({ uuid: clubId });
         if (!club) {
-            return res.render('error', { 
-                message: 'Club not found',
-                user: req.user 
-            });
+            return res.redirect(`/clubs/${clubId}?error=club_not_found`);
         }
 
         // Find the new admin by email
         const newAdmin = await User.findOne({ email: email });
         if (!newAdmin) {
-            return res.render('clubs/assign-admin', {
-                club,
-                error: 'User with this email not found',
-                user: req.user
-            });
+            return res.redirect(`/clubs/${clubId}?error=user_not_found&email=${encodeURIComponent(email)}`);
         }
 
         // Check if new admin is already admin of this club
-        if (club.clubAdmin.toString() === newAdmin._id.toString()) {
-            return res.render('clubs/assign-admin', {
-                club,
-                error: 'User is already an admin of this club',
-                user: req.user
-            });
+        if (club.clubAdmin?.toString() === newAdmin._id.toString()) {
+            return res.redirect(`/clubs/${clubId}?error=already_admin&email=${encodeURIComponent(email)}`);
         }
 
         // Update old admin's clubsManaged
@@ -307,7 +299,7 @@ const assignClubAdmin = async (req, res) => {
         club.clubAdmin = newAdmin._id;
         await club.save();
 
-        res.redirect(`/clubs/${club.uuid}`);
+        res.redirect(`/clubs/${club.uuid}?success=admin_assigned`);
 
     } catch (err) {
         res.render('error', { 
@@ -317,6 +309,35 @@ const assignClubAdmin = async (req, res) => {
     }
 }
 
+const renderDashboard = async (req, res) => {
+    try {
+        const club = await Club.findOne({ uuid: req.params.clubId })
+        .populate('clubAdmin', 'displayName email')
+        .populate('createdEvents', 'name eventStart eventEnd status uuid poster category seatsAvailable seatsRemaining');
+
+        if (!club) {
+            return res.status(404).render('error', {
+                message: 'Club not found',
+                user: req.user
+            });
+        }
+
+        res.render('club-dashboard', {
+            title: `وصل - لوحة تحكم ${club.name}`,
+            HeaderOrSidebar: 'sidebar',
+            extraCSS: '<link href="/css/club-dashboard.css" rel="stylesheet">',
+            currentPage: 'club-dashboard',
+            club: club,
+            error: null
+        });
+    } catch (err) {
+        res.status(500).render('error', {
+            message: 'Error loading club dashboard',
+            user: req.user
+        });
+    }
+};
+
 module.exports = {
     getAllClubs,
     getClubById,
@@ -325,5 +346,6 @@ module.exports = {
     renderEditClubForm,
     updateClub,
     renderAssignClubAdmin,
-    assignClubAdmin
+    assignClubAdmin,
+    renderDashboard,
 }

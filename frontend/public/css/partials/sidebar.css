@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Content wrapper */
+.content-wrapper {
+    margin-right: 280px;
+    padding: 1rem;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background-color: #ffffff;
+    box-shadow: -2px 0 20px rgba(0, 0, 0, 0.06);
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.sidebar .sidebar-brand {
+    font-size: 2rem;
+    font-weight: 800;
+    text-decoration: none;
+    position: relative;
+}
+
+.sidebar .sidebar-brand::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(45deg, #2962ff, #3d5afe);
+    border-radius: 3px;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.sidebar .sidebar-brand:hover::after {
+    transform: scaleX(1);
+}
+
+.sidebar .nav-link.active {
+    background: linear-gradient(45deg, rgba(41, 98, 255, 0.1), rgba(61, 90, 254, 0.1));
+    color: #2962ff;
+    font-weight: 600;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(41, 98, 255, 0.04);
+    color: #2962ff;
+}
+
+/* Footer adjustments */
+.footer {
+    margin-right: 160px;
+    width: auto;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .content-wrapper,
+    .footer {
+        margin-right: 0;
+    }
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
