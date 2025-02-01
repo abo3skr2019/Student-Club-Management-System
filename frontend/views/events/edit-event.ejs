@@ -1,146 +1,224 @@
-<%- include('../partials/header') %>
+<div class="container-fluid py-5" style="background-color: #f8f9fa;">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-body p-4 p-sm-5">
+                    <h3 class="mb-4 text-primary fw-bold">تعديل الفعالية</h3>
 
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-3xl font-bold mb-6">Edit Event</h1>
+                    <% if (typeof error !== 'undefined') { %>
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
 
-        <% if (typeof error !== 'undefined') { %>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <%= error %>
+                    <form action="/events/<%= event.uuid %>/edit" method="POST" id="eventForm">
+                        <!-- Basic Information Section -->
+                        <div class="border rounded-3 shadow-sm p-4 mb-4 bg-white">
+                            <h5 class="mb-4 text-dark d-flex align-items-center">
+                                <i class="bi bi-info-circle me-2"></i>
+                                المعلومات الأساسية
+                            </h5>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted">اسم الفعالية</label>
+                                <input type="text" name="name" class="form-control form-control-lg"
+                                       value="<%= event.name %>" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted">الوصف</label>
+                                <textarea name="description" class="form-control"
+                                          rows="4" required><%= event.description %></textarea>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">رابط الملصق</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-image"></i>
+                                        </span>
+                                        <input type="url" name="poster" class="form-control"
+                                               value="<%= event.poster %>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">الموقع</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-geo-alt"></i>
+                                        </span>
+                                        <input type="text" name="location" class="form-control"
+                                               value="<%= event.location %>" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dates Section -->
+                        <div class="border rounded-3 shadow-sm p-4 mb-4 bg-white">
+                            <h5 class="mb-4 text-dark d-flex align-items-center">
+                                <i class="bi bi-calendar3 me-2"></i>
+                                المواعيد
+                            </h5>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">بداية التسجيل</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-calendar-event"></i>
+                                        </span>
+                                        <input type="datetime-local" name="registrationStart" id="registrationStart"
+                                               class="form-control"
+                                               value="<%= new Date(event.registrationStart).toISOString().slice(0, 16) %>"
+                                               required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">نهاية التسجيل</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-calendar-x"></i>
+                                        </span>
+                                        <input type="datetime-local" name="registrationEnd" id="registrationEnd"
+                                               class="form-control"
+                                               value="<%= new Date(event.registrationEnd).toISOString().slice(0, 16) %>"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">بداية الفعالية</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-calendar-check"></i>
+                                        </span>
+                                        <input type="datetime-local" name="eventStart" id="eventStart"
+                                               class="form-control"
+                                               value="<%= new Date(event.eventStart).toISOString().slice(0, 16) %>"
+                                               required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">نهاية الفعالية</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-calendar-check"></i>
+                                        </span>
+                                        <input type="datetime-local" name="eventEnd" id="eventEnd"
+                                               class="form-control"
+                                               value="<%= new Date(event.eventEnd).toISOString().slice(0, 16) %>"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Details Section -->
+                        <div class="border rounded-3 shadow-sm p-4 mb-4 bg-white">
+                            <h5 class="mb-4 text-dark d-flex align-items-center">
+                                <i class="bi bi-card-list me-2"></i>
+                                التفاصيل
+                            </h5>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">عدد المقاعد</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-people"></i>
+                                        </span>
+                                        <input type="number" name="seatsAvailable"
+                                               class="form-control"
+                                               min="<%= event.registeredUsers.length %>"
+                                               value="<%= event.seatsAvailable %>"
+                                               required>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        المسجلين حالياً: <%= event.registeredUsers.length %>
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">التصنيف</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-tag"></i>
+                                        </span>
+                                        <select name="category" class="form-select" required>
+                                            <% const categories = ['bootcamp', 'workshop', 'meeting', 'hackathon', 'seminar', 'conference', 'networking']; %>
+                                            <% categories.forEach(cat => { %>
+                                                <option value="<%= cat %>" <%= event.category === cat ? 'selected' : '' %>>
+                                                    <%= cat.charAt(0).toUpperCase() + cat.slice(1) %>
+                                                </option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a href="/events/<%= event.uuid %>" class="btn btn-light px-4 py-2">إلغاء</a>
+                            <button type="submit" class="btn btn-primary px-4 py-2">حفظ التعديلات</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        <% } %>
-
-        <form action="/events/<%= event.uuid %>/edit" method="POST" id="eventForm">
-            <div class="space-y-4">
-                <div>
-                    <label for="name" class="block text-gray-700 font-medium mb-2">Event Name</label>
-                    <input type="text" id="name" name="name" value="<%= event.name %>" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label for="description" class="block text-gray-700 font-medium mb-2">Description</label>
-                    <textarea id="description" name="description" rows="4" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"><%= event.description %></textarea>
-                </div>
-
-                <div>
-                    <label for="poster" class="block text-gray-700 font-medium mb-2">Poster URL</label>
-                    <input type="url" id="poster" name="poster" value="<%= event.poster %>" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label for="location" class="block text-gray-700 font-medium mb-2">Location</label>
-                    <input type="text" id="location" name="location" value="<%= event.location %>" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="registrationStart" class="block text-gray-700 font-medium mb-2">Registration Start</label>
-                        <input type="datetime-local" id="registrationStart" name="registrationStart" 
-                            value="<%= new Date(event.registrationStart).toISOString().slice(0, 16) %>" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label for="registrationEnd" class="block text-gray-700 font-medium mb-2">Registration End</label>
-                        <input type="datetime-local" id="registrationEnd" name="registrationEnd" 
-                            value="<%= new Date(event.registrationEnd).toISOString().slice(0, 16) %>" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label for="eventStart" class="block text-gray-700 font-medium mb-2">Event Start</label>
-                        <input type="datetime-local" id="eventStart" name="eventStart" 
-                            value="<%= new Date(event.eventStart).toISOString().slice(0, 16) %>" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label for="eventEnd" class="block text-gray-700 font-medium mb-2">Event End</label>
-                        <input type="datetime-local" id="eventEnd" name="eventEnd" 
-                            value="<%= new Date(event.eventEnd).toISOString().slice(0, 16) %>" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="seatsAvailable" class="block text-gray-700 font-medium mb-2">Available Seats</label>
-                    <input type="number" id="seatsAvailable" name="seatsAvailable" min="<%= event.registeredUsers.length %>" 
-                        value="<%= event.seatsAvailable %>" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <p class="text-sm text-gray-500 mt-1">Currently registered: <%= event.registeredUsers.length %></p>
-                </div>
-
-                <div>
-                    <label for="category" class="block text-gray-700 font-medium mb-2">Category</label>
-                    <select id="category" name="category" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="bootcamp" <%= event.category === 'bootcamp' ? 'selected' : '' %>>Bootcamp</option>
-                        <option value="workshop" <%= event.category === 'workshop' ? 'selected' : '' %>>Workshop</option>
-                        <option value="meeting" <%= event.category === 'meeting' ? 'selected' : '' %>>Meeting</option>
-                        <option value="hackathon" <%= event.category === 'hackathon' ? 'selected' : '' %>>Hackathon</option>
-                        <option value="seminar" <%= event.category === 'seminar' ? 'selected' : '' %>>Seminar</option>
-                        <option value="conference" <%= event.category === 'conference' ? 'selected' : '' %>>Conference</option>
-                        <option value="networking" <%= event.category === 'networking' ? 'selected' : '' %>>Networking</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-4">
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                        Update Event
-                    </button>
-                    <a href="/events/<%= event.uuid %>" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
-                        Cancel
-                    </a>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
+<!-- Include Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
+
 <script>
-document.getElementById('eventForm').addEventListener('submit', function(e) {
-    const registrationStart = new Date(document.getElementById('registrationStart').value);
-    const registrationEnd = new Date(document.getElementById('registrationEnd').value);
-    const eventStart = new Date(document.getElementById('eventStart').value);
-    const eventEnd = new Date(document.getElementById('eventEnd').value);
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+        const registrationStart = new Date(document.getElementById('registrationStart').value);
+        const registrationEnd = new Date(document.getElementById('registrationEnd').value);
+        const eventStart = new Date(document.getElementById('eventStart').value);
+        const eventEnd = new Date(document.getElementById('eventEnd').value);
 
-    let errorMessage = '';
+        let errorMessage = '';
 
-    // Check registration dates
-    if (registrationEnd <= registrationStart) {
-        errorMessage = 'Registration end date must be after registration start date';
-    }
-    // Check event dates
-    else if (eventEnd <= eventStart) {
-        errorMessage = 'Event end date must be after event start date';
-    }
-    // Check if event starts after registration ends
-    else if (eventStart <= registrationEnd) {
-        errorMessage = 'Event must start after registration period ends';
-    }
+        if (registrationEnd <= registrationStart) {
+            errorMessage = 'Registration end date must be after registration start date';
+        }
+        else if (eventEnd <= eventStart) {
+            errorMessage = 'Event end date must be after event start date';
+        }
+        else if (eventStart <= registrationEnd) {
+            errorMessage = 'Event must start after registration period ends';
+        }
 
-    if (errorMessage) {
-        e.preventDefault();
-        alert(errorMessage);
-    }
-});
+        if (errorMessage) {
+            e.preventDefault();
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show mb-4';
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = `
+            ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+            document.querySelector('form').insertBefore(alertDiv, document.querySelector('form').firstChild);
+        }
+    });
 
-// Update min values based on previous date selections
-document.getElementById('registrationStart').addEventListener('change', function() {
-    document.getElementById('registrationEnd').min = this.value;
-});
+    // Update min values based on previous date selections
+    document.getElementById('registrationStart').addEventListener('change', function() {
+        document.getElementById('registrationEnd').min = this.value;
+    });
 
-document.getElementById('registrationEnd').addEventListener('change', function() {
-    document.getElementById('eventStart').min = this.value;
-});
+    document.getElementById('registrationEnd').addEventListener('change', function() {
+        document.getElementById('eventStart').min = this.value;
+    });
 
-document.getElementById('eventStart').addEventListener('change', function() {
-    document.getElementById('eventEnd').min = this.value;
-});
+    document.getElementById('eventStart').addEventListener('change', function() {
+        document.getElementById('eventEnd').min = this.value;
+    });
 </script>
-
-<%- include('../partials/footer') %>
