@@ -32,7 +32,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: SessionDBStore.create({ mongoUrl: process.env.MONGODB_URI }),
-    cookie: {maxAge: 86400000} // 1 day
+    cookie: { maxAge: 86400000 } // 1 day
 }));
 app.use(passport.initialize());
 app.use(passport.session());
