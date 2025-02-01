@@ -1,0 +1,62 @@
+<div class="container py-5">
+
+    <h1 class="display-6 fw-bold mb-4">
+        <i class="fas fa-calendar-alt text-primary me-2"></i>
+        <br>
+        الفعاليات المتاحة
+    </h1>
+    <div class="row g-4">
+        <% if (events.length > 0) { %>
+            <% events.forEach(event => { %>
+                <div class="col-md-6 col-lg-4">
+                    <a href="/events/<%= event.uuid %>" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="position-relative">
+                            <img src="<%= event.poster %>" onerror="this.onerror=null;this.src='https://medcenterhealth.org/wp-content/uploads/mch-event-placeholder@2x-1640x923.png';" class="card-img-top" alt="<%= event.name %>" style="height: 200px; object-fit: cover;">                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    <%= new Date(event.eventStart).toLocaleDateString('ar-SA') %>
+                                </span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                                <div class="d-flex justify-content-between align-items-center text-white">
+                                    <span>
+                                        <i class="fas fa-clock me-2"></i>
+                                        باقي على الفعالية
+                                    </span>
+                                    <span class="badge bg-danger px-3">
+                                        <%= Math.ceil((new Date(event.eventStart) - new Date()) / (1000 * 60 * 60 * 24)) %> يوم
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3"><%= event.name %></h5>
+                            <p class="text-muted mb-4"><%= event.description.substring(0, 100) %>...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="/events/<%= event.uuid %>" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    التفاصيل
+                                </a>
+                                <small class="text-muted">
+                                    <i class="fas fa-users me-1"></i>
+                                    <%= event.seatsRemaining %>/<%= event.seatsAvailable %> مقاعد
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-5 text-center">
+                        <i class="fas fa-calendar-times text-muted display-4 mb-3"></i>
+                        <h5 class="fw-bold mb-3">لا توجد فعاليات متاحة حالياً</h5>
+                        <p class="text-muted">تحقق لاحقاً للعثور على فعاليات جديدة.</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
