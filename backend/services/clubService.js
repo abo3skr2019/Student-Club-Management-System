@@ -1,6 +1,6 @@
 const Club = require("../models/Club");
 const User = require("../models/User");
-const {getIdType} = require("../utils/IdValidators");
+const { getIdType } = require("../utils/IdValidators");
 /**
  * Find club by ID
  * @param {String} club Object ID
@@ -61,7 +61,16 @@ async function findByAdmin(adminId) {
     if (!adminId) {
       throw new Error("adminId is required");
     }
-    return await Club.find({ clubAdmin: adminId });
+    const idType = getIdType(adminId);
+    if (!idType) {
+      throw new Error("Invalid ID format");
+    }
+
+    const query = idType === "ObjectId" ? 
+      { clubAdmin: adminId } : 
+      { "clubAdmin.uuid": adminId };
+    
+    return await Club.find(query);
   } catch (error) {
     console.error("Error in clubService.findByAdmin: ", error);
     throw error;
@@ -161,7 +170,22 @@ async function deleteClub(clubId) {
     if (!clubId) {
       throw new Error("clubId is required");
     }
-    return await Club.findByIdAndDelete(clubId);
+    const idType = getIdType(clubId);
+    if (!idType) {
+      throw new Error("Invalid ID format");
+    }
+
+    let club;
+    if (idType === "ObjectId") {
+      club = await Club.findByIdAndDelete(clubId);
+    } else {
+      club = await Club.findOneAndDelete({ uuid: clubId });
+    }
+
+    if (!club) {
+      throw new Error("Club not found");
+    }
+    return club;
   } catch (error) {
     console.error("Error in clubService.deleteClub: ", error);
     throw error;
@@ -230,7 +254,20 @@ async function findByEvent(eventId) {
  */
 async function updateClubAdmin(clubId, newClubAdminId) {
   try {
-    const club = await Club.findById(clubId);
+    const clubIdType = getIdType(clubId);
+    const adminIdType = getIdType(newClubAdminId);
+    if (!clubIdType || !adminIdType) {
+      throw new Error("Invalid ID format");
+    }
+
+    let club = clubIdType === "ObjectId" ? 
+      await Club.findById(clubId) : 
+      await Club.findOne({ uuid: clubId });
+
+    let newClubAdmin = adminIdType === "ObjectId" ? 
+      await User.findById(newClubAdminId) : 
+      await User.findOne({ uuid: newClubAdminId });
+
     if (!club) {
       throw new Error("Club not found");
     }
@@ -238,7 +275,6 @@ async function updateClubAdmin(clubId, newClubAdminId) {
       throw new Error("User is already this club's admin");
     }
 
-    const newClubAdmin = await User.findById(newClubAdminId);
     if (!newClubAdmin) {
       throw new Error("New admin not found");
     }

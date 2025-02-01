@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Club = require("../models/Club");
 const VALID_ROLES = ["Admin", "ClubAdmin", "Member", "Visitor"];
+const { getIdType } = require("../utils/IdValidators");
 
 /**
  * Find user by ID and return user object
@@ -12,10 +13,23 @@ const findById = async (userId) => {
     if (!userId) {
       throw new Error("userId is required");
     }
-    return await User.findById(userId)
-      .populate("clubsManaged")
-      .populate("clubsJoined")
-      .lean();
+    const idType = getIdType(userId);
+    if (!idType) {
+      throw new Error("Invalid ID format");
+    }
+
+    let user;
+    if (idType === "ObjectId") {
+      user = await User.findById(userId);
+    } else {
+      user = await User.findOne({ uuid: userId });
+    }
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return await user.populate("clubsManaged clubsJoined").lean();
   } catch (error) {
     console.error("Error in userService.findById: ", error);
     throw error;
@@ -152,6 +166,11 @@ const updateProfile = async (userId, updateData) => {
     if (!userId) {
       throw new Error("userId is required");
     }
+    const idType = getIdType(userId);
+    if (!idType) {
+      throw new Error("Invalid ID format");
+    }
+
     if (!updateData) {
       throw new Error("updateData is required");
     }
@@ -176,16 +195,25 @@ const updateProfile = async (userId, updateData) => {
       updateData.displayName = `${updateData.firstName} ${updateData.lastName}`;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $set: updateData },
-      { new: true, runValidators: true }
-    ).lean();
+    let updatedUser;
+    if (idType === "ObjectId") {
+      updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
+    } else {
+      updatedUser = await User.findOneAndUpdate(
+        { uuid: userId },
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
+    }
 
     if (!updatedUser) {
-      throw new Error("User not Found");
+      throw new Error("User not found");
     }
-    return updatedUser;
+    return updatedUser.lean();
   } catch (error) {
     console.error("Error in userService.updateProfile: ", error);
     throw error;
@@ -232,30 +260,40 @@ const changeRole = async (userId, role) => {
  */
 const joinClub = async (userId, clubId) => {
   try {
-    if (!userId) {
-      throw new Error("userId is required");
+    if (!userId || !clubId) {
+      throw new Error("userId and clubId are required");
     }
-    if (!clubId) {
-      throw new Error("clubId is required");
+    
+    const userIdType = getIdType(userId);
+    const clubIdType = getIdType(clubId);
+    if (!userIdType || !clubIdType) {
+      throw new Error("Invalid ID format");
     }
-    const joiningUser = await User.findById(userId);
-    if (!joiningUser) {
+
+    let user = userIdType === "ObjectId" ? 
+      await User.findById(userId) : 
+      await User.findOne({ uuid: userId });
+
+    let club = clubIdType === "ObjectId" ? 
+      await Club.findById(clubId) : 
+      await Club.findOne({ uuid: clubId });
+
+    if (!user) {
       throw new Error("User not Found");
     }
-    const club = await Club.findById(clubId);
     if (!club) {
       throw new Error("Club not Found");
     }
-    if (joiningUser.clubsJoined.includes(clubId)) {
+    if (user.clubsJoined.includes(clubId)) {
       throw new Error("User is already a Member of this Club");
     } 
-    joiningUser.clubsJoined.push(clubId);
+    user.clubsJoined.push(clubId);
     club.clubMembers.push(userId);
     await Promise.all([
-      joiningUser.save(),
+      user.save(),
       club.save()  // Make sure to save club changes
     ]);
-    return joiningUser;
+    return user;
   } catch (error) {
     console.error("Error in userService.joinClub: ", error);
     throw error;
