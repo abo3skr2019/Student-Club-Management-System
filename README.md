@@ -14,4 +14,4 @@ Wasl is a web platform designed to connect students with student clubs while sim
 - 📢 **Organize and promote** events.
 
 
-For more informationn see [[Wiki|https://github.com/abo3skr2019/Student-Club-Management-System/wiki]]
+For more informationn see [Wiki](https://github.com/abo3skr2019/Student-Club-Management-System/wiki)
