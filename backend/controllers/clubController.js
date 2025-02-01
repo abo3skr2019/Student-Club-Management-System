@@ -310,7 +310,8 @@ const assignClubAdmin = async (req, res) => {
 const renderDashboard = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
-            .populate('clubAdmin', 'displayName email');
+        .populate('clubAdmin', 'displayName email')
+        .populate('createdEvents', 'name eventStart eventEnd status uuid poster category seatsAvailable seatsRemaining');
 
         if (!club) {
             return res.status(404).render('error', {
