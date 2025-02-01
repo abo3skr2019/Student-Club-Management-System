@@ -32,7 +32,7 @@ const ClubSchema = new mongoose.Schema({
         ref: 'Event',
         index: true
     }],
-    clubMember:[{
+    clubMembers:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         index: true
