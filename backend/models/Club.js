@@ -31,6 +31,11 @@ const ClubSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event',
         index: true
+    }],
+    clubMember:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        index: true
     }]
 }, {
     timestamps: true
