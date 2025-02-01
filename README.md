@@ -14,7 +14,7 @@ Wasl is a web platform designed to connect students with student clubs while sim
 - 📢 **Organize and promote** events.
 
 ## Technical Details
-Wasl is a CRUD application built using the MEN (MongoDB, Express, Node) stack. We follow Gitflow for our version control process. For more details, please refer to our[Wiki](https://github.com/abo3skr2019/Student-Club-Management-System/wiki).
+Wasl is a CRUD application built using the MEN (MongoDB, Express, Node) stack. We follow Gitflow for our version control process. For more details, please refer to our [Wiki](https://github.com/abo3skr2019/Student-Club-Management-System/wiki).
 
 ### Contributing
 Contributions are welcome! Please read our [contributing guidelines](https://github.com/abo3skr2019/Student-Club-Management-System/wiki/Contribution-Guidelines) for more details.
