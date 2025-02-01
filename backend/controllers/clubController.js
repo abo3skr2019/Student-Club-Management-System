@@ -1,5 +1,6 @@
 const Club = require('../models/Club');
 const User = require('../models/User');
+const ClubService = require('../services/clubService');
 
 
 /**
@@ -10,7 +11,7 @@ const User = require('../models/User');
  */
 const getAllClubs = async (req, res) => {
     try {
-        const clubs = await Club.find().populate('clubAdmin', 'displayName email');
+        const clubs = await ClubService.getAllClubs();
         res.render('clubs/club-list', { 
             clubs,
             user: req.user 
@@ -180,11 +181,8 @@ const updateClub = async (req, res) => {
         }
 
         // Update Club
-        const club = await Club.findOneAndUpdate(
-            { uuid: req.params.clubId },
-            { $set: { name, description, logo } },
-            { new: true, runValidators: true }
-        );
+        const club = await ClubService.updateClub(req.params.clubId, { name, description, logo });
+
 
         // Handle Club doesn't exist
         if (!club) {

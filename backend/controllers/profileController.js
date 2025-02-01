@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const userService = require('../services/userService');
 const {isAuthenticated} = require("../middleware/CheckAuth");
 
 // Render the profile update form
@@ -88,6 +89,24 @@ const deleteAccount = async (req, res) => {
     }
 };
 
+const changeRole = async (req, res) => {
+    const { role } = req.body;
+    try {
+        await userService.changeRole(req.user.id, role);
+        res.redirect('/profile');
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', {
+            message: 'Error changing role',
+            user: req.user
+        });
+    }
+};
+
+const renderChangeRoleForm = (req, res) => {
+    res.render("change-role",{ user: req.user })
+}
+
 const renderDeleteAccount = (req, res) => {
     res.render('delete-account', {
         title: "وصل - حذف الحساب",
@@ -103,5 +122,7 @@ module.exports = {
     updateProfile,
     renderProfile,
     renderDeleteAccount,
-    deleteAccount
+    deleteAccount,
+    changeRole,
+    renderChangeRoleForm
 };
