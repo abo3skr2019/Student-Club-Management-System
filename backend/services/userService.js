@@ -250,7 +250,12 @@ const joinClub = async (userId, clubId) => {
       throw new Error("User is already a Member of this Club");
     } 
     joiningUser.clubsJoined.push(clubId);
-    return await joiningUser.save();
+    club.clubMembers.push(userId);
+    await Promise.all([
+      joiningUser.save(),
+      club.save()  // Make sure to save club changes
+    ]);
+    return joiningUser;
   } catch (error) {
     console.error("Error in userService.joinClub: ", error);
     throw error;
@@ -273,6 +278,12 @@ const leaveClub = async (userId, clubId) => {
       throw new Error("clubId is required");
     }
     const leavingUser = await User.findById(userId);
+
+    const club = await Club.findById(clubId);
+
+    if (!club) {
+      throw new Error("Club not Found");
+    }
     if (!leavingUser) {
       throw new Error("User not Found");
     }
@@ -282,11 +293,22 @@ const leaveClub = async (userId, clubId) => {
     if (!leavingUser.clubsJoined.includes(clubId)) {
       throw new Error("User is not a Member of this Club");
     }
+
+
+    // Remove user from club's members
+    club.clubMembers = club.clubMembers.filter(
+      (id) => id.toString() !== userId.toString()
+    );
+
     leavingUser.clubsJoined = leavingUser.clubsJoined.filter(
       (id) => id.toString() !== clubId
     );
-    const savedUser = await leavingUser.save();
-    return (await savedUser.populate("clubsJoined")).lean();
+
+    await Promise.all([
+      leavingUser.save(),
+      club.save()
+    ]);    
+    return (await leavingUser.populate("clubsJoined")).lean();
   } catch (error) {
     console.error("Error in userService.leaveClub: ", error);
     throw error;
