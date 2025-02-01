@@ -32,8 +32,12 @@ const getAllClubs = async (req, res) => {
 const getClubById = async (req, res) => {
     try {
         const club = await Club.findOne({ uuid: req.params.clubId })
-        .populate('clubAdmin', 'displayName email');
-        // populate('createdEvents'); #TODO!
+        .populate('clubAdmin', 'displayName email')
+        .populate({
+            path: 'createdEvents',
+            select: 'name description eventStart eventEnd status uuid poster category seatsAvailable seatsRemaining',
+            options: { sort: { eventStart: 1 } }
+        });
         
         if (!club) {
             return res.status(404).render('error', { 

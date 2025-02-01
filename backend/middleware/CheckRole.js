@@ -1,4 +1,5 @@
 const Club = require('../models/Club');
+const Event = require('../models/Event');
 /**
  * Check if user is an admin
  * @param {Request} req - The request object
@@ -38,22 +39,27 @@ const isClubAdmin = async (req, res, next) => {
         }
 
         // check if user is admin of the club
-        /**
-         * Find the club
-         * @type {string}
-         */
-        const club = await Club.findOne({
-            uuid: req.params.clubId,
-            _id: { $in: req.user.clubsManaged }
-        })
-        .select('_id')
-        .lean();
+        if (req.params.clubId) {
+            const club = await Club.findOne({ uuid: req.params.clubId }).select('_id').lean();
+            if (!club || !req.user.clubsManaged.includes(club._id)) {
+                return res.status(403).render('error', { 
+                    message: 'Club admin access required',
+                    user: req.user 
+                });
+            }
+        }
 
-        if (!club) {
-            return res.status(403).render('error', { 
-                message: 'Club admin access required',
-                user: req.user 
-            });
+        else if (req.params.eventId) {
+            const event = await Event.findOne({ uuid: req.params.eventId })
+                .select('club')
+                .lean();
+                
+            if (!event || !req.user.clubsManaged.includes(event.club)) {
+                return res.status(403).render('error', { 
+                    message: 'Club admin access required',
+                    user: req.user 
+                });
+            }
         }
 
         return next();
