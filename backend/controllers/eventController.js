@@ -85,6 +85,7 @@ const renderCreateEventForm = async (req, res) => {
         res.render('events/create-event', {
             club,
             user: req.user,
+            HeaderOrSidebar: 'sidebar',
             currentPage: 'events'
         });
     } catch (err) {

@@ -1,147 +1,216 @@
-<%- include('../partials/header') %>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء فعالية</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="/css/partials/sidebar.css" rel="stylesheet">
+    <link href="/css/partials/background.css" rel="stylesheet">
+</head>
+<body class="bg-body-tertiary">
 
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-3xl font-bold mb-6">Create Event for <%= club.name %></h1>
-
-        <% if (typeof error !== 'undefined') { %>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <%= error %>
+<div class="bg-primary bg-opacity-10 py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <img src="<%= club.logo %>" alt="شعار النادي" class="rounded-circle border border-4 border-white shadow" width="120" height="120">
             </div>
-        <% } %>
-
-        <form action="/clubs/<%= club.uuid %>/events/create" method="POST" id="eventForm">
-            <div class="space-y-4">
-                <div>
-                    <label for="name" class="block text-gray-700 font-medium mb-2">Event Name</label>
-                    <input type="text" id="name" name="name" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label for="description" class="block text-gray-700 font-medium mb-2">Description</label>
-                    <textarea id="description" name="description" rows="4" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                </div>
-
-                <div>
-                    <label for="poster" class="block text-gray-700 font-medium mb-2">Poster URL</label>
-                    <input type="url" id="poster" name="poster" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label for="location" class="block text-gray-700 font-medium mb-2">Location</label>
-                    <input type="text" id="location" name="location" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="registrationStart" class="block text-gray-700 font-medium mb-2">Registration Start</label>
-                        <input type="datetime-local" id="registrationStart" name="registrationStart" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label for="registrationEnd" class="block text-gray-700 font-medium mb-2">Registration End</label>
-                        <input type="datetime-local" id="registrationEnd" name="registrationEnd" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label for="eventStart" class="block text-gray-700 font-medium mb-2">Event Start</label>
-                        <input type="datetime-local" id="eventStart" name="eventStart" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label for="eventEnd" class="block text-gray-700 font-medium mb-2">Event End</label>
-                        <input type="datetime-local" id="eventEnd" name="eventEnd" required
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="seatsAvailable" class="block text-gray-700 font-medium mb-2">Available Seats</label>
-                    <input type="number" id="seatsAvailable" name="seatsAvailable" min="1" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label for="category" class="block text-gray-700 font-medium mb-2">Category</label>
-                    <select id="category" name="category" required
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select a category</option>
-                        <option value="bootcamp">Bootcamp</option>
-                        <option value="workshop">Workshop</option>
-                        <option value="meeting">Meeting</option>
-                        <option value="hackathon">Hackathon</option>
-                        <option value="seminar">Seminar</option>
-                        <option value="conference">Conference</option>
-                        <option value="networking">Networking</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-4">
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                        Create Event
-                    </button>
-                    <a href="/clubs/<%= club.uuid %>" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
-                        Cancel
+            <div class="col">
+                <h1 class="display-6 fw-bold mb-2"><%= club.name %></h1>
+                <p class="lead mb-0 text-muted">إنشاء فعالية جديدة</p>
+            </div>
+            <div class="col-auto">
+                <div class="d-flex gap-2">
+                    <a href="/club/<%= club.uuid %>" class="btn btn-outline-primary px-4">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        العودة إلى لوحة التحكم
                     </a>
                 </div>
             </div>
-        </form>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-4">
+                <i class="fas fa-calendar-plus text-primary me-2"></i>
+                إنشاء فعالية جديدة
+            </h5>
+
+            <form id="create-event-form" action="/clubs/<%= club.uuid %>/events/create" method="POST">
+                <!-- Event Name -->
+                <div class="mb-4">
+                    <label for="eventName" class="form-label fw-bold">اسم الفعالية</label>
+                    <input type="text" id="eventName" name="name" class="form-control" placeholder="أدخل اسم الفعالية" required>
+                </div>
+
+                <!-- Event Description -->
+                <div class="mb-4">
+                    <label for="eventDescription" class="form-label fw-bold">وصف الفعالية</label>
+                    <textarea id="eventDescription" name="description" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <!-- Poster URL -->
+                <div class="mb-4">
+                    <label for="eventPoster" class="form-label fw-bold">رابط الملصق</label>
+                    <input type="url" id="eventPoster" name="poster" class="form-control" placeholder="أدخل رابط الملصق" required>
+                    <small class="form-text text-muted">الأنواع المقبولة: JPEG, PNG, GIF</small>
+                </div>
+
+                <!-- Seats Available -->
+                <div class="mb-4">
+                    <label for="eventSeats" class="form-label fw-bold">عدد المقاعد</label>
+                    <input type="number" id="eventSeats" name="seatsAvailable" class="form-control" min="1" required>
+                </div>
+
+                <!-- Event Category -->
+                <div class="mb-4">
+                    <label for="eventCategory" class="form-label fw-bold">نوع الفعالية</label>
+                    <select id="eventCategory" name="category" class="form-select" required>
+                        <option value="" disabled selected>اختر نوع الفعالية</option>
+                        <option value="bootcamp">معسكر - Bootcamp</option>
+                        <option value="workshop">ورشة عمل - Workshop</option>
+                        <option value="meeting">اجتماع - Meeting</option>
+                        <option value="hackathon">هاكاثون - Hackathon</option>
+                        <option value="seminar">ندوة - Seminar</option>
+                        <option value="conference">مؤتمر - Conference</option>
+                        <option value="networking">شبكات - Networking</option>
+                    </select>
+                </div>
+
+                <!-- Registration Dates -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="registerStartDate" class="form-label fw-bold">بداية التسجيل</label>
+                        <input type="datetime-local" id="registerStartDate" name="registrationStart" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="registerEndDate" class="form-label fw-bold">نهاية التسجيل</label>
+                        <input type="datetime-local" id="registerEndDate" name="registrationEnd" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Event Dates -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="eventStart" class="form-label fw-bold">بداية الفعالية</label>
+                        <input type="datetime-local" id="eventStart" name="eventStart" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="eventEnd" class="form-label fw-bold">نهاية الفعالية</label>
+                        <input type="datetime-local" id="eventEnd" name="eventEnd" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="mb-4">
+                    <label for="eventLocation" class="form-label fw-bold">الموقع</label>
+                    <input type="text" id="eventLocation" name="location" class="form-control" placeholder="أدخل موقع الفعالية" required>
+                    <small class="form-text text-muted">يجب أن يكون الموقع أكثر من 3 أحرف.</small>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/club/<%= club.uuid %>" class="btn btn-secondary px-4">
+                        <i class="fas fa-times me-2"></i>
+                        إلغاء
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-check me-2"></i>
+                        إنشاء الفعالية
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">نجاح</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                تم إنشاء الفعالية بنجاح!!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-document.getElementById('eventForm').addEventListener('submit', function(e) {
-    const registrationStart = new Date(document.getElementById('registrationStart').value);
-    const registrationEnd = new Date(document.getElementById('registrationEnd').value);
-    const eventStart = new Date(document.getElementById('eventStart').value);
-    const eventEnd = new Date(document.getElementById('eventEnd').value);
+    document.getElementById('create-event-form').addEventListener('submit', function(e) {
+        const registrationStart = new Date(document.getElementById('registerStartDate').value);
+        const registrationEnd = new Date(document.getElementById('registerEndDate').value);
+        const eventStart = new Date(document.getElementById('eventStart').value);
+        const eventEnd = new Date(document.getElementById('eventEnd').value);
+        const location = document.getElementById('eventLocation').value.trim();
+
+        let errorMessage = '';
+
+        if (eventName .length <= 3) {
+            errorMessage = 'يجب أن يكون اسم الفعالية أكثر من 3 أحرف.';
+        }
+        // Check location length
+        if (location.length <= 3) {
+            errorMessage = 'يجب أن يكون الموقع أكثر من 3 أحرف.';
+        }
+        // Check registration dates
+        else if (registrationEnd <= registrationStart) {
+            errorMessage = 'نهاية التسجيل يجب أن تكون بعد تاريخ البداية';
+        }
+        // Check event dates
+        else if (eventEnd <= eventStart) {
+            errorMessage = 'نهاية الفعالية يجب أن تكون بعد تاريخ البداية';
+        }
+        // Check if event starts after registration ends
+        else if (eventStart <= registrationEnd) {
+            errorMessage = 'يجب أن تبدأ الفعالية بعد انتهاء فترة التسجيل';
+        }
+
+        if (errorMessage) {
+            e.preventDefault();
+            alert(errorMessage);
+        } else {
+            e.preventDefault();
+            // Show success modal
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+            // Optionally, submit the form after a delay
+            setTimeout(() => {
+                e.target.submit();
+            }, 2000);
+        }
+    });
+
+    // Set minimum date-time to now for registration start
     const now = new Date();
+    const nowStr = now.toISOString().slice(0, 16);
+    document.getElementById('registerStartDate').min = nowStr;
 
-    let errorMessage = '';
+    // Update min values based on previous date selections
+    document.getElementById('registerStartDate').addEventListener('change', function() {
+        document.getElementById('registerEndDate').min = this.value;
+    });
 
-    // Check registration dates
-    if (registrationEnd <= registrationStart) {
-        errorMessage = 'Registration end date must be after registration start date';
-    }
-    // Check event dates
-    else if (eventEnd <= eventStart) {
-        errorMessage = 'Event end date must be after event start date';
-    }
-    // Check if event starts after registration ends
-    else if (eventStart <= registrationEnd) {
-        errorMessage = 'Event must start after registration period ends';
-    }
+    document.getElementById('registerEndDate').addEventListener('change', function() {
+        document.getElementById('eventStart').min = this.value;
+    });
 
-    if (errorMessage) {
-        e.preventDefault();
-        alert(errorMessage);
-    }
-});
-
-// Set minimum date-time to now for registration start
-const now = new Date();
-const nowStr = now.toISOString().slice(0, 16);
-document.getElementById('registrationStart').min = nowStr;
-
-// Update min values based on previous date selections
-document.getElementById('registrationStart').addEventListener('change', function() {
-    document.getElementById('registrationEnd').min = this.value;
-});
-
-document.getElementById('registrationEnd').addEventListener('change', function() {
-    document.getElementById('eventStart').min = this.value;
-});
-
-document.getElementById('eventStart').addEventListener('change', function() {
-    document.getElementById('eventEnd').min = this.value;
-});
+    document.getElementById('eventStart').addEventListener('change', function() {
+        document.getElementById('eventEnd').min = this.value;
+    });
 </script>
 
-<%- include('../partials/footer') %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

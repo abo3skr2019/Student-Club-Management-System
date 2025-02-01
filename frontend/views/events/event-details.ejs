@@ -1,115 +1,171 @@
-<%- include('../partials/header') %>
-
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="<%= event.poster %>" alt="<%= event.name %>" class="w-full h-64 object-cover">
-        <div class="p-6">
-            <div class="flex justify-between items-start mb-4">
-                <h1 class="text-3xl font-bold"><%= event.name %></h1>
-                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
-                    <%= event.category.charAt(0).toUpperCase() + event.category.slice(1) %>
+<div class="container py-5">
+    <div class="card border-0 shadow-sm">
+        <div class="position-relative">
+            <img src="<%= event.poster %>" onerror="this.onerror=null;this.src='https://medcenterhealth.org/wp-content/uploads/mch-event-placeholder@2x-1640x923.png';" class="card-img-top" alt="<%= event.name %>" style="height: 200px; object-fit: cover;">                <span class="badge bg-primary">
+                    <i class="fas fa-calendar me-1"></i>
+                    <%= new Date(event.eventStart).toLocaleDateString('ar-SA') %>
                 </span>
             </div>
+            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                <div class="d-flex justify-content-between align-items-center text-white">
+                    <span>
+                        <i class="fas fa-clock me-2"></i>
+                        باقي على الفعالية
+                    </span>
+                    <span class="badge bg-danger px-3">
+                        <%= Math.ceil((new Date(event.eventStart) - new Date()) / (1000 * 60 * 60 * 24)) %> يوم
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <h1 class="display-6 fw-bold mb-3"><%= event.name %></h1>
+            <p class="text-muted mb-4"><%= event.description %></p>
 
-            <div class="mb-6 text-gray-600">
-                <p class="mb-4"><%= event.description %></p>
-                <p class="mb-2"><strong>Location:</strong> <%= event.location %></p>
-                <p class="mb-2"><strong>Organized by:</strong> 
-                    <a href="/clubs/<%= event.club.uuid %>" class="text-blue-600 hover:text-blue-800">
-                        <%= event.club.name %>
+            <div class="row g-4 mb-4">
+                <!-- Event Details -->
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                تفاصيل الفعالية
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <strong>الموقع:</strong> <%= event.location %>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-users text-primary me-2"></i>
+                                    <strong>المقاعد المتاحة:</strong> <%= event.seatsRemaining %>/<%= event.seatsAvailable %>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                    <strong>تاريخ الفعالية:</strong> <%= new Date(event.eventStart).toLocaleString('ar-SA') %>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-clock text-primary me-2"></i>
+                                    <strong>المدة:</strong> <%= Math.ceil((new Date(event.eventEnd) - new Date(event.eventStart)) / (1000 * 60 * 60)) %> ساعة
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Details -->
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-calendar-check text-primary me-2"></i>
+                                تفاصيل التسجيل
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                    <strong>بداية التسجيل:</strong> <%= new Date(event.registrationStart).toLocaleString('ar-SA') %>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-times text-primary me-2"></i>
+                                    <strong>نهاية التسجيل:</strong> <%= new Date(event.registrationEnd).toLocaleString('ar-SA') %>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-users text-primary me-2"></i>
+                                    <strong>المسجلين:</strong> <%= event.registeredUsers.length %>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 mb-4">
+                <% if (isEventAdmin) { %>
+                    <a href="/events/<%= event.uuid %>/edit" class="btn btn-warning">
+                        <i class="fas fa-edit me-1"></i>
+                        تعديل الفعالية
                     </a>
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div class="p-4 bg-gray-50 rounded">
-                    <h3 class="font-semibold mb-2">Event Schedule</h3>
-                    <p>Starts: <%= new Date(event.eventStart).toLocaleString() %></p>
-                    <p>Ends: <%= new Date(event.eventEnd).toLocaleString() %></p>
-                </div>
-                <div class="p-4 bg-gray-50 rounded">
-                    <h3 class="font-semibold mb-2">Registration</h3>
-                    <p>Opens: <%= new Date(event.registrationStart).toLocaleString() %></p>
-                    <p>Closes: <%= new Date(event.registrationEnd).toLocaleString() %></p>
-                    <p class="mt-2">Available Seats: <%= event.seatsRemaining %>/<%= event.seatsAvailable %></p>
-                </div>
-            </div>
-
-            <% if (user) { %>
-                <div class="flex gap-4 mb-6">
-                    <% if (isEventAdmin) { %>
-                        <a href="/events/<%= event.uuid %>/edit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                            Edit Event
-                        </a>
-                        <button onclick="deleteEvent('<%= event.uuid %>')" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
-                            Delete Event
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-1"></i>
+                        حذف الفعالية
+                    </button>
+                <% } else { %>
+                    <% if (isRegistered) { %>
+                        <button class="btn btn-danger" onclick="unregisterFromEvent('<%= event.uuid %>')">
+                            <i class="fas fa-user-times me-1"></i>
+                            إلغاء التسجيل
+                        </button>
+                    <% } else if (event.seatsRemaining > 0) { %>
+                        <button class="btn btn-success disabled" onclick="registerForEvent('<%= event.uuid %>')">
+                            <i class="fas fa-user-plus me-1"></i>
+                            التسجيل الآن(coming soon)
                         </button>
                     <% } else { %>
-                        <% if (isRegistered) { %>
-                            <button onclick="unregisterFromEvent('<%= event.uuid %>')" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
-                                Unregister
-                            </button>
-                        <% } else if (event.seatsRemaining > 0) { %>
-                            <button onclick="registerForEvent('<%= event.uuid %>')" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
-                                Register
-                            </button>
-                        <% } else { %>
-                            <button disabled class="bg-gray-400 text-white px-6 py-2 rounded cursor-not-allowed">
-                                No Seats Available
-                            </button>
-                        <% } %>
+                        <button class="btn btn-secondary disabled">
+                            <i class="fas fa-times-circle me-1"></i>
+                            لا توجد مقاعد
+                        </button>
                     <% } %>
-                </div>
+                <% } %>
+            </div>
 
-                <% if (isEventAdmin) { %>
-                    <div class="mt-8">
-                        <h2 class="text-2xl font-bold mb-4">Registered Users</h2>
-                        <div class="bg-white rounded-lg shadow overflow-hidden">
-                            <table class="min-w-full">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
-                                    </tr>
+            <!-- Registered Users Table (for Admins) -->
+            <% if (isEventAdmin && event.registeredUsers.length > 0) { %>
+                <div class="card border-0 bg-light">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fas fa-users text-primary me-2"></i>
+                            المسجلين
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>تاريخ التسجيل</th>
+                                </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <% if (event.registeredUsers.length === 0) { %>
-                                        <tr>
-                                            <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-                                                No registered users yet
-                                            </td>
-                                        </tr>
-                                    <% } else { %>
-                                        <% event.registeredUsers.forEach(user => { %>
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="flex items-center">
-                                                        <div class="h-10 w-10 flex-shrink-0">
-                                                            <img class="h-10 w-10 rounded-full" src="<%= user.profileImage %>" alt="">
-                                                        </div>
-                                                        <div class="ml-4">
-                                                            <div class="text-sm font-medium text-gray-900">
-                                                                <%= user.displayName %>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm text-gray-900"><%= user.email %></div>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <%= user.registrationDate ? new Date(user.registrationDate).toLocaleString() : 'N/A' %>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    <% } %>
+                                <tbody>
+                                <% event.registeredUsers.forEach(user => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="<%= user.profileImage %>" class="rounded-circle me-2" width="40" height="40" alt="<%= user.displayName %>">
+                                                <%= user.displayName %>
+                                            </div>
+                                        </td>
+                                        <td><%= user.email %></td>
+                                        <td><%= new Date(user.registrationDate).toLocaleDateString('ar-SA') %></td>
+                                    </tr>
+                                <% }); %>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                <% } %>
+                </div>
             <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">تأكيد الحذف</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                هل أنت متأكد من رغبتك في حذف هذه الفعالية؟ هذا الإجراء لا يمكن التراجع عنه.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-danger" onclick="deleteEvent('<%= event.uuid %>')">حذف</button>
+            </div>
         </div>
     </div>
 </div>
@@ -134,7 +190,7 @@ async function registerForEvent(eventId) {
 
 async function unregisterFromEvent(eventId) {
     if (!confirm('Are you sure you want to unregister from this event?')) return;
-    
+
     try {
         const response = await fetch(`/events/${eventId}/unregister`, {
             method: 'POST',
@@ -155,13 +211,13 @@ async function deleteEvent(eventId) {
     if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
         return;
     }
-    
+
     try {
         const response = await fetch(`/events/${eventId}/delete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (response.ok) {
             window.location.href = '/events';
         } else {
