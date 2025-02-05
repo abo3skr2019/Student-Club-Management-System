@@ -187,6 +187,8 @@ describe('Event Service', () => {
             expect(mockEvent.seatsRemaining).toBe(99);
             expect(mockEvent.save).toHaveBeenCalled();
             expect(mockUser.save).toHaveBeenCalled();
+            expect(mockUser.eventsJoined[0]).toHaveProperty('event', mockEvent._id);
+            expect(mockUser.eventsJoined[0]).toHaveProperty('registrationDate');
         });
 
         test('should throw error if event is full', async () => {
@@ -208,7 +210,10 @@ describe('Event Service', () => {
         });
 
         test('should throw error if user is already registered', async () => {
-            mockEvent.registeredUsers = ['user123'];
+            mockUser.eventsJoined = [{
+                event: mockEvent._id,
+                registrationDate: new Date()
+            }];
             User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
 
@@ -236,7 +241,10 @@ describe('Event Service', () => {
         beforeEach(() => {
             mockEvent.registeredUsers = ['user123'];
             mockEvent.seatsRemaining = 99;
-            mockUser.eventsJoined = ['event123'];
+            mockUser.eventsJoined = [{
+                event: mockEvent._id,
+                registrationDate: new Date()
+            }];
         });
 
         test('should unregister user from event successfully', async () => {
@@ -249,6 +257,7 @@ describe('Event Service', () => {
             expect(mockEvent.seatsRemaining).toBe(100);
             expect(mockEvent.save).toHaveBeenCalled();
             expect(mockUser.save).toHaveBeenCalled();
+            expect(mockUser.eventsJoined).toHaveLength(0);
         });
 
         test('should throw error if user not found', async () => {
@@ -269,7 +278,7 @@ describe('Event Service', () => {
         });
 
         test('should throw error if user is not registered', async () => {
-            mockEvent.registeredUsers = ['other-user'];
+            mockUser.eventsJoined = [];
             User.findById.mockResolvedValue(mockUser);
             Event.findOne.mockResolvedValue(mockEvent);
     
@@ -311,16 +320,16 @@ describe('Event Service', () => {
             Club.findByIdAndUpdate.mockResolvedValue(true);
             User.updateMany.mockResolvedValue(true);
             Event.deleteOne.mockResolvedValue(true);
-
+    
             await eventService.deleteEvent('event-uuid-123');
-
+    
             expect(Club.findByIdAndUpdate).toHaveBeenCalledWith(
                 mockEvent.club,
                 { $pull: { createdEvents: mockEvent._id } }
             );
             expect(User.updateMany).toHaveBeenCalledWith(
-                { eventsJoined: mockEvent._id },
-                { $pull: { eventsJoined: mockEvent._id } }
+                { "eventsJoined.event": mockEvent._id },
+                { $pull: { eventsJoined: { event: mockEvent._id } } }
             );
             expect(Event.deleteOne).toHaveBeenCalledWith({ _id: mockEvent._id });
         });
