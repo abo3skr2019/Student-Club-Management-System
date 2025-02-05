@@ -78,13 +78,17 @@ const UserSchema = new Schema(
         ref: "Club",
       },
     ],
-    eventsJoined: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Event",
-        index: true,
+    eventsJoined: [{
+      event: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Event',
+          required: true
       },
-    ],
+      registrationDate: {
+          type: Date,
+          default: Date.now
+      }
+  }],
     /*
     Possible TODO: Add the following fields:
     - eventsManaged: Array of Event references    
