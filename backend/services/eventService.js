@@ -137,18 +137,19 @@ const registerUser = async (eventId, userId) => {
             throw new Error('No seats available');
         }
 
-        if (event.registeredUsers.includes(userId)) {
+        if (user.eventsJoined.some(reg => reg.event.toString() === event._id.toString())) {
             throw new Error('User is already registered for this event');
         }
+
+        user.eventsJoined.push({
+            event: event._id,
+            registrationDate: new Date()
+        });
+        await user.save();
 
         event.registeredUsers.push(userId);
         event.seatsRemaining--;
         await event.save();
-
-        if (!user.eventsJoined.includes(event._id)) {
-            user.eventsJoined.push(event._id);
-            await user.save();
-        }
 
         return event;
     } catch (error) {
@@ -178,20 +179,20 @@ const unregisterUser = async (eventId, userId) => {
             throw new Error('Cannot unregister from this event at this time');
         }
 
-        if (!event.registeredUsers.includes(userId)) {
+        if (!user.eventsJoined.some(reg => reg.event.toString() === event._id.toString())) {
             throw new Error('User is not registered for this event');
         }
+
+        user.eventsJoined = user.eventsJoined.filter(
+            reg => reg.event.toString() !== event._id.toString()
+        );
+        await user.save();
 
         event.registeredUsers = event.registeredUsers.filter(
             id => id.toString() !== userId
         );
         event.seatsRemaining++;
         await event.save();
-
-        user.eventsJoined = user.eventsJoined.filter(
-            eventId => eventId.toString() !== event._id.toString()
-        );
-        await user.save();
 
         return event;
     } catch (error) {
@@ -216,8 +217,8 @@ const deleteEvent = async (eventId) => {
         });
 
         await User.updateMany(
-            { eventsJoined: event._id },
-            { $pull: { eventsJoined: event._id } }
+            { "eventsJoined.event": event._id },
+            { $pull: { eventsJoined: { event: event._id } } }
         );
 
         await Event.deleteOne({ _id: event._id });
