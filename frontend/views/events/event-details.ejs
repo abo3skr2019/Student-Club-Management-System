@@ -1,124 +1,87 @@
 <div class="container py-5">
-    <div class="card border-0 shadow-sm">
-        <div class="position-relative">
-            <img src="<%= event.poster %>" onerror="this.onerror=null;this.src='https://medcenterhealth.org/wp-content/uploads/mch-event-placeholder@2x-1640x923.png';" class="card-img-top" alt="<%= event.name %>" style="height: 200px; object-fit: cover;">                <span class="badge bg-primary">
-                    <i class="fas fa-calendar me-1"></i>
-                    <%= new Date(event.eventStart).toLocaleDateString('ar-SA') %>
-                </span>
-            </div>
-            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                <div class="d-flex justify-content-between align-items-center text-white">
-                    <span>
-                        <i class="fas fa-clock me-2"></i>
-                        باقي على الفعالية
-                    </span>
-                    <span class="badge bg-danger px-3">
-                        <%= Math.ceil((new Date(event.eventStart) - new Date()) / (1000 * 60 * 60 * 24)) %> يوم
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="card-body p-4">
-            <h1 class="display-6 fw-bold mb-3"><%= event.name %></h1>
-            <p class="text-muted mb-4"><%= event.description %></p>
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <img src="<%= event.poster %>"
+                     onerror="this.onerror=null;this.src='https://medcenterhealth.org/wp-content/uploads/mch-event-placeholder@2x-1640x923.png';"
+                     class="card-img-top" alt="<%= event.name %>" style="height: 300px; object-fit: cover;">
 
-            <div class="row g-4 mb-4">
-                <!-- Event Details -->
-                <div class="col-md-6">
-                    <div class="card border-0 bg-light">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-3">
-                                <i class="fas fa-info-circle text-primary me-2"></i>
-                                تفاصيل الفعالية
-                            </h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                                    <strong>الموقع:</strong> <%= event.location %>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-users text-primary me-2"></i>
-                                    <strong>المقاعد المتاحة:</strong> <%= event.seatsRemaining %>/<%= event.seatsAvailable %>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
-                                    <strong>تاريخ الفعالية:</strong> <%= new Date(event.eventStart).toLocaleString('ar-SA') %>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-clock text-primary me-2"></i>
-                                    <strong>المدة:</strong> <%= Math.ceil((new Date(event.eventEnd) - new Date(event.eventStart)) / (1000 * 60 * 60)) %> ساعة
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Registration Details -->
-                <div class="col-md-6">
-                    <div class="card border-0 bg-light">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-3">
-                                <i class="fas fa-calendar-check text-primary me-2"></i>
-                                تفاصيل التسجيل
-                            </h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
-                                    <strong>بداية التسجيل:</strong> <%= new Date(event.registrationStart).toLocaleString('ar-SA') %>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-calendar-times text-primary me-2"></i>
-                                    <strong>نهاية التسجيل:</strong> <%= new Date(event.registrationEnd).toLocaleString('ar-SA') %>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-users text-primary me-2"></i>
-                                    <strong>المسجلين:</strong> <%= registeredUsersData.length %>
-                                </li>
-                            </ul>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="card-title fs-3 fw-bold mb-3"><%= event.name %></h1>
+                        <div class="text-end">
+                            <% if (isEventAdmin) { %>
+                                <div class="btn-group" role="group">
+                                    <a href="/events/<%= event.uuid %>/edit" class="btn btn-warning">
+                                        <i class="bi bi-pencil me-1"></i> تعديل
+                                    </a>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <i class="bi bi-trash me-1"></i> حذف
+                                    </button>
+                                </div>
+                            <% } else { %>
+                                <% if (isRegistered) { %>
+                                    <button class="btn btn-danger" onclick="unregisterFromEvent('<%= event.uuid %>')">
+                                        <i class="bi bi-x-circle me-1"></i> إلغاء التسجيل
+                                    </button>
+                                <% } else if (event.seatsRemaining > 0) { %>
+                                    <button class="btn btn-success" onclick="registerForEvent('<%= event.uuid %>')">
+                                        <i class="bi bi-plus-circle me-1"></i> التسجيل الآن
+                                    </button>
+                                <% } else { %>
+                                    <button class="btn btn-secondary disabled">
+                                        <i class="bi bi-exclamation-circle me-1"></i> لا توجد مقاعد
+                                    </button>
+                                <% } %>
+                            <% } %>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="d-flex gap-2 mb-4">
-                <% if (isEventAdmin) { %>
-                    <a href="/events/<%= event.uuid %>/edit" class="btn btn-warning">
-                        <i class="fas fa-edit me-1"></i>
-                        تعديل الفعالية
-                    </a>
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                        <i class="fas fa-trash me-1"></i>
-                        حذف الفعالية
-                    </button>
-                <% } else { %>
-                    <% if (isRegistered) { %>
-                        <button class="btn btn-danger" onclick="unregisterFromEvent('<%= event.uuid %>')">
-                            <i class="fas fa-user-times me-1"></i>
-                            إلغاء التسجيل
-                        </button>
-                    <% } else if (event.seatsRemaining > 0) { %>
-                        <button class="btn btn-success disabled" onclick="registerForEvent('<%= event.uuid %>')">
-                            <i class="fas fa-user-plus me-1"></i>
-                            التسجيل الآن(coming soon)
-                        </button>
-                    <% } else { %>
-                        <button class="btn btn-secondary disabled">
-                            <i class="fas fa-times-circle me-1"></i>
-                            لا توجد مقاعد
-                        </button>
-                    <% } %>
-                <% } %>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-info-circle text-primary me-2"></i> تفاصيل الفعالية</h5>
+                    <ul class="list-group list-group-flush mb-3">
+                        <p><%= event.description %></p>
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-calendar text-primary me-2"></i>
+                                <span class="me-2">التاريخ:</span>
+                                <strong><%= new Date(event.eventStart).toLocaleDateString('ar-SA') %> - <%= new Date(event.eventEnd).toLocaleDateString('ar-SA') %></strong>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clock text-primary me-2"></i>
+                                <span class="me-2">الوقت:</span>
+                                <strong><%= new Date(event.eventStart).toLocaleTimeString('ar-SA' ,{ hour: 'numeric', minute: 'numeric' }) %> - <%= new Date(event.eventEnd).toLocaleTimeString('ar-SA', { hour: 'numeric', minute: 'numeric' }) %></strong>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-geo text-primary me-2"></i>
+                                <span class="me-2">الموقع:</span>
+                                <strong><%= event.location %></strong>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-people text-primary me-2"></i>
+                                <span class="me-2">المقاعد:</span>
+                                <strong><%= event.seatsRemaining %>/<%= event.seatsAvailable %></strong>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-
-            <!-- Registered Users Table (for Admins) -->
+            <div>
             <% if (isEventAdmin && registeredUsersData.length > 0) { %>
-                <div class="card border-0 bg-light">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3">
-                            <i class="fas fa-users text-primary me-2"></i>
-                            المسجلين
-                        </h5>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title m-0"><i class="bi bi-people text-primary me-2"></i> المسجلين</h5>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
@@ -148,24 +111,6 @@
                 </div>
             <% } %>
         </div>
-    </div>
-</div>
-
-<!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">تأكيد الحذف</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                هل أنت متأكد من رغبتك في حذف هذه الفعالية؟ هذا الإجراء لا يمكن التراجع عنه.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-danger" onclick="deleteEvent('<%= event.uuid %>')">حذف</button>
-            </div>
         </div>
     </div>
 </div>
