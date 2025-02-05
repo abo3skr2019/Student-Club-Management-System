@@ -32,17 +32,25 @@
                 <h3 class="h5 text-primary fw-bold"><i class="fas fa-calendar-check me-2"></i> الفعاليات المسجل فيها</h3>
                 <% if (user.eventsJoined && user.eventsJoined.length > 0) { %>
                     <div class="row g-3">
-                        <% user.eventsJoined.forEach(event => { %>
-                            <div class="col-md-6">
-                                <div class="card border-0 shadow-sm event-card">
-                                    <div class="card-body p-3">
-                                        <h6 class="fw-bold mb-2"><%= event.name %></h6>
-                                        <p class="text-muted small mb-1"><i class="fas fa-calendar-alt me-1"></i> <%= new Date(event.eventStart).toLocaleDateString('ar-SA') %></p>
-                                        <p class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i> <%= event.location %></p>
-                                        <a href="/events/<%= event.uuid %>" class="btn btn-primary btn-sm w-100">التفاصيل</a>
+                        <% user.eventsJoined.forEach(registration => { %>
+                            <% if (registration.event) { %>
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm event-card">
+                                        <div class="card-body p-3">
+                                            <h6 class="fw-bold mb-2"><%= registration.event.name %></h6>
+                                            <p class="text-muted small mb-1">
+                                                <i class="fas fa-calendar-alt me-1"></i> 
+                                                <%= new Date(registration.event.eventStart).toLocaleDateString('ar-SA') %>
+                                            </p>
+                                            <p class="text-muted small">
+                                                <i class="fas fa-map-marker-alt me-1"></i> 
+                                                <%= registration.event.location %>
+                                            </p>
+                                            <a href="/events/<%= registration.event.uuid %>" class="btn btn-primary btn-sm w-100">التفاصيل</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            <% } %>
                         <% }); %>
                     </div>
                 <% } else { %>

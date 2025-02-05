@@ -47,7 +47,12 @@ const updateProfile = async (req, res) => {
  */
 const renderProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id)
+            .populate({
+                path: 'eventsJoined.event',
+                model: 'Event'
+            });
+
         if (!user) {
             return res.status(404).send('User not found');
         }
@@ -57,6 +62,8 @@ const renderProfile = async (req, res) => {
             clubUUID: req.user.clubUUID
         };
 
+        console.log(userWithClubUUID)
+
         res.render('profile', {
             title: "وصل - الملف الشخصي",
             HeaderOrSidebar: 'header',
@@ -65,6 +72,7 @@ const renderProfile = async (req, res) => {
             user: userWithClubUUID
         });
     } catch (err) {
+        console.log(err)
         res.status(500).send('Server error');
     }
 };
