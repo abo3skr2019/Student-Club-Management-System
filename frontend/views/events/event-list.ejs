@@ -12,17 +12,15 @@
         <% if (events.length > 0) { %>
             <% events.forEach(event => { %>
                 <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm hover-card">
-                        <!-- Event Image Section -->
+                    <a href="/events/<%= event.uuid %>" class="card h-100 shadow-sm hover-card text-decoration-none">
                         <div class="position-relative">
                             <img src="<%= event.poster %>"
                                  onerror="this.onerror=null;this.src='https://medcenterhealth.org/wp-content/uploads/mch-event-placeholder@2x-1640x923.png';"
                                  class="card-img-top object-fit-cover"
                                  style="height: 220px;"
                                  alt="<%= event.name %>">
-                            <!-- Date Badge -->
                             <div class="position-absolute top-0 start-0 m-3">
-                                <div class="date-badge">
+                                <div class="date-badge bg-primary text-white p-2 rounded">
                                     <i class="fas fa-calendar-day"></i>
                                     <%= new Date(event.eventStart).toLocaleDateString('ar-SA') %>
                                 </div>
@@ -47,14 +45,9 @@
                                         <%= event.location %>
                                     </span>
                                 </div>
-
-                                <a href="/events/<%= event.uuid %>" class="btn btn-primary w-100 details-btn">
-                                    <i class="fas fa-arrow-circle-right me-2"></i>
-                                    عرض التفاصيل
-                                </a>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             <% }); %>
         <% } else { %>
@@ -89,5 +82,13 @@
     .details-btn {
         background: linear-gradient(45deg, #4A90E2, #003366);
         border-color: transparent;
+    }
+    .card {
+        text-decoration: none;
+        color: inherit;
+    }
+    .date-badge {
+        font-size: 1rem;
+        font-weight: bold;
     }
 </style>

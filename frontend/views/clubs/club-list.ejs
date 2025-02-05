@@ -18,7 +18,7 @@
         <% if (clubs.length > 0) { %>
             <% clubs.forEach(club => { %>
                 <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm hover-card">
+                    <a href="/clubs/<%= club.uuid %>" class="card h-100 shadow-sm hover-card text-decoration-none">
                         <div class="position-relative">
                             <img src="<%= club.logo %>"
                                  onerror="this.onerror=null;this.src='https://medcenterhealth.org/wp-content/uploads/mch-event-placeholder@2x-1640x923.png';"
@@ -37,13 +37,8 @@
                             </p>
 
                             <p class="text-muted">المشرف: <%= club.clubAdmin.displayName %></p>
-
-                            <a href="/clubs/<%= club.uuid %>" class="btn btn-primary w-100 details-btn">
-                                <i class="fas fa-arrow-circle-right me-2"></i>
-                                عرض التفاصيل
-                            </a>
                         </div>
-                    </div>
+                    </a>
                 </div>
             <% }); %>
         <% } else { %>
@@ -78,5 +73,9 @@
     .details-btn {
         background: linear-gradient(45deg, #4A90E2, #003366);
         border-color: transparent;
+    }
+    .card {
+        text-decoration: none;
+        color: inherit;
     }
 </style>
