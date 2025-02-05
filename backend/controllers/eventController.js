@@ -1,3 +1,5 @@
+const Event = require('../models/Event');
+const User = require('../models/User');
 const eventService = require('../services/eventService');
 
 /** 
@@ -31,7 +33,8 @@ const getAllEvents = async (req, res) => {
  */
 const getEventById = async (req, res) => {
     try {
-        const event = await eventService.findByUUID(req.params.eventId);
+        const event = await Event.findOne({ uuid: req.params.eventId })
+            .populate('club', 'name uuid');
 
         if (!event) {
             return res.render('error', {
@@ -43,20 +46,41 @@ const getEventById = async (req, res) => {
 
         // Get admin status
         const isEventAdmin = await eventService.isUserEventAdmin(req.user, event);
+
+        let registeredUsersData = [];
+        if (isEventAdmin) {
+            const registeredUsers = await User.find(
+                { 'eventsJoined.event': event._id },
+                'displayName email profileImage eventsJoined'
+            );
+            
+            registeredUsersData = registeredUsers.map(user => ({
+                user: {
+                    displayName: user.displayName,
+                    email: user.email,
+                    profileImage: user.profileImage
+                },
+                registrationDate: user.eventsJoined.find(
+                    e => e.event.toString() === event._id.toString()
+                ).registrationDate
+            }));
+        }
         
         // Get registration status
-        const isRegistered = req.user && event.registeredUsers.some(
-            registeredUser => registeredUser._id.toString() === req.user._id.toString()
+        const isRegistered = req.user && req.user.eventsJoined.some(
+            reg => reg.event.toString() === event._id.toString()
         );
 
         res.render('events/event-details', {
             event,
             isRegistered,
             isEventAdmin,
+            registeredUsersData,
             user: req.user,
             currentPage: 'events'
         });
     } catch (err) {
+        console.log(err);
         res.render('error', {
             message: 'Error fetching event details',
             user: req.user,
