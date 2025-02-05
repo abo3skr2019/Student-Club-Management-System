@@ -47,7 +47,7 @@ const updateProfile = async (req, res) => {
  */
 const renderProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id).populate('eventsJoined');
         if (!user) {
             return res.status(404).send('User not found');
         }
