@@ -23,7 +23,6 @@
             <p class="text-muted mb-4"><%= event.description %></p>
 
             <div class="row g-4 mb-4">
-                <!-- Event Details -->
                 <div class="col-md-6">
                     <div class="card border-0 bg-light">
                         <div class="card-body p-4">
@@ -53,7 +52,6 @@
                     </div>
                 </div>
 
-                <!-- Registration Details -->
                 <div class="col-md-6">
                     <div class="card border-0 bg-light">
                         <div class="card-body p-4">
@@ -80,7 +78,6 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
             <div class="d-flex gap-2 mb-4">
                 <% if (isEventAdmin) { %>
                     <a href="/events/<%= event.uuid %>/edit" class="btn btn-warning">
@@ -151,7 +148,6 @@
     </div>
 </div>
 
-<!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -228,5 +224,3 @@ async function deleteEvent(eventId) {
     }
 }
 </script>
-
-<%- include('../partials/footer') %>
