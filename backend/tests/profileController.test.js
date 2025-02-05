@@ -74,15 +74,28 @@ describe('profileController', () => {
             const mockUser = {
                 firstName: 'Test',
                 lastName: 'User',
+                eventsJoined: [
+                    { id: 'event1', name: 'Event 1' },
+                    { id: 'event2', name: 'Event 2' }
+                ],
                 toObject: jest.fn().mockReturnValue({
                     firstName: 'Test',
-                    lastName: 'User'
+                    lastName: 'User',
+                    eventsJoined: [
+                        { id: 'event1', name: 'Event 1' },
+                        { id: 'event2', name: 'Event 2' }
+                    ]
                 })
             };
-            User.findById.mockResolvedValue(mockUser);
+
+            // Mock the populate chain
+            User.findById.mockReturnValue({
+                populate: jest.fn().mockResolvedValue(mockUser)
+            });
 
             await profileController.renderProfile(req, res);
 
+            expect(User.findById).toHaveBeenCalledWith('user123');
             expect(res.render).toHaveBeenCalledWith('profile', {
                 title: "وصل - الملف الشخصي",
                 HeaderOrSidebar: 'header',
@@ -91,20 +104,28 @@ describe('profileController', () => {
                 user: {
                     firstName: 'Test',
                     lastName: 'User',
+                    eventsJoined: [
+                        { id: 'event1', name: 'Event 1' },
+                        { id: 'event2', name: 'Event 2' }
+                    ],
                     clubUUID: 'test-club-uuid'
                 }
             });
         });
 
         test('should return 404 if user not found', async () => {
-            User.findById.mockResolvedValue(null);
+            User.findById.mockReturnValue({
+                populate: jest.fn().mockResolvedValue(null)
+            });
             await profileController.renderProfile(req, res);
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.send).toHaveBeenCalledWith('User not found');
         });
 
         test('should handle errors and return 500', async () => {
-            User.findById.mockRejectedValue(new Error('DB Error'));
+            User.findById.mockReturnValue({
+                populate: jest.fn().mockRejectedValue(new Error('DB Error'))
+            });
             await profileController.renderProfile(req, res);
             expect(res.status).toHaveBeenCalledWith(500);
             expect(res.send).toHaveBeenCalledWith('Server error');

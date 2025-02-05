@@ -168,7 +168,7 @@ const unregisterUser = async (eventId, userId) => {
         if (!user) {
             throw new Error('User not found');
         }
-        
+
         const event = await Event.findOne({ uuid: eventId });
         if (!event) {
             throw new Error('Event not found');
@@ -178,12 +178,17 @@ const unregisterUser = async (eventId, userId) => {
             throw new Error('Cannot unregister from this event at this time');
         }
 
-        if (!event.registeredUsers.includes(userId)) {
+        // Ensure comparison with string representations
+        const userIdString = userId.toString();
+        const registeredUserIds = event.registeredUsers.map(id => id.toString());
+
+        if (!registeredUserIds.includes(userIdString)) {
             throw new Error('User is not registered for this event');
         }
 
+        // Filter using string comparison
         event.registeredUsers = event.registeredUsers.filter(
-            id => id.toString() !== userId
+            id => id.toString() !== userIdString
         );
         event.seatsRemaining++;
         await event.save();

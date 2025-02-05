@@ -28,7 +28,7 @@
                 <% if (user) { %>
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="<%= user.profileImage %>" alt="Profile" class="rounded-circle" width="30" height="30">
+                            <img src="<%= user.profileImage %>" onerror="this.onerror=null;this.src='https://api.dicebear.com/9.x/thumbs/svg?seed=Aidan';" alt="Profile" class="rounded-circle" width="30" height="30">
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/profile">حسابي</a></li>

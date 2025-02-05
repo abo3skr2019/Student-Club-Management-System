@@ -23,7 +23,7 @@
             </div>
             <div class="col-auto">
                 <div class="d-flex gap-2">
-                    <a href="/club/<%= club.uuid %>" class="btn btn-outline-primary px-4">
+                    <a href="/clubs/<%= club.uuid %>/dashboard" class="btn btn-outline-primary px-4">
                         <i class="fas fa-arrow-left me-2"></i>
                         العودة إلى لوحة التحكم
                     </a>
@@ -115,7 +115,7 @@
 
                 <!-- Submit Button -->
                 <div class="d-flex justify-content-end gap-2">
-                    <a href="/club/<%= club.uuid %>" class="btn btn-secondary px-4">
+                    <a href="/clubs/<%= club.uuid %>/dashboard" class="btn btn-secondary px-4">
                         <i class="fas fa-times me-2"></i>
                         إلغاء
                     </a>
@@ -149,6 +149,7 @@
 
 <script>
     document.getElementById('create-event-form').addEventListener('submit', function(e) {
+        const eventName = document.getElementById('eventName').value.trim();
         const registrationStart = new Date(document.getElementById('registerStartDate').value);
         const registrationEnd = new Date(document.getElementById('registerEndDate').value);
         const eventStart = new Date(document.getElementById('eventStart').value);
@@ -157,23 +158,15 @@
 
         let errorMessage = '';
 
-        if (eventName .length <= 3) {
+        if (eventName.length <= 3) {
             errorMessage = 'يجب أن يكون اسم الفعالية أكثر من 3 أحرف.';
-        }
-        // Check location length
-        if (location.length <= 3) {
+        } else if (location.length <= 3) {
             errorMessage = 'يجب أن يكون الموقع أكثر من 3 أحرف.';
-        }
-        // Check registration dates
-        else if (registrationEnd <= registrationStart) {
+        } else if (registrationEnd <= registrationStart) {
             errorMessage = 'نهاية التسجيل يجب أن تكون بعد تاريخ البداية';
-        }
-        // Check event dates
-        else if (eventEnd <= eventStart) {
+        } else if (eventEnd <= eventStart) {
             errorMessage = 'نهاية الفعالية يجب أن تكون بعد تاريخ البداية';
-        }
-        // Check if event starts after registration ends
-        else if (eventStart <= registrationEnd) {
+        } else if (eventStart <= registrationEnd) {
             errorMessage = 'يجب أن تبدأ الفعالية بعد انتهاء فترة التسجيل';
         }
 
@@ -190,24 +183,6 @@
                 e.target.submit();
             }, 2000);
         }
-    });
-
-    // Set minimum date-time to now for registration start
-    const now = new Date();
-    const nowStr = now.toISOString().slice(0, 16);
-    document.getElementById('registerStartDate').min = nowStr;
-
-    // Update min values based on previous date selections
-    document.getElementById('registerStartDate').addEventListener('change', function() {
-        document.getElementById('registerEndDate').min = this.value;
-    });
-
-    document.getElementById('registerEndDate').addEventListener('change', function() {
-        document.getElementById('eventStart').min = this.value;
-    });
-
-    document.getElementById('eventStart').addEventListener('change', function() {
-        document.getElementById('eventEnd').min = this.value;
     });
 </script>
 
