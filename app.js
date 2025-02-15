@@ -65,7 +65,7 @@ app.use('/clubs', require('./backend/routes/clubRoutes'));
 app.use('/events', require('./backend/routes/eventRoutes'));
 app.use(require('./backend/routes/auth'));
 app.use(require('./backend/routes/profile'));
-
+app.use(require('./backend/routes/main-misc'));
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

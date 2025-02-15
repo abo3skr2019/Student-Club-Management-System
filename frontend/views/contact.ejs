@@ -1,0 +1,89 @@
+<div class="container mt-5 py-4">
+    <div class="mb-4 text-center">
+        <h1>Contact</h1>
+        <p class="text-secondary">
+            Have a question or feedback? Send us a message and we'll get back to you as soon as possible.
+        </p>
+    </div>
+    <form action="/contact" method="POST" class="mt-4">
+        <div class="mb-3">
+            <label for="title" class="form-label">Subject</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Message</label>
+            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" name="category" required>
+                <option value="bug">Bug Report</option>
+                <option value="feature">Feature Request</option>
+                <option value="task">General Inquiry</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="priority" class="form-label">Priority</label>
+            <select class="form-select" id="priority" name="priority" required>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Your message has been sent successfully. We will get back to you soon.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">Error!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                There was an error sending your message. Please try again later.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const error = urlParams.get('error');
+        
+        if (success === 'true') {
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+        }
+        
+        if (error === 'true') {
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+    });
+</script>
