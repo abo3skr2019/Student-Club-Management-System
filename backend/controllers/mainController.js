@@ -12,7 +12,7 @@ const getIndex = (req, res) => {
 }
 
 /**
- * GET /dashboard
+ * GET /admin/Tickets
  * Dashboard
 */
 const getTicketDashboard = async (req, res) => {
