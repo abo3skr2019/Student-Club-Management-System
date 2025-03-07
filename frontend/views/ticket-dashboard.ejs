@@ -1,0 +1,186 @@
+<!-- TODO Add Messaging and Status Handling -->
+<div class="container mt-5 py-4">
+    <div class="mb-4 text-center">
+        <h1>Tickets Dashboard</h1>
+        <p class="text-secondary">View and manage all tickets</p>
+    </div>
+    
+    <!-- Sorting Controls -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <select class="form-select" id="sortBy" onchange="handleSort()">
+                <option value="createdAt">Date Created</option>
+                <option value="priority">Priority</option>
+                <option value="status">Status</option>
+                <option value="category">Category</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="sortOrder" onchange="handleSort()">
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tickets Table -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="ticketsTableBody">
+                <% tickets.forEach(ticket => { %>
+                    <tr data-ticket='<%= JSON.stringify(ticket) %>'>
+                        <td><%= ticket.title %></td>
+                        <td><span class="badge bg-info"><%= ticket.category %></span></td>
+                        <td>
+                            <span class="badge bg-<%= ticket.priority === 'high' ? 'danger' : 
+                                                    ticket.priority === 'medium' ? 'warning' : 'success' %>">
+                                <%= ticket.priority %>
+                            </span>
+                        </td>
+                        <td><span class="badge bg-secondary"><%= ticket.status %></span></td>
+                        <td><%= ticket.creatorDisplay %></td>
+                        <td><%= new Date(ticket.createdAt).toLocaleDateString() %></td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" 
+                                    onclick="showTicketDetails('<%= JSON.stringify(ticket) %>')">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Ticket Details Modal -->
+<div class="modal fade" id="ticketDetailsModal" tabindex="-1" aria-labelledby="ticketDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ticketDetailsModalLabel">Ticket Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Title:</strong> <span id="modalTitle"></span></p>
+                        <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+                        <p><strong>Priority:</strong> <span id="modalPriority"></span></p>
+                        <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Created By:</strong> <span id="modalCreator"></span></p>
+                        <p><strong>Created At:</strong> <span id="modalCreatedAt"></span></p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Description:</h6>
+                        <p id="modalDescription" class="border p-3 bg-light"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let allTickets = Array.from(document.querySelectorAll('#ticketsTableBody tr')).map(row => {
+    return JSON.parse(row.dataset.ticket);
+});
+
+function handleSort() {
+    const sortBy = document.getElementById('sortBy').value;
+    const sortOrder = document.getElementById('sortOrder').value;
+    
+    const sortedTickets = [...allTickets].sort((a, b) => {
+        let comparison = 0;
+        
+        switch(sortBy) {
+            case 'createdAt':
+                comparison = new Date(a.createdAt) - new Date(b.createdAt);
+                break;
+            case 'priority':
+                const priorityWeight = { high: 3, medium: 2, low: 1 };
+                comparison = priorityWeight[a.priority] - priorityWeight[b.priority];
+                break;
+            case 'status':
+                const statusWeight = { open: 3, inProgress: 2, closed: 1 };
+                comparison = statusWeight[a.status] - statusWeight[b.status];
+                break;
+            
+            case 'category':
+                const categoryWeight = { bug: 3, feature: 2, task: 1 };
+                comparison = categoryWeight[a.category] - categoryWeight[b.category];
+                break;
+            default:
+                comparison = a[sortBy].localeCompare(b[sortBy]);
+        }
+        
+        return sortOrder === 'asc' ? comparison : -comparison;
+    });
+    
+    renderTickets(sortedTickets);
+}
+
+function renderTickets(tickets) {
+    const tbody = document.getElementById('ticketsTableBody');
+    tbody.innerHTML = tickets.map(ticket => `
+        <tr data-ticket='${JSON.stringify(ticket)}'>
+            <td>${ticket.title}</td>
+            <td><span class="badge bg-info">${ticket.category}</span></td>
+            <td>
+                <span class="badge bg-${ticket.priority === 'high' ? 'danger' : 
+                                      ticket.priority === 'medium' ? 'warning' : 'success'}">
+                    ${ticket.priority}
+                </span>
+            </td>
+            <td><span class="badge bg-secondary">${ticket.status}</span></td>
+            <td>${ticket.creatorDisplay}</td>
+            <td>${new Date(ticket.createdAt).toLocaleDateString()}</td>
+            <td>
+                <button class="btn btn-sm btn-primary" data-ticket='${JSON.stringify(ticket)}' onclick="showTicketDetails(this.dataset.ticket)">
+                    View
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function showTicketDetails(ticketJson) {
+    const ticket = JSON.parse(ticketJson);
+    
+    // Set modal content
+    document.getElementById('modalTitle').textContent = ticket.title;
+    document.getElementById('modalCategory').innerHTML = 
+        `<span class="badge bg-info">${ticket.category}</span>`;
+    document.getElementById('modalPriority').innerHTML = 
+        `<span class="badge bg-${ticket.priority === 'high' ? 'danger' : 
+                                 ticket.priority === 'medium' ? 'warning' : 'success'}">${ticket.priority}</span>`;
+    document.getElementById('modalStatus').innerHTML = 
+        `<span class="badge bg-secondary">${ticket.status}</span>`;
+    document.getElementById('modalCreator').textContent = ticket.creatorDisplay;
+    document.getElementById('modalCreatedAt').textContent = 
+        new Date(ticket.createdAt).toLocaleString();
+    document.getElementById('modalDescription').textContent = ticket.description;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('ticketDetailsModal'));
+    modal.show();
+}
+</script>
