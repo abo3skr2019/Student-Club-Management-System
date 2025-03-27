@@ -120,7 +120,7 @@ function handleSort() {
                 comparison = priorityWeight[a.priority] - priorityWeight[b.priority];
                 break;
             case 'status':
-                const statusWeight = { open: 3, inProgress: 2, closed: 1 };
+                const statusWeight = { open: 3, 'in-progress': 2, closed: 1 };
                 comparison = statusWeight[a.status] - statusWeight[b.status];
                 break;
             
