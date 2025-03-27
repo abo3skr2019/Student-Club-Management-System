@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1743030766409,
+      "tag": "0000_graceful_slipstream",
+      "breakpoints": true
+    }
+  ]
+}
