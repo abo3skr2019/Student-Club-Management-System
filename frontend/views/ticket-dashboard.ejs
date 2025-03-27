@@ -53,7 +53,8 @@
                         <td><%= new Date(ticket.createdAt).toLocaleDateString() %></td>
                         <td>
                             <button class="btn btn-sm btn-primary" 
-                                    onclick="showTicketDetails('<%= JSON.stringify(ticket) %>')">
+                                    data-ticket='<%= JSON.stringify(ticket) %>'
+                                    onclick="showTicketDetails(this.dataset.ticket)">
                                 View
                             </button>
                         </td>

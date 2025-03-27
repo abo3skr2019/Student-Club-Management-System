@@ -1,4 +1,11 @@
-import { pgTable, serial, text, varchar, index } from 'drizzle-orm/pg-core';
+import {
+    pgTable,
+    serial,
+    text,
+    varchar,
+    index,
+    integer,
+} from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid } from './common';
@@ -31,12 +38,12 @@ export const ticket = pgTable(
         category: text('category', { enum: TICKET_CATEGORIES })
             .notNull()
             .default('bug'),
-        assignedTo: serial('assigned_to').references(() => user.id, {
+        assignedTo: integer('assigned_to').references(() => user.id, {
             onDelete: 'set null',
         }),
-        createdBy: serial('created_by')
-            .references(() => user.id, { onDelete: 'restrict' })
-            .notNull(),
+        createdBy: integer('created_by').references(() => user.id, {
+            onDelete: 'restrict',
+        }),
         ...timestamps,
     },
     (table) => ({
@@ -66,8 +73,8 @@ const ticketValidation = {
     status: z.enum(TICKET_STATUSES),
     priority: z.enum(TICKET_PRIORITIES),
     category: z.enum(TICKET_CATEGORIES),
-    assignedTo: z.number().int().positive().optional(),
-    createdBy: z.number().int().positive(),
+    assignedTo: z.number().int().positive().nullable(),
+    createdBy: z.number().int().positive().nullable(),
 };
 
 export const insertTicketSchema =

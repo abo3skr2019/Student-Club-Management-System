@@ -75,12 +75,19 @@ Handle contact form submission
 */
 const submitContact = async (req, res) => {
     try {
-        // Validate the request body
-        const validatedData = insertTicketSchema.safeParse({
-            ...req.body,
+        // Create ticket data object similar to mongoose version
+        const ticketData = {
+            title: req.body.title,
+            description: req.body.description,
+            category: req.body.category,
+            priority: req.body.priority,
             status: 'open',
-            createdBy: req.user?.id || null,
-        });
+            assignedTo: null,
+            createdBy: req.user ? req.user.id : null, // null for anonymous users
+        };
+
+        // Validate with schema
+        const validatedData = insertTicketSchema.safeParse(ticketData);
 
         if (!validatedData.success) {
             console.error('Validation error:', validatedData.error);
