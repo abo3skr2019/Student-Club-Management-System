@@ -1,5 +1,7 @@
 const schedule = require('node-schedule');
-const Event = require('../backend/models/Event');
+const { db } = require('../dist/db');
+const { event } = require('../dist/db/schema');
+const { eq, ne } = require('drizzle-orm');
 
 /**
  * Update status for a single event
@@ -8,8 +10,20 @@ const Event = require('../backend/models/Event');
  */
 const updateEventStatus = async (eventId) => {
     try {
-        const event = await Event.findOne({ uuid: eventId });
-        if (!event) {
+        const eventData = await db.query.event.findFirst({
+            where: eq(event.uuid, eventId),
+            columns: {
+                id: true,
+                uuid: true,
+                registrationStart: true,
+                registrationEnd: true,
+                eventStart: true,
+                eventEnd: true,
+                status: true,
+            },
+        });
+
+        if (!eventData) {
             throw new Error('Event not found');
         }
 
@@ -17,26 +31,36 @@ const updateEventStatus = async (eventId) => {
         let newStatus;
 
         // Determine new status
-        if (event.eventEnd < now) {
+        if (eventData.eventEnd < now) {
             newStatus = 'completed';
-        } else if (event.eventStart <= now && event.eventEnd >= now) {
+        } else if (eventData.eventStart <= now && eventData.eventEnd >= now) {
             newStatus = 'ongoing';
-        } else if (now >= event.registrationStart && now <= event.registrationEnd) {
+        } else if (
+            now >= eventData.registrationStart &&
+            now <= eventData.registrationEnd
+        ) {
             newStatus = 'registration_open';
-        } else if (now < event.registrationStart) {
+        } else if (now < eventData.registrationStart) {
             newStatus = 'upcoming';
-        } else if (now > event.registrationEnd && now < event.eventStart) {
+        } else if (
+            now > eventData.registrationEnd &&
+            now < eventData.eventStart
+        ) {
             newStatus = 'registration_closed';
         }
 
         // Only update if status has changed
-        if (newStatus && newStatus !== event.status) {
-            event.status = newStatus;
-            await event.save({ validateBeforeSave: false });
-            console.log(`Updated event ${event.uuid} status to ${newStatus}`);
+        if (newStatus && newStatus !== eventData.status) {
+            await db
+                .update(event)
+                .set({ status: newStatus })
+                .where(eq(event.id, eventData.id));
+            console.log(
+                `Updated event ${eventData.uuid} status to ${newStatus}`,
+            );
         }
 
-        return event;
+        return eventData;
     } catch (error) {
         console.error(`Error updating event ${eventId} status:`, error);
         throw error;
@@ -44,44 +68,65 @@ const updateEventStatus = async (eventId) => {
 };
 
 // Run daily at midnight
-const updateEventStatuses = schedule.scheduleJob('0 0 * * *', async function() {
-    try {
-        console.log('Starting daily event status update...');
-        const now = new Date();
-        
-        const events = await Event.find({ status: { $ne: 'cancelled' } });
+const updateEventStatuses = schedule.scheduleJob(
+    '0 0 * * *',
+    async function () {
+        try {
+            console.log('Starting daily event status update...');
+            const now = new Date();
 
-        if (events.length > 0) {
-            console.log(`Checking ${events.length} events for status updates`);
-            
-            for (const event of events) {
-                await updateEventStatus(event.uuid);
+            const events = await db.query.event.findMany({
+                where: ne(event.status, 'cancelled'),
+                columns: {
+                    id: true,
+                    uuid: true,
+                },
+            });
+
+            if (events.length > 0) {
+                console.log(
+                    `Checking ${events.length} events for status updates`,
+                );
+
+                for (const event of events) {
+                    await updateEventStatus(event.uuid);
+                }
             }
-        }
 
-        console.log('Daily event status update completed');
-    } catch (error) {
-        console.error('Error in daily event status update:', error);
-    }
-});
+            console.log('Daily event status update completed');
+        } catch (error) {
+            console.error('Error in daily event status update:', error);
+        }
+    },
+);
 
 // Run on application startup to ensure all statuses are correct
 const initializeEventStatuses = async () => {
     try {
         console.log('Starting event status initialization...');
-        
-        const events = await Event.find({ status: { $ne: 'cancelled' } });
+
+        const events = await db.query.event.findMany({
+            where: ne(event.status, 'cancelled'),
+            columns: {
+                id: true,
+                uuid: true,
+                status: true,
+            },
+        });
+
         let updateCount = 0;
 
-        for (const event of events) {
-            const previousStatus = event.status;
-            await updateEventStatus(event.uuid);
-            if (event.status !== previousStatus) {
+        for (const eventData of events) {
+            const previousStatus = eventData.status;
+            await updateEventStatus(eventData.uuid);
+            if (eventData.status !== previousStatus) {
                 updateCount++;
             }
         }
 
-        console.log(`Event status initialization completed. Updated ${updateCount} events`);
+        console.log(
+            `Event status initialization completed. Updated ${updateCount} events`,
+        );
     } catch (error) {
         console.error('Error initializing event statuses:', error);
         throw error;
@@ -91,5 +136,5 @@ const initializeEventStatuses = async () => {
 module.exports = {
     updateEventStatus,
     updateEventStatuses,
-    initializeEventStatuses
+    initializeEventStatuses,
 };

@@ -153,10 +153,6 @@ async function unregisterFromEvent(eventId) {
 }
 
 async function deleteEvent(eventId) {
-    if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
-        return;
-    }
-
     try {
         const response = await fetch(`/events/${eventId}/delete`, {
             method: 'POST',
@@ -166,12 +162,32 @@ async function deleteEvent(eventId) {
         if (response.ok) {
             window.location.href = '/events';
         } else {
-            alert('Error deleting event');
+            const data = await response.json();
+            alert(data.error || 'Error deleting event');
         }
     } catch (err) {
         alert('Error deleting event');
     }
 }
 </script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">تأكيد الحذف</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                هل أنت متأكد من حذف هذه الفعالية؟ لا يمكن التراجع عن هذا الإجراء.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-danger" onclick="deleteEvent('<%= event.uuid %>')">حذف</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%- include('../partials/footer') %>
