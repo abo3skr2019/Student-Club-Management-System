@@ -10,7 +10,8 @@
         "db:push": "drizzle-kit push:pg",
         "db:drop": "drizzle-kit drop",
         "db:check": "drizzle-kit check:pg",
-        "build": "tsc"
+        "build": "tsc",
+        "projectinit": "npm run build && npm run db:generate && npm run db:push"
     },
     "keywords": [],
     "author": "",
