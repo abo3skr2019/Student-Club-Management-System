@@ -29,7 +29,7 @@
                             </button>
                         </div>
                     <% } %>
-                    <% if (user && user.globalRole==="user") %>
+                    <% if (user && user.globalRole==="user" && !isClubAdmin) {%>
                         <div class="d-grid gap-2 d-md-block mb-3">
                             <form action="/clubs/<%= club.uuid %>/join" method="POST" class="d-inline">
                                 <button type="submit" class="btn btn-success">
