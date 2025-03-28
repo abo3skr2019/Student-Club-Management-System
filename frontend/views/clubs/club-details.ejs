@@ -3,7 +3,6 @@
     <header class="text-center mb-5">
         <h1 class="display-4 fw-bold"><%= club.name %></h1>
     </header>
-
     <div class="card shadow-sm">
         <div class="row g-0">
             <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
@@ -30,6 +29,17 @@
                             </button>
                         </div>
                     <% } %>
+                    <% if (user && user.globalRole==="user") %>
+                        <div class="d-grid gap-2 d-md-block mb-3">
+                            <form action="/clubs/<%= club.uuid %>/join" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-user-plus ms-2"></i>
+                                    انضمام إلى النادي
+                                </button>
+                            </form>
+                        </div>
+                        <% } %><% const isMember = %>
+
                 </div>
             </div>
         </div>

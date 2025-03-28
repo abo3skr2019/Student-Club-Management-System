@@ -118,6 +118,33 @@ const renderEditClubForm = async (req, res) => {
     }
 };
 
+const joinClub = async (req, res) => {  
+    try {
+        const { clubId } = req.params;
+        const userId = req.user.id;
+        const clubData = await clubService.findByUUID(clubId);
+        if (!clubData) {
+            return res.status(404).render('error', {
+                message: 'Club not found',
+                user: req.user,
+            });
+        }
+        // Check if the user is already a member of the club
+        const isMember = clubData.memberships.some(
+            (membership) => membership.user.id === userId,
+        );
+        if (isMember) {
+            return res.redirect(`/clubs/${clubId}?error=already_member`);
+        }
+        // Join the club
+        await clubService.joinClub(clubId, userId);
+        res.redirect(`/clubs/${clubId}`);
+    } catch (error) {
+        console.error('Error in joinClub:', error);
+        res.status(500).json({ message: 'Error joining club' });
+    }
+}
+
 /**
  * Update club
  * @param {Object} req Express request object
@@ -262,4 +289,5 @@ module.exports = {
     renderAssignClubAdmin,
     assignClubAdmin,
     renderDashboard,
+    joinClub,
 };

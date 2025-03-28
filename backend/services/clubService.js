@@ -346,6 +346,43 @@ const getDashboardData = async (clubId) => {
     }
 };
 
+
+const joinClub = async (clubId, userId) => {
+    try {
+        if (!isValidUUID(clubId)) {
+            throw new Error('Invalid UUID format');
+        }
+
+        const clubData = await findByUUID(clubId);
+        if (!clubData) {
+            throw new Error('Club not found');
+        }
+
+        // Check if user is already a member
+        const existingMembership = await db.query.clubMembership.findFirst({
+            where: and(
+                eq(clubMembership.clubId, clubData.id),
+                eq(clubMembership.userId, userId),
+            ),
+        });
+
+        if (existingMembership) {
+            throw new Error('User is already a member of this club');
+        }
+
+        // Create membership
+        await db.insert(clubMembership).values({
+            clubId: clubData.id,
+            userId: userId,
+            role: ClubRole.MEMBER,
+        });
+
+        return await findByUUID(clubId);
+    } catch (error) {
+        console.error('Error in joinClub:', error);
+        throw error;
+    }
+};
 module.exports = {
     getAllClubs,
     findByUUID,
@@ -354,4 +391,5 @@ module.exports = {
     assignClubAdmin,
     getDashboardData,
     isValidUUID,
+    joinClub,
 };

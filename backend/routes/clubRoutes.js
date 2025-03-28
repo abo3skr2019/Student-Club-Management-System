@@ -60,6 +60,13 @@ router.post(
     eventController.createEvent,
 );
 
+//Join Club ROute
+router.post(
+    '/:clubId/join',
+    isAuthenticated,
+    clubController.joinClub,
+);
+
 // Public Routes
 router.get('/', clubController.getAllClubs);
 router.get('/:clubId', clubController.getClubById);
