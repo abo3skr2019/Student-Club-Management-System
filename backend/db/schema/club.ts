@@ -15,7 +15,7 @@ export const club = pgTable(
         ...withUuid('club'),
         name: varchar('name', { length: 100 }).notNull().unique(),
         description: varchar('description', { length: 500 }).notNull(),
-        logo: varchar('logo', { length: 255 }).notNull(),
+        logo: varchar('logo', { length: 4096 }).notNull(),
         ...timestamps,
     },
     (table) => ({
@@ -33,7 +33,7 @@ export const clubRelations = relations(club, ({ many }) => ({
 const clubValidation = {
     name: z.string().min(3).max(100),
     description: z.string().max(500),
-    logo: z.string().url().max(255),
+    logo: z.string().url().max(4096),
 };
 
 export const insertClubSchema = createInsertSchema(club).extend(clubValidation);

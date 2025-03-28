@@ -42,7 +42,7 @@ export const event = pgTable(
         ...withUuid('event'),
         name: varchar('name', { length: 100 }).notNull(),
         description: varchar('description', { length: 1000 }).notNull(),
-        poster: varchar('poster', { length: 255 }).notNull(),
+        poster: varchar('poster', { length: 4096 }).notNull(),
         location: varchar('location', { length: 255 }).notNull(),
         registrationStart: timestamp('registration_start').notNull(),
         registrationEnd: timestamp('registration_end').notNull(),
@@ -80,7 +80,7 @@ export const eventRelations = relations(event, ({ many, one }) => ({
 const eventValidation = {
     name: z.string().min(3).max(100),
     description: z.string().max(1000),
-    poster: z.string().url().max(255),
+    poster: z.string().url().max(4096),
     location: z.string().min(3).max(255),
     registrationStart: z.coerce.date(),
     registrationEnd: z.coerce.date(),
