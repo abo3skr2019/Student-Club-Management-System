@@ -8,20 +8,14 @@ import { event } from './event';
 import { clubMembership } from './user';
 
 // Club table definition
-export const club = pgTable(
-    'club',
-    {
-        id: serial('id').primaryKey(),
-        ...withUuid('club'),
-        name: varchar('name', { length: 100 }).notNull().unique(),
-        description: varchar('description', { length: 500 }).notNull(),
-        logo: varchar('logo', { length: 4096 }).notNull(),
-        ...timestamps,
-    },
-    (table) => ({
-        nameIdx: index('name_idx').on(table.name),
-    }),
-);
+export const club = pgTable('club', {
+    id: serial('id').primaryKey(),
+    ...withUuid('club'),
+    name: varchar('name', { length: 100 }).notNull().unique(),
+    description: varchar('description', { length: 500 }).notNull(),
+    logo: varchar('logo', { length: 4096 }).notNull(),
+    ...timestamps,
+});
 
 // Relations
 export const clubRelations = relations(club, ({ many }) => ({

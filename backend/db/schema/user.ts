@@ -56,7 +56,6 @@ export const user = pgTable(
         ...timestamps,
     },
     (table) => ({
-        emailIdx: index('email_idx').on(table.email),
         globalRoleIdx: index('global_role_idx').on(table.globalRole),
         providerIdx: index('provider_idx').on(table.providers),
     }),
