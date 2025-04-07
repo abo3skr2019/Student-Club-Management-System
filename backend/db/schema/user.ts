@@ -6,6 +6,7 @@ import {
     timestamp,
     index,
     uniqueIndex,
+    varchar,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
@@ -33,6 +34,7 @@ export const user = pgTable(
     {
         id: serial('id').primaryKey(),
         ...withUuid('user'),
+        uniId: varchar('uni_id', { length: 9 }).unique(),
         displayName: text('display_name').notNull(),
         firstName: text('first_name').notNull(),
         lastName: text('last_name'),
@@ -154,6 +156,7 @@ const userValidation = {
     firstName: z.string().min(2),
     lastName: z.string().optional(),
     email: z.string().email(),
+    uniId: z.string().length(9).optional(),
     profileImage: z.string().url(),
     providers: z.array(providerValidation),
     globalRole: z.enum([
