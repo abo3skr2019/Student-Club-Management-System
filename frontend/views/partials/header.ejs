@@ -17,14 +17,6 @@
             </ul>
 
             <div class="navbar-nav gap-3">
-                <% if (user && user.role === 'ClubAdmin' && user.clubUUID) { %>
-                    <a class="btn btn-outline-primary" href="/clubs/<%= user.clubUUID %>/dashboard">لوحة تحكم النادي</a>
-                <% } %>
-
-                <% if (user && user.role === 'Admin') { %>
-                    <a class="btn btn-outline-primary" href="/clubs">إدارة الأندية</a>
-                <% } %>
-
                 <% if (user) { %>
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -32,9 +24,6 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/profile">حسابي</a></li>
-                            <% if (user.role === 'ClubAdmin' && user.clubUUID) { %>
-                                <li><a class="dropdown-item" href="/clubs/<%= user.clubUUID %>/dashboard">لوحة تحكم النادي</a></li>
-                            <% } %>
                             <li><a class="dropdown-item" href="/logout">تسجيل الخروج</a></li>
                         </ul>
                     </div>

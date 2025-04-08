@@ -1,8 +1,7 @@
-const Event = require('../models/Event');
-const User = require('../models/User');
 const eventService = require('../services/eventService');
+const { z } = require('zod');
 
-/** 
+/**
  * Get all events
  * @param {Request} req The request object
  * @param {Response} res The response object
@@ -14,18 +13,43 @@ const getAllEvents = async (req, res) => {
         res.render('events/event-list', {
             events,
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
+            HeaderOrSidebar: 'header',
         });
-    } catch (err) {
+    } catch (error) {
+        console.error('Error in getAllEvents:', error);
         res.render('error', {
             message: 'Error fetching events',
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
     }
 };
 
-/** 
+/**
+ * Get event by UUID
+ * @param {Request} req The request object
+ * @param {Response} res The response object
+ * @returns {void}
+ */
+const getEventByUUID = async (req, res) => {
+    try {
+        const { uuid } = req.params;
+        const eventData = await eventService.findByUUID(uuid);
+        res.json(eventData);
+    } catch (error) {
+        console.error('Error in getEventByUUID:', error);
+        if (error.message === 'Invalid UUID format') {
+            return res.status(400).json({ error: error.message });
+        }
+        if (error.message === 'Event not found') {
+            return res.status(404).json({ error: error.message });
+        }
+        res.status(500).json({ error: 'Failed to fetch event' });
+    }
+};
+
+/**
  * Get event by ID
  * @param {Request} req The request object
  * @param {Response} res The response object
@@ -33,63 +57,48 @@ const getAllEvents = async (req, res) => {
  */
 const getEventById = async (req, res) => {
     try {
-        const event = await Event.findOne({ uuid: req.params.eventId })
-            .populate('club', 'name uuid');
+        const { eventId } = req.params;
+        const eventData = await eventService.findByUUID(eventId);
 
-        if (!event) {
-            return res.render('error', {
-                message: 'Event not found',
-                user: req.user,
-                currentPage: 'events'
-            });
-        }
-
-        // Get admin status
-        const isEventAdmin = await eventService.isUserEventAdmin(req.user, event);
-
-        let registeredUsersData = [];
-        if (isEventAdmin) {
-            const registeredUsers = await User.find(
-                { 'eventsJoined.event': event._id },
-                'displayName email profileImage eventsJoined'
-            );
-            
-            registeredUsersData = registeredUsers.map(user => ({
-                user: {
-                    displayName: user.displayName,
-                    email: user.email,
-                    profileImage: user.profileImage
-                },
-                registrationDate: user.eventsJoined.find(
-                    e => e.event.toString() === event._id.toString()
-                ).registrationDate
-            }));
-        }
-        
         // Get registration status
-        const isRegistered = req.user && req.user.eventsJoined.some(
-            reg => reg.event.toString() === event._id.toString()
-        );
+        const isRegistered =
+            req.user &&
+            eventData.registeredUsers.some(
+                (reg) => reg.user.uuid === req.user.uuid,
+            );
+
+        // Check if user is admin for UI purposes
+        const isEventAdmin =
+            req.user &&
+            (req.user.globalRole === 'inmaAdmin' ||
+                eventData.club.memberships.some(
+                    (m) =>
+                        m.userId === req.user.id &&
+                        ['clubAdmin', 'hr'].includes(m.role),
+                ));
 
         res.render('events/event-details', {
-            event,
+            event: eventData,
             isRegistered,
             isEventAdmin,
-            registeredUsersData,
+            registeredUsersData: eventData.registeredUsers.map((reg) => ({
+                user: reg.user,
+                registrationDate: reg.registrationDate,
+            })),
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
-    } catch (err) {
-        console.log(err);
+    } catch (error) {
+        console.error('Error in getEventById:', error);
         res.render('error', {
-            message: 'Error fetching event details',
+            message: error.message || 'Error fetching event details',
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
     }
 };
 
-/** 
+/**
  * Render create event form
  * @param {Request} req The request object
  * @param {Response} res The response object
@@ -102,7 +111,7 @@ const renderCreateEventForm = async (req, res) => {
             return res.render('error', {
                 message: 'Club not found',
                 user: req.user,
-                currentPage: 'events'
+                currentPage: 'events',
             });
         }
 
@@ -110,18 +119,19 @@ const renderCreateEventForm = async (req, res) => {
             club,
             user: req.user,
             HeaderOrSidebar: 'sidebar',
-            currentPage: 'events'
+            currentPage: 'events',
         });
-    } catch (err) {
+    } catch (error) {
+        console.error('Error in renderCreateEventForm:', error);
         res.render('error', {
-            message: 'Error loading create event form',
+            message: error.message || 'Error loading create event form',
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
     }
 };
 
-/** 
+/**
  * Create new event
  * @param {Request} req The request object
  * @param {Response} res The response object
@@ -129,19 +139,32 @@ const renderCreateEventForm = async (req, res) => {
  */
 const createEvent = async (req, res) => {
     try {
-        const event = await eventService.createEvent(req.body, req.params.clubId);
+        // Convert form data to proper types
+        const eventData = {
+            ...req.body,
+            seatsAvailable: parseInt(req.body.seatsAvailable),
+            registrationStart: new Date(req.body.registrationStart),
+            registrationEnd: new Date(req.body.registrationEnd),
+            eventStart: new Date(req.body.eventStart),
+            eventEnd: new Date(req.body.eventEnd),
+        };
+
+        const event = await eventService.createEvent(
+            eventData,
+            req.params.clubId,
+        );
         res.redirect(`/events/${event.uuid}`);
     } catch (err) {
         res.render('events/create-event', {
             error: err.message,
             club: { uuid: req.params.clubId },
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
     }
 };
 
-/** 
+/**
  * Render edit event form
  * @param {Request} req The request object
  * @param {Response} res The response object
@@ -149,31 +172,32 @@ const createEvent = async (req, res) => {
  */
 const renderEditEventForm = async (req, res) => {
     try {
-        const event = await eventService.findByUUID(req.params.eventId);
-        
-        if (!event) {
+        const eventData = await eventService.findByUUID(req.params.eventId);
+
+        if (!eventData) {
             return res.render('error', {
                 message: 'Event not found',
                 user: req.user,
-                currentPage: 'events'
+                currentPage: 'events',
             });
         }
 
         res.render('events/edit-event', {
-            event,
+            event: eventData,
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
-    } catch (err) {
+    } catch (error) {
+        console.error('Error in renderEditEventForm:', error);
         res.render('error', {
-            message: 'Error loading edit form',
+            message: error.message || 'Error loading edit form',
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
     }
 };
 
-/** 
+/**
  * Update event
  * @param {Request} req The request object
  * @param {Response} res The response object
@@ -181,49 +205,93 @@ const renderEditEventForm = async (req, res) => {
  */
 const updateEvent = async (req, res) => {
     try {
-        const event = await eventService.updateEvent(req.params.eventId, req.body);
+        // Convert form data to proper types
+        const updateData = {
+            ...req.body,
+            seatsAvailable: parseInt(req.body.seatsAvailable),
+            registrationStart: new Date(req.body.registrationStart),
+            registrationEnd: new Date(req.body.registrationEnd),
+            eventStart: new Date(req.body.eventStart),
+            eventEnd: new Date(req.body.eventEnd),
+        };
+
+        const event = await eventService.updateEvent(
+            req.params.eventId,
+            updateData,
+        );
         res.redirect(`/events/${event.uuid}`);
     } catch (err) {
+        // Fetch the full event data for re-rendering
+        const eventData = await eventService.findByUUID(req.params.eventId);
+
         res.render('events/edit-event', {
             error: err.message,
-            event: { uuid: req.params.eventId, ...req.body },
+            event: eventData,
             user: req.user,
-            currentPage: 'events'
+            currentPage: 'events',
         });
     }
 };
 
-/** 
- * Register for event
+/**
+ * Register user for event
  * @param {Request} req The request object
  * @param {Response} res The response object
  * @returns {void}
  */
 const registerForEvent = async (req, res) => {
     try {
-        await eventService.registerUser(req.params.eventId, req.user._id);
-        res.json({ message: 'Successfully registered' });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+        const eventId = req.params.eventId;
+        const userId = req.user.id;
+
+        const eventData = await eventService.registerUser(eventId, userId);
+        res.json(eventData);
+    } catch (error) {
+        console.error('Error in registerForEvent:', error);
+        if (error.message === 'Event not found') {
+            return res.status(404).json({ error: error.message });
+        }
+        if (
+            error.message === 'User is already registered for this event' ||
+            error.message === 'No seats available' ||
+            error.message ===
+                'Registration is not currently open for this event'
+        ) {
+            return res.status(400).json({ error: error.message });
+        }
+        res.status(500).json({ error: 'Failed to register user for event' });
     }
 };
 
-/** 
- * Unregister from event
+/**
+ * Unregister user from event
  * @param {Request} req The request object
  * @param {Response} res The response object
  * @returns {void}
  */
 const unregisterFromEvent = async (req, res) => {
     try {
-        await eventService.unregisterUser(req.params.eventId, req.user._id);
-        res.json({ message: 'Successfully unregistered' });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+        const eventId = req.params.eventId;
+        const userId = req.user.id;
+
+        const eventData = await eventService.unregisterUser(eventId, userId);
+        res.json(eventData);
+    } catch (error) {
+        console.error('Error in unregisterFromEvent:', error);
+        if (error.message === 'Event not found') {
+            return res.status(404).json({ error: error.message });
+        }
+        if (
+            error.message === 'User is not registered for this event' ||
+            error.message === 'Cannot unregister from this event at this time'
+        ) {
+            return res.status(400).json({ error: error.message });
+        }
+        res.status(500).json({ error: 'Failed to unregister user from event' });
     }
 };
 
-/** 
+/**
  * Delete event
  * @param {Request} req The request object
  * @param {Response} res The response object
@@ -231,19 +299,21 @@ const unregisterFromEvent = async (req, res) => {
  */
 const deleteEvent = async (req, res) => {
     try {
-        await eventService.deleteEvent(req.params.eventId);
-        res.redirect('/events');
-    } catch (err) {
-        res.render('error', {
-            message: 'Error deleting event',
-            user: req.user,
-            currentPage: 'events'
-        });
+        const { eventId } = req.params;
+        await eventService.deleteEvent(eventId);
+        res.status(204).send();
+    } catch (error) {
+        console.error('Error in deleteEvent:', error);
+        if (error.message === 'Event not found') {
+            return res.status(404).json({ error: error.message });
+        }
+        res.status(500).json({ error: 'Failed to delete event' });
     }
 };
 
 module.exports = {
     getAllEvents,
+    getEventByUUID,
     getEventById,
     renderCreateEventForm,
     createEvent,
@@ -251,5 +321,5 @@ module.exports = {
     updateEvent,
     registerForEvent,
     unregisterFromEvent,
-    deleteEvent
+    deleteEvent,
 };

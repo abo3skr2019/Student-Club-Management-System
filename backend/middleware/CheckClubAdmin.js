@@ -1,4 +1,7 @@
-const Club = require("../models/Club");
+const { db } = require('../../dist/db');
+const { club, clubMembership } = require('../../dist/db/schema');
+const { eq, and } = require('drizzle-orm');
+const { ClubRole } = require('../../dist/db/schema/user');
 
 /**
  * Middleware to check if the user is a Club Admin and attach club UUID to req.user
@@ -10,11 +13,23 @@ const Club = require("../models/Club");
 const checkClubAdmin = async (req, res, next) => {
     if (req.user) {
         try {
-            if (req.user.role === 'ClubAdmin') {
-                const club = await Club.findOne({ clubAdmin: req.user._id });
-                if (club) {
-                    req.user.clubUUID = club.uuid;
-                }
+            // Find any clubs where user is admin
+            const adminMembership = await db.query.clubMembership.findFirst({
+                where: and(
+                    eq(clubMembership.userId, req.user.id),
+                    eq(clubMembership.role, ClubRole.CLUB_ADMIN),
+                ),
+                with: {
+                    club: {
+                        columns: {
+                            uuid: true,
+                        },
+                    },
+                },
+            });
+
+            if (adminMembership) {
+                req.user.clubUUID = adminMembership.club.uuid;
             }
         } catch (err) {
             console.error('Error fetching club UUID:', err);
@@ -24,4 +39,4 @@ const checkClubAdmin = async (req, res, next) => {
     next();
 };
 
-module.exports = {checkClubAdmin};
+module.exports = { checkClubAdmin };

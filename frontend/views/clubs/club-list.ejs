@@ -17,7 +17,7 @@
                     <div class="card-body">
                         <h2 class="card-title fw-bold"><%= club.name %></h2>
                         <p class="card-text"><%= club.description %></p>
-                        <p class="text-muted">المشرف: <%= club.clubAdmin.displayName %></p>
+                        <p class="text-muted">المشرف: <%= club.clubAdmin?.displayName || 'لا يوجد مشرف' %></p>
                         <a href="/clubs/<%= club.uuid %>" class="btn btn-outline-primary w-100">عرض التفاصيل</a>
                     </div>
                 </div>

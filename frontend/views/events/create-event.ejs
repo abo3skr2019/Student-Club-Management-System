@@ -23,7 +23,7 @@
             </div>
             <div class="col-auto">
                 <div class="d-flex gap-2">
-                    <a href="/club/<%= club.uuid %>" class="btn btn-outline-primary px-4">
+                    <a href="/clubs/<%= club.uuid %>/dashboard" class="btn btn-outline-primary px-4">
                         <i class="fas fa-arrow-left me-2"></i>
                         العودة إلى لوحة التحكم
                     </a>
@@ -154,14 +154,15 @@
         const eventStart = new Date(document.getElementById('eventStart').value);
         const eventEnd = new Date(document.getElementById('eventEnd').value);
         const location = document.getElementById('eventLocation').value.trim();
+        const eventName = document.getElementById('eventName').value.trim();
 
         let errorMessage = '';
 
-        if (eventName .length <= 3) {
+        if (eventName.length <= 3) {
             errorMessage = 'يجب أن يكون اسم الفعالية أكثر من 3 أحرف.';
         }
         // Check location length
-        if (location.length <= 3) {
+        else if (location.length <= 3) {
             errorMessage = 'يجب أن يكون الموقع أكثر من 3 أحرف.';
         }
         // Check registration dates

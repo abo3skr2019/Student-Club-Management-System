@@ -1,7 +1,24 @@
-const Event = require('../models/Event');
-const Club = require('../models/Club');
-const User = require('../models/User');
+const { db } = require('../../dist/db');
+const {
+    event,
+    club,
+    user,
+    userToEventJoined,
+    clubMembership,
+} = require('../../dist/db/schema');
+const { eq, and, sql } = require('drizzle-orm');
 const { updateEventStatus } = require('../../utils/eventScheduler');
+const {
+    insertEventSchema,
+    updateEventSchema,
+} = require('../../dist/db/schema/event');
+
+// Helper function for UUID validation
+const isValidUUID = (uuid) => {
+    const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+};
 
 /**
  * Find all events
@@ -9,12 +26,33 @@ const { updateEventStatus } = require('../../utils/eventScheduler');
  */
 const getAllEvents = async () => {
     try {
-        return await Event.find()
-            .populate('club', 'name uuid')
-            .sort({ eventStart: 1 })
-            .lean();
+        return await db.query.event.findMany({
+            columns: {
+                id: true,
+                uuid: true,
+                name: true,
+                description: true,
+                poster: true,
+                eventStart: true,
+                eventEnd: true,
+                location: true,
+                status: true,
+                seatsAvailable: true,
+                seatsRemaining: true,
+            },
+            with: {
+                club: {
+                    columns: {
+                        name: true,
+                        uuid: true,
+                        logo: true,
+                    },
+                },
+            },
+            orderBy: (events, { asc }) => [asc(events.eventStart)],
+        });
     } catch (error) {
-        console.error(error);
+        console.error('Error in getAllEvents:', error);
         throw error;
     }
 };
@@ -26,14 +64,69 @@ const getAllEvents = async () => {
  */
 const findByUUID = async (uuid) => {
     try {
-        if (!uuid) {
-            throw new Error('UUID is required');
+        if (!isValidUUID(uuid)) {
+            throw new Error('Invalid UUID format');
         }
-        return await Event.findOne({ uuid })
-            .populate('club', 'name uuid')
-            .populate('registeredUsers', 'displayName email profileImage')
-            .lean();
+
+        const eventData = await db.query.event.findFirst({
+            where: eq(event.uuid, uuid),
+            columns: {
+                id: true,
+                uuid: true,
+                name: true,
+                description: true,
+                poster: true,
+                registrationStart: true,
+                registrationEnd: true,
+                eventStart: true,
+                eventEnd: true,
+                location: true,
+                status: true,
+                seatsAvailable: true,
+                seatsRemaining: true,
+                category: true,
+            },
+            with: {
+                club: {
+                    columns: {
+                        name: true,
+                        uuid: true,
+                        logo: true,
+                    },
+                    with: {
+                        memberships: {
+                            columns: {
+                                userId: true,
+                                role: true,
+                            },
+                        },
+                    },
+                },
+                registeredUsers: {
+                    columns: {
+                        registrationDate: true,
+                    },
+                    with: {
+                        user: {
+                            columns: {
+                                uuid: true,
+                                displayName: true,
+                                email: true,
+                                profileImage: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!eventData) {
+            throw new Error('Event not found');
+        }
+
+        return eventData;
     } catch (error) {
+        console.error('Error in findByUUID:', error);
         throw error;
     }
 };
@@ -46,28 +139,40 @@ const findByUUID = async (uuid) => {
  */
 const createEvent = async (eventData, clubId) => {
     try {
-        const club = await Club.findOne({ uuid: clubId });
-        if (!club) {
+        if (!isValidUUID(clubId)) {
+            throw new Error('Invalid club UUID format');
+        }
+
+        // First get the club data to get its ID
+        const clubData = await db.query.club.findFirst({
+            where: eq(club.uuid, clubId),
+        });
+
+        if (!clubData) {
             throw new Error('Club not found');
         }
 
-        const event = new Event({
+        // Now add the clubId to the event data before validation
+        const dataToValidate = {
             ...eventData,
-            club: club._id,
-            seatsRemaining: eventData.seatsAvailable
-        });
+            clubId: clubData.id,
+            status: 'upcoming',
+            seatsRemaining: eventData.seatsAvailable,
+        };
 
-        await event.save();
+        const validatedData = insertEventSchema.parse(dataToValidate);
 
-        // Add event to club's createdEvents
-        club.createdEvents.push(event._id);
-        await club.save();
+        const [newEvent] = await db
+            .insert(event)
+            .values(validatedData)
+            .returning();
 
         // Set initial status
-        await updateEventStatus(event.uuid);
+        await updateEventStatus(newEvent.uuid);
 
-        return event;
+        return newEvent;
     } catch (error) {
+        console.error('Error in createEvent:', error);
         throw error;
     }
 };
@@ -80,33 +185,47 @@ const createEvent = async (eventData, clubId) => {
  */
 const updateEvent = async (eventId, updateData) => {
     try {
-        const existingEvent = await Event.findOne({ uuid: eventId });
-        if (!existingEvent) {
-            throw new Error('Event not found');
+        if (!isValidUUID(eventId)) {
+            throw new Error('Invalid UUID format');
         }
 
-        if (updateData.seatsAvailable < existingEvent.registeredUsers.length) {
-            throw new Error('Cannot reduce seats below number of registered users');
+        // If seatsRemaining is in the update data, throw error
+        if ('seatsRemaining' in updateData) {
+            throw new Error('Cannot directly update seatsRemaining');
         }
 
-        // Calculate new seatsRemaining
-        const seatsRemaining = updateData.seatsAvailable - existingEvent.registeredUsers.length;
+        const validatedData = updateEventSchema.parse(updateData);
+        const existingEvent = await findByUUID(eventId);
 
-        const updatedEvent = await Event.findOneAndUpdate(
-            { uuid: eventId },
-            { 
-                $set: {
-                    ...updateData,
-                    seatsRemaining
-                }
-            },
-            { new: true, runValidators: true }
-        );
+        // Only check seats if admin is updating seatsAvailable
+        if (validatedData.seatsAvailable !== undefined) {
+            const registeredCount = await db
+                .select({ count: sql`count(*)` })
+                .from(userToEventJoined)
+                .where(eq(userToEventJoined.eventId, existingEvent.id));
+
+            if (validatedData.seatsAvailable < registeredCount[0].count) {
+                throw new Error(
+                    'Cannot reduce seats below number of registered users',
+                );
+            }
+
+            // Update seatsRemaining based on new seatsAvailable
+            validatedData.seatsRemaining =
+                validatedData.seatsAvailable - registeredCount[0].count;
+        }
+
+        const [updatedEvent] = await db
+            .update(event)
+            .set(validatedData)
+            .where(eq(event.uuid, eventId))
+            .returning();
 
         await updateEventStatus(eventId);
 
         return updatedEvent;
     } catch (error) {
+        console.error('Error in updateEvent:', error);
         throw error;
     }
 };
@@ -114,45 +233,55 @@ const updateEvent = async (eventId, updateData) => {
 /**
  * Register user for event
  * @param {String} eventId Event UUID
- * @param {String} userId User ID
+ * @param {number} userId User ID
  * @returns {Promise<Object>} Updated event
  */
 const registerUser = async (eventId, userId) => {
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new Error('User not found');
-        }
-        
-        const event = await Event.findOne({ uuid: eventId });
-        if (!event) {
-            throw new Error('Event not found');
+        const eventData = await findByUUID(eventId);
+
+        if (eventData.status !== 'registration_open') {
+            throw new Error(
+                'Registration is not currently open for this event',
+            );
         }
 
-        if (event.status !== 'registration_open') {
-            throw new Error('Registration is not currently open for this event');
-        }
-
-        if (event.seatsRemaining <= 0) {
+        if (eventData.seatsRemaining <= 0) {
             throw new Error('No seats available');
         }
 
-        if (user.eventsJoined.some(reg => reg.event.toString() === event._id.toString())) {
+        // Check if already registered
+        const existingRegistration = await db.query.userToEventJoined.findFirst(
+            {
+                where: and(
+                    eq(userToEventJoined.eventId, eventData.id),
+                    eq(userToEventJoined.userId, userId),
+                ),
+            },
+        );
+
+        if (existingRegistration) {
             throw new Error('User is already registered for this event');
         }
 
-        user.eventsJoined.push({
-            event: event._id,
-            registrationDate: new Date()
+        // Register user
+        await db.insert(userToEventJoined).values({
+            eventId: eventData.id,
+            userId: userId,
         });
-        await user.save();
 
-        event.registeredUsers.push(userId);
-        event.seatsRemaining--;
-        await event.save();
+        // Update seats remaining
+        const [updatedEvent] = await db
+            .update(event)
+            .set({
+                seatsRemaining: eventData.seatsRemaining - 1,
+            })
+            .where(eq(event.id, eventData.id))
+            .returning();
 
-        return event;
+        return updatedEvent;
     } catch (error) {
+        console.error('Error in registerUser:', error);
         throw error;
     }
 };
@@ -160,42 +289,53 @@ const registerUser = async (eventId, userId) => {
 /**
  * Unregister user from event
  * @param {String} eventId Event UUID
- * @param {String} userId User ID
+ * @param {number} userId User ID
  * @returns {Promise<Object>} Updated event
  */
 const unregisterUser = async (eventId, userId) => {
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new Error('User not found');
-        }
-        
-        const event = await Event.findOne({ uuid: eventId });
-        if (!event) {
-            throw new Error('Event not found');
-        }
+        const eventData = await findByUUID(eventId);
 
-        if (event.status !== 'registration_open') {
+        if (eventData.status !== 'registration_open') {
             throw new Error('Cannot unregister from this event at this time');
         }
 
-        if (!user.eventsJoined.some(reg => reg.event.toString() === event._id.toString())) {
+        // Check if registered
+        const existingRegistration = await db.query.userToEventJoined.findFirst(
+            {
+                where: and(
+                    eq(userToEventJoined.eventId, eventData.id),
+                    eq(userToEventJoined.userId, userId),
+                ),
+            },
+        );
+
+        if (!existingRegistration) {
             throw new Error('User is not registered for this event');
         }
 
-        user.eventsJoined = user.eventsJoined.filter(
-            reg => reg.event.toString() !== event._id.toString()
-        );
-        await user.save();
+        // Unregister user
+        await db
+            .delete(userToEventJoined)
+            .where(
+                and(
+                    eq(userToEventJoined.eventId, eventData.id),
+                    eq(userToEventJoined.userId, userId),
+                ),
+            );
 
-        event.registeredUsers = event.registeredUsers.filter(
-            id => id.toString() !== userId
-        );
-        event.seatsRemaining++;
-        await event.save();
+        // Update seats remaining
+        const [updatedEvent] = await db
+            .update(event)
+            .set({
+                seatsRemaining: eventData.seatsRemaining + 1,
+            })
+            .where(eq(event.id, eventData.id))
+            .returning();
 
-        return event;
+        return updatedEvent;
     } catch (error) {
+        console.error('Error in unregisterUser:', error);
         throw error;
     }
 };
@@ -207,56 +347,25 @@ const unregisterUser = async (eventId, userId) => {
  */
 const deleteEvent = async (eventId) => {
     try {
-        const event = await Event.findOne({ uuid: eventId });
-        if (!event) {
-            throw new Error('Event not found');
-        }
-
-        await Club.findByIdAndUpdate(event.club, {
-            $pull: { createdEvents: event._id }
-        });
-
-        await User.updateMany(
-            { "eventsJoined.event": event._id },
-            { $pull: { eventsJoined: { event: event._id } } }
-        );
-
-        await Event.deleteOne({ _id: event._id });
+        const eventData = await findByUUID(eventId);
+        // Cascade will handle deleting all registrations automatically
+        await db.delete(event).where(eq(event.id, eventData.id));
     } catch (error) {
-        throw error;
-    }
-};
-
-/**
- * Check if user is admin for event
- * @param {Object} user User object
- * @param {Object} event Event object
- * @returns {Promise<boolean>} Is admin
- */
-const isUserEventAdmin = async (user, event) => {
-    try {
-        if (!user || !event) return false;
-        if (user.role === 'Admin') return true;
-        
-        const isClubAdmin = await Club.findOne({
-            _id: event.club._id,
-            clubAdmin: user._id
-        });
-        
-        return !!isClubAdmin;
-    } catch (error) {
+        console.error('Error in deleteEvent:', error);
         throw error;
     }
 };
 
 /**
  * Find club by UUID
- * @param {String} clubId Club UUID
+ * @param {String} uuid Club UUID
  * @returns {Promise<Object>} Club object
  */
-const findClubByUUID = async (clubId) => {
+const findClubByUUID = async (uuid) => {
     try {
-        return await Club.findOne({ uuid: clubId });
+        return await db.query.club.findFirst({
+            where: eq(club.uuid, uuid),
+        });
     } catch (error) {
         throw error;
     }
@@ -270,6 +379,6 @@ module.exports = {
     registerUser,
     unregisterUser,
     deleteEvent,
-    isUserEventAdmin,
-    findClubByUUID
+    findClubByUUID,
+    isValidUUID,
 };
