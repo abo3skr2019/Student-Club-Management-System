@@ -1,0 +1,1 @@
+ALTER TABLE "club_membership" ALTER COLUMN "tag" SET DATA TYPE varchar(50);

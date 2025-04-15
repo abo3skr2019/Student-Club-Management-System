@@ -91,7 +91,7 @@ export const clubMembership = pgTable(
         })
             .notNull()
             .default(ClubRole.MEMBER),
-        tag: text('tag'),
+        tag: varchar('tag', { length: 50 }),
         status: text('status', {
             enum: [MembershipStatus.ACTIVE, MembershipStatus.INACTIVE],
         })
@@ -199,7 +199,7 @@ const clubMembershipValidation = {
     userId: z.number().int().positive(),
     clubId: z.number().int().positive(),
     role: z.enum([ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER]),
-    tag: z.string().optional(),
+    tag: z.string().max(50).optional(),
     status: z.enum([MembershipStatus.ACTIVE, MembershipStatus.INACTIVE]),
     submittingErrors: z.number().int().min(0),
     createdBy: z.number().int().positive(),
