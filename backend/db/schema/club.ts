@@ -5,6 +5,7 @@ import {
     text,
     index,
     date,
+    integer,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
@@ -48,10 +49,10 @@ export const club = pgTable(
         })
             .notNull()
             .default(ClubStatus.ACTIVE),
-        createdBy: serial('created_by')
+        createdBy: integer('created_by')
             .references(() => user.id)
             .notNull(),
-        updatedBy: serial('updated_by')
+        updatedBy: integer('updated_by')
             .references(() => user.id)
             .notNull(),
         ...withArchive,
