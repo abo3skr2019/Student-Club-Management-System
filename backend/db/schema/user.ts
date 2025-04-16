@@ -7,6 +7,7 @@ import {
     index,
     uniqueIndex,
     varchar,
+    integer,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
@@ -80,10 +81,10 @@ export const clubMembership = pgTable(
     {
         id: serial('id').primaryKey(),
         ...withUuid('club_membership'),
-        userId: serial('user_id')
+        userId: integer('user_id')
             .references(() => user.id, { onDelete: 'cascade' })
             .notNull(),
-        clubId: serial('club_id')
+        clubId: integer('club_id')
             .references(() => club.id, { onDelete: 'cascade' })
             .notNull(),
         role: text('role', {
@@ -97,11 +98,11 @@ export const clubMembership = pgTable(
         })
             .notNull()
             .default(MembershipStatus.ACTIVE),
-        submittingErrors: serial('submitting_errors').notNull().default(0),
-        createdBy: serial('created_by')
+        submittingErrors: integer('submitting_errors').notNull().default(0),
+        createdBy: integer('created_by')
             .references(() => user.id)
             .notNull(),
-        updatedBy: serial('updated_by')
+        updatedBy: integer('updated_by')
             .references(() => user.id)
             .notNull(),
         joinedAt: timestamp('joined_at').notNull().defaultNow(),
