@@ -35,7 +35,7 @@ export const user = pgTable(
         id: serial('id').primaryKey(),
         ...withUuid('user'),
         uniId: varchar('uni_id', { length: 9 }).unique(),
-        nationalId: varchar('national_id', { length: 10 }).notNull(),
+        nationalId: varchar('national_id', { length: 10 }).notNull().unique(),
         phoneNumber: varchar('phone_number', { length: 10 }).notNull(),
         displayName: text('display_name').notNull(),
         firstName: text('first_name').notNull(),
