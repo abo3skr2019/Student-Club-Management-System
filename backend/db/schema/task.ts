@@ -17,6 +17,7 @@ import { user } from './user';
 export const TaskStatus = {
     ACCEPTED: 'accepted',
     PENDING: 'pending',
+    CHANGES_REQUESTED: 'changes_requested',
     DENIED: 'denied',
 } as const;
 
@@ -53,7 +54,12 @@ export const task = pgTable(
             ],
         }).notNull(),
         status: text('status', {
-            enum: [TaskStatus.ACCEPTED, TaskStatus.PENDING, TaskStatus.DENIED],
+            enum: [
+                TaskStatus.ACCEPTED,
+                TaskStatus.PENDING,
+                TaskStatus.CHANGES_REQUESTED,
+                TaskStatus.DENIED,
+            ],
         })
             .notNull()
             .default(TaskStatus.PENDING),
@@ -110,6 +116,7 @@ const taskValidation = {
     status: z.enum([
         TaskStatus.ACCEPTED,
         TaskStatus.PENDING,
+        TaskStatus.CHANGES_REQUESTED,
         TaskStatus.DENIED,
     ]),
     attachment: z.string().max(4096).optional(),
