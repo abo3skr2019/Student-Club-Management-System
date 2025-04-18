@@ -14,6 +14,7 @@ import { relations } from 'drizzle-orm';
 import { user } from './user';
 import { event } from './event';
 import { clubMembership } from './user';
+import { supervisor } from './supervisor';
 
 // Club type enum
 export const ClubType = {
@@ -36,10 +37,9 @@ export const club = pgTable(
         name: varchar('name', { length: 100 }).notNull().unique(),
         description: varchar('description', { length: 500 }).notNull(),
         logo: varchar('logo', { length: 4096 }).notNull(),
-        supervisorName: varchar('supervisor_name', { length: 100 }).notNull(),
-        supervisorPhoneNumber: varchar('supervisor_phone_number', {
-            length: 10,
-        }).notNull(),
+        supervisorId: integer('supervisor_id')
+            .references(() => supervisor.id)
+            .notNull(),
         type: text('type', {
             enum: [ClubType.GENERAL, ClubType.SPECIALIZED],
         }).notNull(),
@@ -65,9 +65,13 @@ export const club = pgTable(
 );
 
 // Relations
-export const clubRelations = relations(club, ({ many }) => ({
+export const clubRelations = relations(club, ({ many, one }) => ({
     memberships: many(clubMembership),
     createdEvents: many(event),
+    supervisor: one(supervisor, {
+        fields: [club.supervisorId],
+        references: [supervisor.id],
+    }),
 }));
 
 // Validation schemas
@@ -75,11 +79,7 @@ const clubValidation = {
     name: z.string().min(3).max(100),
     description: z.string().max(500),
     logo: z.string().url().max(4096),
-    supervisorName: z.string().min(3).max(100),
-    supervisorPhoneNumber: z
-        .string()
-        .length(10)
-        .regex(/^\d+$/, 'Phone number must contain only digits'),
+    supervisorId: z.number().int().positive(),
     type: z.enum([ClubType.GENERAL, ClubType.SPECIALIZED]),
     foundingDate: z.date().optional(),
     status: z.enum([ClubStatus.ACTIVE, ClubStatus.INACTIVE]),
