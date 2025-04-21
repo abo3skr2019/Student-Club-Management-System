@@ -10,10 +10,7 @@ import {
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid, withArchive } from './common';
-import { relations } from 'drizzle-orm';
 import { user } from './user';
-import { event } from './event';
-import { clubMembership } from './user';
 import { supervisor } from './supervisor';
 
 // Club type enum
@@ -63,16 +60,6 @@ export const club = pgTable(
         isArchivedIdx: index('club_is_archived_idx').on(table.isArchived),
     }),
 );
-
-// Relations
-export const clubRelations = relations(club, ({ many, one }) => ({
-    memberships: many(clubMembership),
-    createdEvents: many(event),
-    supervisor: one(supervisor, {
-        fields: [club.supervisorId],
-        references: [supervisor.id],
-    }),
-}));
 
 // Validation schemas
 const clubValidation = {

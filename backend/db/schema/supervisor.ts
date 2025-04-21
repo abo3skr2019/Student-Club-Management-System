@@ -2,8 +2,6 @@ import { pgTable, serial, varchar, index } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid, withArchive } from './common';
-import { relations } from 'drizzle-orm';
-import { club } from './club';
 
 // Supervisor table definition
 export const supervisor = pgTable(
@@ -21,11 +19,6 @@ export const supervisor = pgTable(
         isArchivedIdx: index('supervisor_is_archived_idx').on(table.isArchived),
     }),
 );
-
-// Relations
-export const supervisorRelations = relations(supervisor, ({ many }) => ({
-    clubs: many(club),
-}));
 
 // Validation schemas
 const supervisorValidation = {
