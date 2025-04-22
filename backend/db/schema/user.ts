@@ -36,6 +36,8 @@ export const user = pgTable(
         id: serial('id').primaryKey(),
         ...withUuid('user'),
         uniId: varchar('uni_id', { length: 9 }).unique(),
+        nationalId: varchar('national_id', { length: 10 }).notNull().unique(),
+        phoneNumber: varchar('phone_number', { length: 10 }).notNull(),
         displayName: text('display_name').notNull(),
         firstName: text('first_name').notNull(),
         lastName: text('last_name'),
@@ -54,11 +56,13 @@ export const user = pgTable(
         })
             .notNull()
             .default(GlobalRole.USER),
+        ...withArchive,
         ...timestamps,
     },
     (table) => ({
         globalRoleIdx: index('global_role_idx').on(table.globalRole),
         providerIdx: index('provider_idx').on(table.providers),
+        isArchivedIdx: index('user_is_archived_idx').on(table.isArchived),
     }),
 );
 
@@ -182,6 +186,14 @@ const userValidation = {
     lastName: z.string().optional(),
     email: z.string().email(),
     uniId: z.string().length(9).optional(),
+    nationalId: z
+        .string()
+        .length(10)
+        .regex(/^\d+$/, 'National ID must contain only digits'),
+    phoneNumber: z
+        .string()
+        .length(10)
+        .regex(/^\d+$/, 'Phone number must contain only digits'),
     profileImage: z.string().url(),
     providers: z.array(providerValidation),
     globalRole: z.enum([
