@@ -9,7 +9,19 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-  
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://user:password@db/mydb
+      PORT: 5000
+      Google_Client_ID: your_google_client_id
+      Google_Client_Secret: your_google_client_secret
 
 volumes:
   pgdata:
