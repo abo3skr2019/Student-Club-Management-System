@@ -1,19 +1,22 @@
-FROM node:23-alpine
-
-# Install pnpm globally
+# Stage 1: build and prune dev dependencies
+FROM node:23-alpine AS builder
 RUN npm install -g pnpm
-
-# Create and set working directory
 WORKDIR /usr/src/app
-
-# Copy package.json and pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml* ./
-
-# Install dependencies using pnpm
-RUN pnpm install
-
-# Copy remaining application code
+RUN pnpm install --frozen-lockfile
 COPY . .
+RUN pnpm build
+RUN pnpm prune --prod
 
-# Command to run the application
-CMD ["pnpm", "start"]
+# Stage 2: runtime
+FROM node:23-alpine AS runner
+WORKDIR /usr/src/app
+# Copy production node_modules and build artifacts
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/backend ./backend
+COPY --from=builder /usr/src/app/frontend ./frontend
+COPY --from=builder /usr/src/app/utils ./utils
+COPY app.js ./
+
+CMD ["node", "app.js"]

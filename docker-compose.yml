@@ -14,6 +14,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
+      target: runner
     ports:
       - "5000:5000"
     depends_on:
