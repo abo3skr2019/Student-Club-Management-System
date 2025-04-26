@@ -1,6 +1,6 @@
 # Stage 1: build and prune dev dependencies
 FROM node:23-alpine AS builder
-RUN npm install -g pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /usr/src/app
 COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
