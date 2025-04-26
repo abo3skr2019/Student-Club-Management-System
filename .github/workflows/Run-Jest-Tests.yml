@@ -17,10 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
         node-version: '22.x'
+        cache: 'pnpm'
 
-    - run: npm ci
+    - run: pnpm install
 
-    - run: npm test 
+    - run: pnpm test
