@@ -11,6 +11,7 @@ RUN pnpm prune --prod
 # Stage 2: runtime
 FROM node:23-alpine AS runner
 WORKDIR /usr/src/app
+USER node
 # Copy production node_modules and build artifacts
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
