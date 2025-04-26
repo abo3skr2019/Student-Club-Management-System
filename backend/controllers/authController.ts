@@ -4,16 +4,21 @@ import jwt from 'jsonwebtoken';
 import { db } from '../db';
 import { user, GlobalRole } from '../db/schema/user';
 import { eq } from 'drizzle-orm';
+
 // MSAL configuration
+const isTestEnv = process.env.NODE_ENV === 'test';
+const clientId = isTestEnv ? 'test-client-id' : process.env.AZURE_CLIENT_ID!;
+const tenantId = isTestEnv ? 'test-tenant' : process.env.AZURE_TENANT_ID!;
+const clientSecret = isTestEnv ? 'test-secret' : process.env.AZURE_CLIENT_SECRET!;
 const msalConfig = {
   auth: {
-    clientId: process.env.AZURE_CLIENT_ID!,
-    authority: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}`,
-    clientSecret: process.env.AZURE_CLIENT_SECRET!,
+    clientId,
+    authority: `https://login.microsoftonline.com/${tenantId}`,
+    clientSecret,
   },
 };
 const cca = new ConfidentialClientApplication(msalConfig);
-const redirectUri = process.env.AZURE_REDIRECT_URI!;
+const redirectUri = isTestEnv ? 'http://localhost' : process.env.AZURE_REDIRECT_URI!;
 const scopes = ['User.Read'];
 
 // Initiate Microsoft login by redirecting to auth URL

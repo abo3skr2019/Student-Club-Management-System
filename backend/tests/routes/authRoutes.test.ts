@@ -1,4 +1,5 @@
 import request from 'supertest';
+// @ts-ignore: Could not find a declaration file for module '../../../app'.
 import app from '../../../app';
 import { ConfidentialClientApplication } from '@azure/msal-node';
 

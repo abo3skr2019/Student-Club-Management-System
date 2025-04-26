@@ -28,17 +28,19 @@ app.use(require('./backend/routes/main-misc'));
 // Start the server
 const PORT = process.env.PORT || 3000;
 
-// Connect to database and start server
-connectDB()
-    .then(() => {
-        app.listen(PORT, () => {
-            console.log(`Server is running at http://localhost:${PORT}`);
+// Connect to database and start server (skip during tests)
+if (process.env.NODE_ENV !== 'test') {
+    connectDB()
+        .then(() => {
+            app.listen(PORT, () => {
+                console.log(`Server is running at http://localhost:${PORT}`);
+            });
+        })
+        .catch((err) => {
+            console.error('Failed to start server:', err);
+            process.exit(1);
         });
-    })
-    .catch((err) => {
-        console.error('Failed to start server:', err);
-        process.exit(1);
-    });
+}
 
 // Export for testing
 module.exports = app;
