@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import { db } from '../db';
 import { user, GlobalRole } from '../db/schema/user';
 import { eq } from 'drizzle-orm';
-
 // MSAL configuration
 const msalConfig = {
   auth: {
@@ -51,21 +50,39 @@ export const microsoftCallback = async (req: Request, res: Response) => {
     const email = account.username;
 
     // Look up user in database
-    const [existing] = await db
-      .select()
-      .from(user)
-      .where(eq(user.email, email));
-
-    if (!existing) {
-      return res.status(401).json({ error: 'User not found. Please register.' });
+    const [existing] = await db.select().from(user).where(eq(user.email, email));
+    let dbUser = existing;
+    if (!dbUser) {
+      // Auto-register new user
+      const claims = tokenResponse?.idTokenClaims as any;
+      const displayName = claims.name || email;
+      const firstName = claims.given_name || '';
+      const lastName = claims.family_name || '';
+      const profileImage = (claims.picture as string) || '';
+      const providerInfo = [{ name: 'microsoft', providerId: account.homeAccountId }];
+      // Derive university ID from email prefix
+      const uniId = email.split('@')[0];
+      const [created] = await db.insert(user).values({
+        uniId,
+        displayName,
+        firstName,
+        lastName,
+        email,
+        nationalId: '', // Placeholder, should be collected from user
+        phoneNumber: '', // Placeholder, should be collected from user
+        profileImage,
+        providers: providerInfo,
+        globalRole: GlobalRole.USER,
+      }).returning();
+      dbUser = created;
     }
 
     // Issue JWT
-    const payload = { userId: existing.id, email, role: existing.globalRole };
+    const payload = { userId: dbUser.id, email, role: dbUser.globalRole };
     const token = jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '1h' });
 
     // Return token and user info
-    return res.json({ token, user: existing });
+    return res.json({ token, user: dbUser });
   } catch (err) {
     console.error('MSAL callback error', err);
     return res.redirect('/auth/login-failure');
