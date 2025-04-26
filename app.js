@@ -58,6 +58,10 @@ app.get('/', (req, res) =>
     }),
 );
 
+app.get('/api', (req, res) => {
+    res.json({ message: 'API is working!' });
+});
+
 app.get('/event-admin-view', (req, res) => res.render('event-admin-view'));
 app.get('/event-user-view', (req, res) => res.render('event-user-view'));
 
