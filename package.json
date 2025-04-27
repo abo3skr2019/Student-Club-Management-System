@@ -6,12 +6,14 @@
     "scripts": {
         "test": "jest",
         "dev": "node --watch app.js",
+        "dev:build": "tsc --watch & node --watch app.js",
         "db:generate": "drizzle-kit generate:pg",
         "db:push": "drizzle-kit push:pg",
         "db:drop": "drizzle-kit drop",
         "db:check": "drizzle-kit check:pg",
         "build": "tsc",
-        "projectinit": "npm run build && npm run db:generate && npm run db:push"
+        "projectinit": "tsc && drizzle-kit generate:pg && drizzle-kit push:pg",
+        "start": "tsc && node app.js"
     },
     "keywords": [],
     "author": "",

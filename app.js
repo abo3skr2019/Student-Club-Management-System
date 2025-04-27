@@ -17,7 +17,9 @@ const pool = new Pool({
 app.use(express.json()); // For parsing JSON bodies
 
 app.use(express.urlencoded({ extended: true }));
-
+app.get('/api', (req, res) => {
+    res.json({ message: 'API is working!' });
+});
 // API Routes
 app.use('/clubs', require('./routes/clubRoutes'));
 app.use('/events', require('./routes/eventRoutes'));

@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+.env
+*/tests/*
+.prettierr*
+*.md
+.git
+.github
+.gitignore
+LICENSE
+jest.config.js
