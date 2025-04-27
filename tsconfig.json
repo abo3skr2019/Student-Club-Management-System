@@ -7,8 +7,8 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./backend"
+    "rootDir": "./"
   },
-  "include": ["backend/**/*"],
+  "include": ["/**/*.ts"],
   "exclude": ["node_modules"]
 }
