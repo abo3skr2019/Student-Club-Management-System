@@ -11,17 +11,22 @@ on:
       - dev
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
+    env:
+      CI: true
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: '22.x'
-        cache: 'pnpm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
 
-    - run: pnpm install
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-    - run: pnpm test
+      - name: Run tests
+        run: pnpm test
