@@ -13,8 +13,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      CI: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -22,17 +20,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.x'
-          cache: 'pnpm'
-      
-      - name: Enable pnpm via Corepack
-        run: corepack enable pnpm
+          node-version: '22.x'      
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm install
 
       - name: Build the project
-        run: pnpm run build
+        run: npm run build
 
       - name: Run tests
-        run: pnpm test
+        run: npm test
