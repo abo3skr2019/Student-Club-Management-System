@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const { Pool } = require('pg');
 const { db, connectDB } = require('./dist/db');
-const { checkClubAdmin } = require('./backend/middleware/CheckClubAdmin');
+const { checkClubAdmin } = require('./middleware/CheckClubAdmin');
 
 const app = express();
 
@@ -19,11 +19,11 @@ app.use(express.json()); // For parsing JSON bodies
 app.use(express.urlencoded({ extended: true }));
 
 // API Routes
-app.use('/clubs', require('./backend/routes/clubRoutes'));
-app.use('/events', require('./backend/routes/eventRoutes'));
-app.use('/auth', require('./backend/routes/auth'));
-app.use(require('./backend/routes/profile'));
-app.use(require('./backend/routes/main-misc'));
+app.use('/clubs', require('./routes/clubRoutes'));
+app.use('/events', require('./routes/eventRoutes'));
+app.use('/auth', require('./routes/auth'));
+app.use(require('./routes/profile'));
+app.use(require('./routes/main-misc'));
 
 // Start the server
 const PORT = process.env.PORT || 3000;
