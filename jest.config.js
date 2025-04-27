@@ -4,7 +4,7 @@ module.exports = {
   verbose: true,
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  roots: ['<rootDir>/backend/tests'],
+  roots: ['<rootDir>/tests'],
   transform: {
     '^.+\\.ts$': 'ts-jest'
   },
