@@ -1,7 +1,7 @@
-const { db } = require('../../dist/db');
-const { club, clubMembership, event } = require('../../dist/db/schema');
+const { db } = require('../dist/db');
+const { club, clubMembership, event } = require('../dist/db/schema');
 const { eq, and } = require('drizzle-orm');
-const { ClubRole } = require('../../dist/db/schema/user');
+const { ClubRole } = require('../dist/db/schema/user');
 
 /**
  * Check if user is an admin

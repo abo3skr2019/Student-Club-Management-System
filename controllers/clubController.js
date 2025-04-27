@@ -1,6 +1,6 @@
 const clubService = require('../services/clubService');
-const { ClubRole } = require('../../dist/db/schema/user');
-const { GlobalRole } = require('../../dist/db/schema/user');
+const { ClubRole } = require('../dist/db/schema/user');
+const { GlobalRole } = require('../dist/db/schema/user');
 
 /**
  * Get all clubs
