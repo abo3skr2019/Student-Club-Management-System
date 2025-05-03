@@ -12,10 +12,10 @@ export const userRelations = relations(user, ({ many }) => ({
     clubMemberships: many(clubMembership, { relationName: 'membershipUser' }),
     eventsJoined: many(userToEventJoined, { relationName: 'eventJoinUser' }),
     clubsSupervised: many(club, { relationName: 'supervisor' }),
-    createdTasks: many(task, { relationName: 'createdByUser' }),
-    updatedTasks: many(task, { relationName: 'updatedByUser' }),
-    assignedTickets: many(ticket, { relationName: 'assignedTo' }),
-    createdTickets: many(ticket, { relationName: 'createdBy' }),
+    createdTasks: many(task, { relationName: 'taskCreatedBy' }),
+    updatedTasks: many(task, { relationName: 'taskUpdatedBy' }),
+    assignedTickets: many(ticket, { relationName: 'ticketAssignedTo' }),
+    createdTickets: many(ticket, { relationName: 'ticketCreatedBy' }),
 }));
 
 // Club relations
@@ -30,10 +30,12 @@ export const clubRelations = relations(club, ({ many, one }) => ({
     createdByUser: one(user, {
         fields: [club.createdBy],
         references: [user.id],
+        relationName: 'clubCreatedBy',
     }),
     updatedByUser: one(user, {
         fields: [club.updatedBy],
         references: [user.id],
+        relationName: 'clubUpdatedBy',
     }),
 }));
 
@@ -88,12 +90,12 @@ export const taskRelations = relations(task, ({ one }) => ({
     createdByUser: one(user, {
         fields: [task.createdBy],
         references: [user.id],
-        relationName: 'createdByUser',
+        relationName: 'taskCreatedBy',
     }),
     updatedByUser: one(user, {
         fields: [task.updatedBy],
         references: [user.id],
-        relationName: 'updatedByUser',
+        relationName: 'taskUpdatedBy',
     }),
 }));
 
@@ -102,11 +104,11 @@ export const ticketRelations = relations(ticket, ({ one }) => ({
     assignedTo: one(user, {
         fields: [ticket.assignedTo],
         references: [user.id],
-        relationName: 'assignedTickets',
+        relationName: 'ticketAssignedTo',
     }),
     createdBy: one(user, {
         fields: [ticket.createdBy],
         references: [user.id],
-        relationName: 'createdTickets',
+        relationName: 'ticketCreatedBy',
     }),
 }));
