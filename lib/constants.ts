@@ -15,8 +15,10 @@ export const ClubRole = {
 
 // Membership statuses
 export const MembershipStatus = {
-    ACTIVE: 'active',
-    INACTIVE: 'inactive',
+    ACTIVE: 'active', // approved / active membership
+    INACTIVE: 'inactive', // withdrawn
+    PENDING: 'pending', // pending approval
+    DENIED: 'denied', // denied approval
 } as const;
 
 // Club types

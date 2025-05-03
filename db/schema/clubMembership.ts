@@ -35,10 +35,15 @@ export const clubMembership = pgTable(
         tag: varchar('tag', { length: 50 }),
         status: varchar('status', {
             length: 10,
-            enum: [MembershipStatus.ACTIVE, MembershipStatus.INACTIVE],
+            enum: [
+                MembershipStatus.ACTIVE,
+                MembershipStatus.INACTIVE,
+                MembershipStatus.PENDING,
+                MembershipStatus.DENIED,
+            ],
         })
             .notNull()
-            .default(MembershipStatus.ACTIVE),
+            .default(MembershipStatus.PENDING),
         submittingErrors: integer('submitting_errors').notNull().default(0),
         createdBy: integer('created_by')
             .references(() => user.id)
@@ -56,6 +61,7 @@ export const clubMembership = pgTable(
         ),
         roleIdx: index('club_membership_role_idx').on(table.role),
         statusIdx: index('club_membership_status_idx').on(table.status),
+        clubIdx: index('club_membership_club_idx').on(table.clubId),
         isArchivedIdx: index('club_membership_is_archived_idx').on(
             table.isArchived,
         ),
@@ -68,7 +74,12 @@ const clubMembershipValidation = {
     clubId: z.number().int().positive(),
     role: z.enum([ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER]),
     tag: z.string().max(50).optional(),
-    status: z.enum([MembershipStatus.ACTIVE, MembershipStatus.INACTIVE]),
+    status: z.enum([
+        MembershipStatus.ACTIVE,
+        MembershipStatus.INACTIVE,
+        MembershipStatus.PENDING,
+        MembershipStatus.DENIED,
+    ]),
     submittingErrors: z.number().int().min(0),
     createdBy: z.number().int().positive(),
     updatedBy: z.number().int().positive(),
