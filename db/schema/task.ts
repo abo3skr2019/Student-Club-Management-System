@@ -9,27 +9,9 @@ import {
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid, withArchive } from './common';
-import { relations } from 'drizzle-orm';
-import { clubMembership } from './user';
+import { clubMembership } from './clubMembership';
 import { user } from './user';
-
-// Task status enum
-export const TaskStatus = {
-    ACCEPTED: 'accepted',
-    PENDING: 'pending',
-    CHANGES_REQUESTED: 'changes_requested',
-    DENIED: 'denied',
-} as const;
-
-// Task category enum
-export const TaskCategories = {
-    CLUB_PROGRAMS_PROJECTS: 'club_programs_projects',
-    UNI_COLLAB: 'uni_collab',
-    EXTERNAL_COLLAB: 'external_collab',
-    CLUB_INITIATIVES: 'club_initiatives',
-    INTERNAL_ACTIVITIES: 'internal_activities',
-    COMMUNITY_CONTRIBUTIONS: 'community_contributions',
-} as const;
+import { TaskStatus, TaskCategories } from '../../lib/constants';
 
 // Task table definition
 export const task = pgTable(
@@ -82,22 +64,6 @@ export const task = pgTable(
         isArchivedIdx: index('task_is_archived_idx').on(table.isArchived),
     }),
 );
-
-// Relations
-export const taskRelations = relations(task, ({ one }) => ({
-    clubMembership: one(clubMembership, {
-        fields: [task.clubMembershipId],
-        references: [clubMembership.id],
-    }),
-    createdByUser: one(user, {
-        fields: [task.createdBy],
-        references: [user.id],
-    }),
-    updatedByUser: one(user, {
-        fields: [task.updatedBy],
-        references: [user.id],
-    }),
-}));
 
 // Validation schemas
 const taskValidation = {

@@ -1,0 +1,82 @@
+import {
+    pgTable,
+    serial,
+    text,
+    timestamp,
+    index,
+    uniqueIndex,
+    varchar,
+    integer,
+} from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
+import { withUuid, withArchive } from './common';
+import { user } from './user';
+import { club } from './club';
+import { ClubRole, MembershipStatus } from '../../lib/constants';
+
+// Club membership table with roles
+export const clubMembership = pgTable(
+    'club_membership',
+    {
+        id: serial('id').primaryKey(),
+        ...withUuid('club_membership'),
+        userId: integer('user_id')
+            .references(() => user.id, { onDelete: 'cascade' })
+            .notNull(),
+        clubId: integer('club_id')
+            .references(() => club.id, { onDelete: 'cascade' })
+            .notNull(),
+        role: text('role', {
+            enum: [ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER],
+        })
+            .notNull()
+            .default(ClubRole.MEMBER),
+        tag: varchar('tag', { length: 50 }),
+        status: text('status', {
+            enum: [MembershipStatus.ACTIVE, MembershipStatus.INACTIVE],
+        })
+            .notNull()
+            .default(MembershipStatus.ACTIVE),
+        submittingErrors: integer('submitting_errors').notNull().default(0),
+        createdBy: integer('created_by')
+            .references(() => user.id)
+            .notNull(),
+        updatedBy: integer('updated_by')
+            .references(() => user.id)
+            .notNull(),
+        joinedAt: timestamp('joined_at').notNull().defaultNow(),
+        ...withArchive,
+    },
+    (table) => ({
+        userClubIdx: uniqueIndex('user_club_idx').on(
+            table.userId,
+            table.clubId,
+        ),
+        roleIdx: index('club_membership_role_idx').on(table.role),
+        statusIdx: index('club_membership_status_idx').on(table.status),
+        isArchivedIdx: index('club_membership_is_archived_idx').on(
+            table.isArchived,
+        ),
+    }),
+);
+
+// Validation schemas
+const clubMembershipValidation = {
+    userId: z.number().int().positive(),
+    clubId: z.number().int().positive(),
+    role: z.enum([ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER]),
+    tag: z.string().max(50).optional(),
+    status: z.enum([MembershipStatus.ACTIVE, MembershipStatus.INACTIVE]),
+    submittingErrors: z.number().int().min(0),
+    createdBy: z.number().int().positive(),
+    updatedBy: z.number().int().positive(),
+    isArchived: z.boolean(),
+    archivedAt: z.date().optional(),
+};
+
+export const insertClubMembershipSchema = createInsertSchema(
+    clubMembership,
+).extend(clubMembershipValidation);
+export const selectClubMembershipSchema = createSelectSchema(clubMembership);
+export const updateClubMembershipSchema = insertClubMembershipSchema.partial();

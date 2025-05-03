@@ -12,22 +12,15 @@ import {
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid, withArchive } from './common';
-import { relations } from 'drizzle-orm';
 import { club } from './club';
 import { event } from './event';
+import { GlobalRole, ClubRole, MembershipStatus } from '../../lib/constants';
 
 // Provider validation
 const providerValidation = z.object({
     name: z.string(),
     providerId: z.string(),
 });
-
-// Global role enum
-export const GlobalRole = {
-    INMA_ADMIN: 'inmaAdmin',
-    UNI_ADMIN: 'uniAdmin',
-    USER: 'user',
-} as const;
 
 // User table definition
 export const user = pgTable(
@@ -51,6 +44,7 @@ export const user = pgTable(
             enum: [
                 GlobalRole.INMA_ADMIN,
                 GlobalRole.UNI_ADMIN,
+                GlobalRole.SUPERVISOR,
                 GlobalRole.USER,
             ],
         })
@@ -63,119 +57,6 @@ export const user = pgTable(
         globalRoleIdx: index('global_role_idx').on(table.globalRole),
         providerIdx: index('provider_idx').on(table.providers),
         isArchivedIdx: index('user_is_archived_idx').on(table.isArchived),
-    }),
-);
-
-// Club role enum
-export const ClubRole = {
-    CLUB_ADMIN: 'clubAdmin',
-    HR: 'hr',
-    MEMBER: 'member',
-} as const;
-
-// Membership status enum
-export const MembershipStatus = {
-    ACTIVE: 'active',
-    INACTIVE: 'inactive',
-} as const;
-
-// Club membership table with roles
-export const clubMembership = pgTable(
-    'club_membership',
-    {
-        id: serial('id').primaryKey(),
-        ...withUuid('club_membership'),
-        userId: integer('user_id')
-            .references(() => user.id, { onDelete: 'cascade' })
-            .notNull(),
-        clubId: integer('club_id')
-            .references(() => club.id, { onDelete: 'cascade' })
-            .notNull(),
-        role: text('role', {
-            enum: [ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER],
-        })
-            .notNull()
-            .default(ClubRole.MEMBER),
-        tag: varchar('tag', { length: 50 }),
-        status: text('status', {
-            enum: [MembershipStatus.ACTIVE, MembershipStatus.INACTIVE],
-        })
-            .notNull()
-            .default(MembershipStatus.ACTIVE),
-        submittingErrors: integer('submitting_errors').notNull().default(0),
-        createdBy: integer('created_by')
-            .references(() => user.id)
-            .notNull(),
-        updatedBy: integer('updated_by')
-            .references(() => user.id)
-            .notNull(),
-        joinedAt: timestamp('joined_at').notNull().defaultNow(),
-        ...withArchive,
-    },
-    (table) => ({
-        userClubIdx: uniqueIndex('user_club_idx').on(
-            table.userId,
-            table.clubId,
-        ),
-        roleIdx: index('club_membership_role_idx').on(table.role),
-        statusIdx: index('club_membership_status_idx').on(table.status),
-        isArchivedIdx: index('club_membership_is_archived_idx').on(
-            table.isArchived,
-        ),
-    }),
-);
-
-// Event registration table with additional fields
-export const userToEventJoined = pgTable(
-    'user_event_joined',
-    {
-        id: serial('id').primaryKey(),
-        userId: serial('user_id')
-            .references(() => user.id, { onDelete: 'cascade' })
-            .notNull(),
-        eventId: serial('event_id')
-            .references(() => event.id, { onDelete: 'cascade' })
-            .notNull(),
-        registrationDate: timestamp('registration_date').notNull().defaultNow(),
-    },
-    (table) => ({
-        userEventIdx: uniqueIndex('user_event_idx').on(
-            table.userId,
-            table.eventId,
-        ),
-    }),
-);
-
-// Relations
-export const userRelations = relations(user, ({ many }) => ({
-    clubMemberships: many(clubMembership),
-    eventsJoined: many(userToEventJoined),
-}));
-
-// Club membership relations
-export const clubMembershipRelations = relations(clubMembership, ({ one }) => ({
-    user: one(user, {
-        fields: [clubMembership.userId],
-        references: [user.id],
-    }),
-    club: one(club, {
-        fields: [clubMembership.clubId],
-        references: [club.id],
-    }),
-}));
-
-// Event registration relations
-export const userToEventJoinedRelations = relations(
-    userToEventJoined,
-    ({ one }) => ({
-        user: one(user, {
-            fields: [userToEventJoined.userId],
-            references: [user.id],
-        }),
-        event: one(event, {
-            fields: [userToEventJoined.eventId],
-            references: [event.id],
-        }),
     }),
 );
 
@@ -199,6 +80,7 @@ const userValidation = {
     globalRole: z.enum([
         GlobalRole.INMA_ADMIN,
         GlobalRole.UNI_ADMIN,
+        GlobalRole.SUPERVISOR,
         GlobalRole.USER,
     ]),
 };
@@ -206,37 +88,3 @@ const userValidation = {
 export const insertUserSchema = createInsertSchema(user).extend(userValidation);
 export const selectUserSchema = createSelectSchema(user);
 export const updateUserSchema = insertUserSchema.partial();
-
-// Club membership validation
-const clubMembershipValidation = {
-    userId: z.number().int().positive(),
-    clubId: z.number().int().positive(),
-    role: z.enum([ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER]),
-    tag: z.string().max(50).optional(),
-    status: z.enum([MembershipStatus.ACTIVE, MembershipStatus.INACTIVE]),
-    submittingErrors: z.number().int().min(0),
-    createdBy: z.number().int().positive(),
-    updatedBy: z.number().int().positive(),
-    isArchived: z.boolean(),
-    archivedAt: z.date().optional(),
-};
-
-export const insertClubMembershipSchema = createInsertSchema(
-    clubMembership,
-).extend(clubMembershipValidation);
-export const selectClubMembershipSchema = createSelectSchema(clubMembership);
-export const updateClubMembershipSchema = insertClubMembershipSchema.partial();
-
-// Event registration validation
-const eventRegistrationValidation = {
-    userId: z.number().int().positive(),
-    eventId: z.number().int().positive(),
-};
-
-export const insertEventRegistrationSchema = createInsertSchema(
-    userToEventJoined,
-).extend(eventRegistrationValidation);
-export const selectEventRegistrationSchema =
-    createSelectSchema(userToEventJoined);
-export const updateEventRegistrationSchema =
-    insertEventRegistrationSchema.partial();

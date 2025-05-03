@@ -9,30 +9,8 @@ import {
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid } from './common';
-import { relations } from 'drizzle-orm';
-import { userToEventJoined } from './user';
 import { club } from './club';
-
-// Event Categories
-export const EVENT_CATEGORIES = [
-    'bootcamp',
-    'workshop',
-    'meeting',
-    'hackathon',
-    'seminar',
-    'conference',
-    'networking',
-] as const;
-
-// Event Statuses
-export const EVENT_STATUSES = [
-    'upcoming',
-    'registration_open',
-    'registration_closed',
-    'ongoing',
-    'completed',
-    'cancelled',
-] as const;
+import { EVENT_CATEGORIES, EVENT_STATUSES } from '../../lib/constants';
 
 // Event table definition
 export const event = pgTable(
@@ -66,15 +44,6 @@ export const event = pgTable(
         clubIdIdx: index('club_id_idx').on(table.clubId),
     }),
 );
-
-// Relations
-export const eventRelations = relations(event, ({ many, one }) => ({
-    registeredUsers: many(userToEventJoined),
-    club: one(club, {
-        fields: [event.clubId],
-        references: [club.id],
-    }),
-}));
 
 // Validation schemas
 const eventValidation = {
