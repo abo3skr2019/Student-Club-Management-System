@@ -1,4 +1,10 @@
-import { pgTable, serial, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+    pgTable,
+    serial,
+    timestamp,
+    uniqueIndex,
+    integer,
+} from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { user } from './user';
@@ -9,10 +15,10 @@ export const userToEventJoined = pgTable(
     'user_event_joined',
     {
         id: serial('id').primaryKey(),
-        userId: serial('user_id')
+        userId: integer('user_id')
             .references(() => user.id, { onDelete: 'cascade' })
             .notNull(),
-        eventId: serial('event_id')
+        eventId: integer('event_id')
             .references(() => event.id, { onDelete: 'cascade' })
             .notNull(),
         registrationDate: timestamp('registration_date').notNull().defaultNow(),

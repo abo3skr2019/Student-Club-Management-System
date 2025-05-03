@@ -9,8 +9,8 @@ import { ticket } from './ticket';
 
 // User relations
 export const userRelations = relations(user, ({ many }) => ({
-    clubMemberships: many(clubMembership, { relationName: 'user' }),
-    eventsJoined: many(userToEventJoined, { relationName: 'user' }),
+    clubMemberships: many(clubMembership, { relationName: 'membershipUser' }),
+    eventsJoined: many(userToEventJoined, { relationName: 'eventJoinUser' }),
     clubsSupervised: many(club, { relationName: 'supervisor' }),
     createdTasks: many(task, { relationName: 'createdByUser' }),
     updatedTasks: many(task, { relationName: 'updatedByUser' }),
@@ -44,7 +44,7 @@ export const clubMembershipRelations = relations(
         user: one(user, {
             fields: [clubMembership.userId],
             references: [user.id],
-            relationName: 'user',
+            relationName: 'membershipUser',
         }),
         club: one(club, {
             fields: [clubMembership.clubId],
@@ -70,7 +70,7 @@ export const userToEventJoinedRelations = relations(
         user: one(user, {
             fields: [userToEventJoined.userId],
             references: [user.id],
-            relationName: 'user',
+            relationName: 'eventJoinUser',
         }),
         event: one(event, {
             fields: [userToEventJoined.eventId],
@@ -88,10 +88,12 @@ export const taskRelations = relations(task, ({ one }) => ({
     createdByUser: one(user, {
         fields: [task.createdBy],
         references: [user.id],
+        relationName: 'createdByUser',
     }),
     updatedByUser: one(user, {
         fields: [task.updatedBy],
         references: [user.id],
+        relationName: 'updatedByUser',
     }),
 }));
 

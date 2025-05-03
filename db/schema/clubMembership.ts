@@ -1,7 +1,6 @@
 import {
     pgTable,
     serial,
-    text,
     timestamp,
     index,
     uniqueIndex,
@@ -27,13 +26,15 @@ export const clubMembership = pgTable(
         clubId: integer('club_id')
             .references(() => club.id, { onDelete: 'cascade' })
             .notNull(),
-        role: text('role', {
+        role: varchar('role', {
+            length: 15,
             enum: [ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER],
         })
             .notNull()
             .default(ClubRole.MEMBER),
         tag: varchar('tag', { length: 50 }),
-        status: text('status', {
+        status: varchar('status', {
+            length: 10,
             enum: [MembershipStatus.ACTIVE, MembershipStatus.INACTIVE],
         })
             .notNull()
