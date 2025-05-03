@@ -42,14 +42,11 @@ export const EVENT_CATEGORIES = [
     'networking',
 ] as const;
 
-// Event statuses
-export const EVENT_STATUSES = [
-    'upcoming',
-    'registration_open',
-    'registration_closed',
-    'ongoing',
-    'completed',
-    'cancelled',
+// Event Registration statuses
+export const EVENT_REGISTRATION_STATUSES = [
+    'pending',
+    'accepted',
+    'rejected',
 ] as const;
 
 // Task statuses

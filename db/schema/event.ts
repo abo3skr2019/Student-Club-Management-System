@@ -8,9 +8,10 @@ import {
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
-import { timestamps, withUuid } from './common';
+import { timestamps, withArchive, withUuid } from './common';
 import { club } from './club';
-import { EVENT_CATEGORIES, EVENT_STATUSES } from '../../lib/constants';
+import { EVENT_CATEGORIES } from '../../lib/constants';
+import { user } from './user';
 
 // Event table definition
 export const event = pgTable(
@@ -27,21 +28,26 @@ export const event = pgTable(
         eventStart: timestamp('event_start').notNull(),
         eventEnd: timestamp('event_end').notNull(),
         seatsAvailable: integer('seats_available').notNull(),
-        seatsRemaining: integer('seats_remaining').notNull(),
         category: varchar('category', {
             length: 20,
             enum: EVENT_CATEGORIES,
         }).notNull(),
-        status: varchar('status', { length: 20, enum: EVENT_STATUSES })
-            .notNull()
-            .default('upcoming'),
-        clubId: serial('club_id')
+        clubId: integer('club_id')
             .references(() => club.id, { onDelete: 'cascade' })
             .notNull(),
+        createdBy: integer('created_by')
+            .references(() => user.id)
+            .notNull(),
+        updatedBy: integer('updated_by')
+            .references(() => user.id)
+            .notNull(),
+        ...withArchive,
         ...timestamps,
     },
     (table) => ({
         clubIdIdx: index('club_id_idx').on(table.clubId),
+        categoryIdx: index('event_category_idx').on(table.category),
+        eventStartIdx: index('event_start_idx').on(table.eventStart),
     }),
 );
 
@@ -57,8 +63,11 @@ const eventValidation = {
     eventEnd: z.coerce.date(),
     seatsAvailable: z.number().int().min(1).max(10000),
     category: z.enum(EVENT_CATEGORIES),
-    status: z.enum(EVENT_STATUSES),
     clubId: z.number().int().positive(),
+    createdBy: z.number().int().positive(),
+    updatedBy: z.number().int().positive(),
+    isArchived: z.boolean().default(false),
+    archivedAt: z.date().optional(),
 };
 
 // Base schema without refinements for updates
@@ -73,12 +82,7 @@ export const insertEventSchema = baseEventSchema
     })
     .refine((data) => data.eventStart > data.registrationEnd, {
         message: 'Event must start after registration ends',
-    })
-    .transform((data) => ({
-        ...data,
-        seatsRemaining: data.seatsAvailable, // Initialize seatsRemaining with seatsAvailable
-        status: 'upcoming', // Explicitly set status to upcoming
-    }));
+    });
 
 export const selectEventSchema = createSelectSchema(event);
 export const updateEventSchema = baseEventSchema.partial();

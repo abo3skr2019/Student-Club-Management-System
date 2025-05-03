@@ -3,14 +3,16 @@ import { user } from './user';
 import { club } from './club';
 import { clubMembership } from './clubMembership';
 import { event } from './event';
-import { userToEventJoined } from './eventRegistration';
+import { eventRegistrations } from './eventRegistration';
 import { task } from './task';
 import { ticket } from './ticket';
 
 // User relations
 export const userRelations = relations(user, ({ many }) => ({
     clubMemberships: many(clubMembership, { relationName: 'membershipUser' }),
-    eventsJoined: many(userToEventJoined, { relationName: 'eventJoinUser' }),
+    eventRegistrations: many(eventRegistrations, {
+        relationName: 'eventRegistrationUser',
+    }),
     clubsSupervised: many(club, { relationName: 'supervisor' }),
     createdTasks: many(task, { relationName: 'taskCreatedBy' }),
     updatedTasks: many(task, { relationName: 'taskUpdatedBy' }),
@@ -58,7 +60,7 @@ export const clubMembershipRelations = relations(
 
 // Event relations
 export const eventRelations = relations(event, ({ many, one }) => ({
-    registeredUsers: many(userToEventJoined),
+    registeredUsers: many(eventRegistrations),
     club: one(club, {
         fields: [event.clubId],
         references: [club.id],
@@ -66,16 +68,16 @@ export const eventRelations = relations(event, ({ many, one }) => ({
 }));
 
 // Event registration relations
-export const userToEventJoinedRelations = relations(
-    userToEventJoined,
+export const eventRegistrationsRelations = relations(
+    eventRegistrations,
     ({ one }) => ({
         user: one(user, {
-            fields: [userToEventJoined.userId],
+            fields: [eventRegistrations.userId],
             references: [user.id],
-            relationName: 'eventJoinUser',
+            relationName: 'eventRegistrationUser',
         }),
         event: one(event, {
-            fields: [userToEventJoined.eventId],
+            fields: [eventRegistrations.eventId],
             references: [event.id],
         }),
     }),
