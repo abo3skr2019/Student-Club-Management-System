@@ -3,18 +3,13 @@ import {
     serial,
     text,
     jsonb,
-    timestamp,
     index,
-    uniqueIndex,
     varchar,
-    integer,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid, withArchive } from './common';
-import { club } from './club';
-import { event } from './event';
-import { GlobalRole, ClubRole, MembershipStatus } from '../../lib/constants';
+import { GlobalRole } from '../../lib/constants';
 
 // Provider validation
 const providerValidation = z.object({
