@@ -15,9 +15,13 @@ USER node
 # Copy production node_modules and build artifacts
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/backend ./backend
-COPY --from=builder /usr/src/app/frontend ./frontend
+COPY --from=builder /usr/src/app/controllers ./controllers
+COPY --from=builder /usr/src/app/routes ./routes
+COPY --from=builder /usr/src/app/middleware ./middleware
+COPY --from=builder /usr/src/app/services ./services
 COPY --from=builder /usr/src/app/utils ./utils
+COPY --from=builder /usr/src/app/db ./db
+COPY --from=builder /usr/src/app/drizzle ./drizzle
 COPY app.js ./
 
 CMD ["node", "app.js"]
