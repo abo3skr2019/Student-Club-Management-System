@@ -14,8 +14,8 @@ import { EVENT_REGISTRATION_STATUSES } from '../../lib/constants';
 import { timestamps, withArchive } from './common';
 
 // Event registrations table
-export const eventRegistrations = pgTable(
-    'event_registrations',
+export const eventRegistration = pgTable(
+    'event_registration',
     {
         id: serial('id').primaryKey(),
         userId: integer('user_id')
@@ -57,9 +57,9 @@ const eventRegistrationValidation = {
 };
 
 export const insertEventRegistrationSchema = createInsertSchema(
-    eventRegistrations,
+    eventRegistration,
 ).extend(eventRegistrationValidation);
 export const selectEventRegistrationSchema =
-    createSelectSchema(eventRegistrations);
+    createSelectSchema(eventRegistration);
 export const updateEventRegistrationSchema =
     insertEventRegistrationSchema.partial();
