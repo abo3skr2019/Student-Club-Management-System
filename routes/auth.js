@@ -3,8 +3,8 @@ const router = express.Router();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
-const { db } = require('../../dist/db');
-const { user: userTable } = require('../../dist/db/schema/user');
+const { db } = require('../dist/db');
+const { user: userTable } = require('../dist/db/schema/user');
 const { eq } = require('drizzle-orm');
 
 passport.use(

@@ -1,13 +1,13 @@
-const { db } = require('../../dist/db');
+const { db } = require('../dist/db');
 const {
     user,
     userToEventJoined,
     clubMembership,
-} = require('../../dist/db/schema');
-const { updateUserSchema } = require('../../dist/db/schema/user');
+} = require('../dist/db/schema');
+const { updateUserSchema } = require('../dist/db/schema/user');
 const { eq, and } = require('drizzle-orm');
 const { z } = require('zod');
-const { ClubRole } = require('../../dist/db/schema/user');
+const { ClubRole } = require('../dist/db/schema/user');
 
 /**
  * Render the profile update form

@@ -1,11 +1,11 @@
-const { db } = require('../../dist/db');
-const { club, user, clubMembership, event } = require('../../dist/db/schema');
+const { db } = require('../dist/db');
+const { club, user, clubMembership, event } = require('../dist/db/schema');
 const { eq, and, sql, ilike } = require('drizzle-orm');
 const {
     insertClubSchema,
     updateClubSchema,
-} = require('../../dist/db/schema/club');
-const { ClubRole } = require('../../dist/db/schema/user');
+} = require('../dist/db/schema/club');
+const { ClubRole } = require('../dist/db/schema/user');
 
 // Helper function for UUID validation
 const isValidUUID = (uuid) => {
@@ -345,7 +345,6 @@ const getDashboardData = async (clubId) => {
         throw error;
     }
 };
-
 
 const joinClub = async (clubId, userId) => {
     try {
