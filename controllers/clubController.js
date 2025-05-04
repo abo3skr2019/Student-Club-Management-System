@@ -1,6 +1,6 @@
 const clubService = require('../services/clubService');
-const { ClubRole } = require('../../dist/db/schema/user');
-const { GlobalRole } = require('../../dist/db/schema/user');
+const { ClubRole } = require('../dist/db/schema/user');
+const { GlobalRole } = require('../dist/db/schema/user');
 
 /**
  * Get all clubs
@@ -118,7 +118,7 @@ const renderEditClubForm = async (req, res) => {
     }
 };
 
-const joinClub = async (req, res) => {  
+const joinClub = async (req, res) => {
     try {
         const { clubId } = req.params;
         const userId = req.user.id;
@@ -143,7 +143,7 @@ const joinClub = async (req, res) => {
         console.error('Error in joinClub:', error);
         res.status(500).json({ message: 'Error joining club' });
     }
-}
+};
 
 /**
  * Update club

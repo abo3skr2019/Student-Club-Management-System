@@ -1,17 +1,17 @@
-const { db } = require('../../dist/db');
+const { db } = require('../dist/db');
 const {
     event,
     club,
     user,
     userToEventJoined,
     clubMembership,
-} = require('../../dist/db/schema');
+} = require('../dist/db/schema');
 const { eq, and, sql } = require('drizzle-orm');
-const { updateEventStatus } = require('../../utils/eventScheduler');
+const { updateEventStatus } = require('../utils/eventScheduler');
 const {
     insertEventSchema,
     updateEventSchema,
-} = require('../../dist/db/schema/event');
+} = require('../dist/db/schema/event');
 
 // Helper function for UUID validation
 const isValidUUID = (uuid) => {

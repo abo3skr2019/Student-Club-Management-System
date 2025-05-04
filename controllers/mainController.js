@@ -1,7 +1,7 @@
-const { db } = require('../../dist/db');
-const { ticket } = require('../../dist/db/schema');
+const { db } = require('../dist/db');
+const { ticket } = require('../dist/db/schema');
 const { eq } = require('drizzle-orm');
-const { insertTicketSchema } = require('../../dist/db/schema/ticket');
+const { insertTicketSchema } = require('../dist/db/schema/ticket');
 
 /**
  * GET /

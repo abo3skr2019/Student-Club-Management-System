@@ -1,7 +1,7 @@
-const { db } = require('../../dist/db');
-const { club, clubMembership } = require('../../dist/db/schema');
+const { db } = require('../dist/db');
+const { club, clubMembership } = require('../dist/db/schema');
 const { eq, and } = require('drizzle-orm');
-const { ClubRole } = require('../../dist/db/schema/user');
+const { ClubRole } = require('../dist/db/schema/user');
 
 /**
  * Middleware to check if the user is a Club Admin and attach club UUID to req.user
