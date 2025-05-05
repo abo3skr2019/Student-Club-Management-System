@@ -11,19 +11,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid, withArchive } from './common';
 import { user } from './user';
-import { supervisor } from './supervisor';
-
-// Club type enum
-export const ClubType = {
-    GENERAL: 'general', // عام
-    SPECIALIZED: 'specialized', // تخصصي
-} as const;
-
-// Club status enum
-export const ClubStatus = {
-    ACTIVE: 'active',
-    INACTIVE: 'inactive',
-} as const;
+import { ClubType, ClubStatus } from '../../lib/constants';
 
 // Club table definition
 export const club = pgTable(
@@ -35,7 +23,7 @@ export const club = pgTable(
         description: varchar('description', { length: 500 }).notNull(),
         logo: varchar('logo', { length: 4096 }).notNull(),
         supervisorId: integer('supervisor_id')
-            .references(() => supervisor.id)
+            .references(() => user.id)
             .notNull(),
         type: text('type', {
             enum: [ClubType.GENERAL, ClubType.SPECIALIZED],

@@ -9,17 +9,12 @@ import {
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withUuid } from './common';
-import { relations } from 'drizzle-orm';
 import { user } from './user';
-
-// Ticket Statuses
-export const TICKET_STATUSES = ['open', 'closed', 'in-progress'] as const;
-
-// Ticket Priorities
-export const TICKET_PRIORITIES = ['low', 'medium', 'high'] as const;
-
-// Ticket Categories
-export const TICKET_CATEGORIES = ['bug', 'feature', 'task'] as const;
+import {
+    TICKET_STATUSES,
+    TICKET_PRIORITIES,
+    TICKET_CATEGORIES,
+} from '../../lib/constants';
 
 // Ticket table definition
 export const ticket = pgTable(
@@ -51,20 +46,6 @@ export const ticket = pgTable(
         priorityIdx: index('priority_idx').on(table.priority),
     }),
 );
-
-// Relations
-export const ticketRelations = relations(ticket, ({ one }) => ({
-    assignedTo: one(user, {
-        fields: [ticket.assignedTo],
-        references: [user.id],
-        relationName: 'assignedTickets',
-    }),
-    createdBy: one(user, {
-        fields: [ticket.createdBy],
-        references: [user.id],
-        relationName: 'createdTickets',
-    }),
-}));
 
 // Validation schemas
 const ticketValidation = {
