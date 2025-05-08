@@ -6,7 +6,4 @@ const router = express.Router();
 // New route to return current user info based on the bearer token 
 router.get('/user', isAuthenticated, getUser);
 
-// Logout Route
-router.get('/logout', logout);
-
 module.exports = router;
