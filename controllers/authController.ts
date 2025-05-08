@@ -40,8 +40,8 @@ export const getUser = async (req: AuthenticatedRequest, res: Response) => {
                 firstName: given_name || '',
                 lastName: family_name || '',
                 email,
-                nationalId, // Placeholder
-                phoneNumber, // Placeholder
+                nationalId, 
+                phoneNumber, 
                 profileImage: picture || '',
                 providers: providerInfo,
                 globalRole: GlobalRole.USER,
