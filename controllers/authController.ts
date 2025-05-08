@@ -7,22 +7,21 @@ import { eq } from 'drizzle-orm';
 // New function: getUser that uses token info from the request to retrieve/upsert user record.
 export const getUser = async (req: Request, res: Response) => {
 	// Token payload expected to have: sub (oid), email, name, given_name, family_name, picture
-	const { sub, email, name, given_name, family_name, picture } = req.user as any;
+	const { sub, email, name, given_name, family_name,nationalId,phoneNumber,uniId, picture } = req.user as any;
 	try {
 		// Look up user in database
 		const [existing] = await db.select().from(user).where(eq(user.email, email));
 		let dbUser = existing;
 		if (!dbUser) {
-			const uniId = email.split('@')[0];
 			const providerInfo = [{ name: 'azure', providerId: sub }];
 			const [created] = await db.insert(user).values({
-				uniId,
-				displayName: name || email,
+				uniId: uniId,
+				displayName: name || given_name+' ' + family_name || '',
 				firstName: given_name || '',
 				lastName: family_name || '',
 				email,
-				nationalId: '', // Placeholder
-				phoneNumber: '', // Placeholder
+				nationalId: nationalId, // Placeholder
+				phoneNumber: phoneNumber, // Placeholder
 				profileImage: picture || '',
 				providers: providerInfo,
 				globalRole: GlobalRole.USER,
