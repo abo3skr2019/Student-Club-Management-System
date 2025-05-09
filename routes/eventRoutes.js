@@ -2,19 +2,20 @@ const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/eventController');
 const { isAuthenticated } = require('../middleware/CheckAuth');
-const { isClubAdmin } = require('../middleware/CheckRole');
+const { authorize } = require('../middleware/authorize');
+const { ClubRole } = require('../dist/lib/constants');
 
 // Event edit routes
 router.get(
     '/:eventId/edit',
     isAuthenticated,
-    isClubAdmin,
+    authorize([], [ClubRole.CLUB_ADMIN]),
     eventController.renderEditEventForm,
 );
 router.post(
     '/:eventId/edit',
     isAuthenticated,
-    isClubAdmin,
+    authorize([], [ClubRole.CLUB_ADMIN]),
     eventController.updateEvent,
 );
 
@@ -22,7 +23,7 @@ router.post(
 router.post(
     '/:eventId/delete',
     isAuthenticated,
-    isClubAdmin,
+    authorize([], [ClubRole.CLUB_ADMIN]),
     eventController.deleteEvent,
 );
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const { isAuthenticated } = require('../middleware/CheckAuth');
-const { isAdmin } = require('../middleware/CheckRole');
+const { authorize } = require('../middleware/authorize');
+const { GlobalRole } = require('../dist/lib/constants');
 const router = express.Router();
 
 const mainController = require('../controllers/mainController');
@@ -9,7 +10,7 @@ router.get('/', mainController.getIndex);
 router.get(
     '/admin/Tickets',
     isAuthenticated,
-    isAdmin,
+    authorize([GlobalRole.INMA_ADMIN], []),
     mainController.getTicketDashboard,
 );
 router.get('/contact', mainController.getContact);
