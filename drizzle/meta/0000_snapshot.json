@@ -1,5 +1,5 @@
 {
-  "id": "dbf9a841-9aef-46ae-b856-82a137f89f02",
+  "id": "2f1b6f93-9c45-47e8-8e71-42545da219f2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -35,9 +35,59 @@
         },
         "logo": {
           "name": "logo",
-          "type": "varchar(255)",
+          "type": "varchar(4096)",
           "primaryKey": false,
           "notNull": true
+        },
+        "supervisor_id": {
+          "name": "supervisor_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "founding_date": {
+          "name": "founding_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_archived": {
+          "name": "is_archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -55,15 +105,62 @@
         }
       },
       "indexes": {
-        "name_idx": {
-          "name": "name_idx",
+        "club_status_idx": {
+          "name": "club_status_idx",
           "columns": [
-            "name"
+            "status"
+          ],
+          "isUnique": false
+        },
+        "club_is_archived_idx": {
+          "name": "club_is_archived_idx",
+          "columns": [
+            "is_archived"
           ],
           "isUnique": false
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "club_supervisor_id_user_id_fk": {
+          "name": "club_supervisor_id_user_id_fk",
+          "tableFrom": "club",
+          "tableTo": "user",
+          "columnsFrom": [
+            "supervisor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "club_created_by_user_id_fk": {
+          "name": "club_created_by_user_id_fk",
+          "tableFrom": "club",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "club_updated_by_user_id_fk": {
+          "name": "club_updated_by_user_id_fk",
+          "tableFrom": "club",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "drizzle_club_uuid_unique": {
@@ -78,6 +175,198 @@
           "nullsNotDistinct": false,
           "columns": [
             "name"
+          ]
+        }
+      }
+    },
+    "club_membership": {
+      "name": "club_membership",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "club_id": {
+          "name": "club_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
+        },
+        "tag": {
+          "name": "tag",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "submitting_errors": {
+          "name": "submitting_errors",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_archived": {
+          "name": "is_archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "user_club_idx": {
+          "name": "user_club_idx",
+          "columns": [
+            "user_id",
+            "club_id"
+          ],
+          "isUnique": true
+        },
+        "club_membership_role_idx": {
+          "name": "club_membership_role_idx",
+          "columns": [
+            "role"
+          ],
+          "isUnique": false
+        },
+        "club_membership_status_idx": {
+          "name": "club_membership_status_idx",
+          "columns": [
+            "status"
+          ],
+          "isUnique": false
+        },
+        "club_membership_club_idx": {
+          "name": "club_membership_club_idx",
+          "columns": [
+            "club_id"
+          ],
+          "isUnique": false
+        },
+        "club_membership_is_archived_idx": {
+          "name": "club_membership_is_archived_idx",
+          "columns": [
+            "is_archived"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "club_membership_user_id_user_id_fk": {
+          "name": "club_membership_user_id_user_id_fk",
+          "tableFrom": "club_membership",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "club_membership_club_id_club_id_fk": {
+          "name": "club_membership_club_id_club_id_fk",
+          "tableFrom": "club_membership",
+          "tableTo": "club",
+          "columnsFrom": [
+            "club_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "club_membership_created_by_user_id_fk": {
+          "name": "club_membership_created_by_user_id_fk",
+          "tableFrom": "club_membership",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "club_membership_updated_by_user_id_fk": {
+          "name": "club_membership_updated_by_user_id_fk",
+          "tableFrom": "club_membership",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "drizzle_club_membership_uuid_unique": {
+          "name": "drizzle_club_membership_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
           ]
         }
       }
@@ -113,7 +402,7 @@
         },
         "poster": {
           "name": "poster",
-          "type": "varchar(255)",
+          "type": "varchar(4096)",
           "primaryKey": false,
           "notNull": true
         },
@@ -153,30 +442,42 @@
           "primaryKey": false,
           "notNull": true
         },
-        "seats_remaining": {
-          "name": "seats_remaining",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "category": {
           "name": "category",
           "type": "varchar(20)",
           "primaryKey": false,
           "notNull": true
         },
-        "status": {
-          "name": "status",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'upcoming'"
-        },
         "club_id": {
           "name": "club_id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_archived": {
+          "name": "is_archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -200,6 +501,20 @@
             "club_id"
           ],
           "isUnique": false
+        },
+        "event_category_idx": {
+          "name": "event_category_idx",
+          "columns": [
+            "category"
+          ],
+          "isUnique": false
+        },
+        "event_start_idx": {
+          "name": "event_start_idx",
+          "columns": [
+            "event_start"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -215,6 +530,32 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        },
+        "event_created_by_user_id_fk": {
+          "name": "event_created_by_user_id_fk",
+          "tableFrom": "event",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "event_updated_by_user_id_fk": {
+          "name": "event_updated_by_user_id_fk",
+          "tableFrom": "event",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -228,8 +569,8 @@
         }
       }
     },
-    "club_membership": {
-      "name": "club_membership",
+    "event_registration": {
+      "name": "event_registration",
       "schema": "",
       "columns": {
         "id": {
@@ -240,25 +581,57 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "club_id": {
-          "name": "club_id",
-          "type": "serial",
+        "event_id": {
+          "name": "event_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "role": {
-          "name": "role",
-          "type": "text",
+        "status": {
+          "name": "status",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'member'"
+          "default": "'pending'"
         },
-        "joined_at": {
-          "name": "joined_at",
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_archived": {
+          "name": "is_archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
@@ -266,26 +639,33 @@
         }
       },
       "indexes": {
-        "user_club_idx": {
-          "name": "user_club_idx",
+        "user_event_idx": {
+          "name": "user_event_idx",
           "columns": [
             "user_id",
-            "club_id"
+            "event_id"
           ],
           "isUnique": true
         },
-        "role_idx": {
-          "name": "role_idx",
+        "event_registration_status_idx": {
+          "name": "event_registration_status_idx",
           "columns": [
-            "role"
+            "status"
+          ],
+          "isUnique": false
+        },
+        "event_registration_event_idx": {
+          "name": "event_registration_event_idx",
+          "columns": [
+            "event_id"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "club_membership_user_id_user_id_fk": {
-          "name": "club_membership_user_id_user_id_fk",
-          "tableFrom": "club_membership",
+        "event_registration_user_id_user_id_fk": {
+          "name": "event_registration_user_id_user_id_fk",
+          "tableFrom": "event_registration",
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
@@ -296,17 +676,43 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "club_membership_club_id_club_id_fk": {
-          "name": "club_membership_club_id_club_id_fk",
-          "tableFrom": "club_membership",
-          "tableTo": "club",
+        "event_registration_event_id_event_id_fk": {
+          "name": "event_registration_event_id_event_id_fk",
+          "tableFrom": "event_registration",
+          "tableTo": "event",
           "columnsFrom": [
-            "club_id"
+            "event_id"
           ],
           "columnsTo": [
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "event_registration_created_by_user_id_fk": {
+          "name": "event_registration_created_by_user_id_fk",
+          "tableFrom": "event_registration",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "event_registration_updated_by_user_id_fk": {
+          "name": "event_registration_updated_by_user_id_fk",
+          "tableFrom": "event_registration",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -329,6 +735,24 @@
           "primaryKey": false,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "uni_id": {
+          "name": "uni_id",
+          "type": "varchar(9)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "national_id": {
+          "name": "national_id",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
         },
         "display_name": {
           "name": "display_name",
@@ -374,6 +798,19 @@
           "notNull": true,
           "default": "'user'"
         },
+        "is_archived": {
+          "name": "is_archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -390,13 +827,6 @@
         }
       },
       "indexes": {
-        "email_idx": {
-          "name": "email_idx",
-          "columns": [
-            "email"
-          ],
-          "isUnique": false
-        },
         "global_role_idx": {
           "name": "global_role_idx",
           "columns": [
@@ -408,6 +838,13 @@
           "name": "provider_idx",
           "columns": [
             "providers"
+          ],
+          "isUnique": false
+        },
+        "user_is_archived_idx": {
+          "name": "user_is_archived_idx",
+          "columns": [
+            "is_archived"
           ],
           "isUnique": false
         }
@@ -422,6 +859,20 @@
             "uuid"
           ]
         },
+        "user_uni_id_unique": {
+          "name": "user_uni_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uni_id"
+          ]
+        },
+        "user_national_id_unique": {
+          "name": "user_national_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "national_id"
+          ]
+        },
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
@@ -430,77 +881,6 @@
           ]
         }
       }
-    },
-    "user_event_joined": {
-      "name": "user_event_joined",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "serial",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "event_id": {
-          "name": "event_id",
-          "type": "serial",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "registration_date": {
-          "name": "registration_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "user_event_idx": {
-          "name": "user_event_idx",
-          "columns": [
-            "user_id",
-            "event_id"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "user_event_joined_user_id_user_id_fk": {
-          "name": "user_event_joined_user_id_user_id_fk",
-          "tableFrom": "user_event_joined",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_event_joined_event_id_event_id_fk": {
-          "name": "user_event_joined_event_id_event_id_fk",
-          "tableFrom": "user_event_joined",
-          "tableTo": "event",
-          "columnsFrom": [
-            "event_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
     },
     "ticket": {
       "name": "ticket",
@@ -554,15 +934,15 @@
         },
         "assigned_to": {
           "name": "assigned_to",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_by": {
           "name": "created_by",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -627,6 +1007,187 @@
       "uniqueConstraints": {
         "drizzle_ticket_uuid_unique": {
           "name": "drizzle_ticket_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      }
+    },
+    "task": {
+      "name": "task",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "club_membership_id": {
+          "name": "club_membership_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "volunteered_seconds": {
+          "name": "volunteered_seconds",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "attachment": {
+          "name": "attachment",
+          "type": "varchar(4096)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_comment": {
+          "name": "review_comment",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_archived": {
+          "name": "is_archived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "task_club_membership_idx": {
+          "name": "task_club_membership_idx",
+          "columns": [
+            "club_membership_id"
+          ],
+          "isUnique": false
+        },
+        "task_status_idx": {
+          "name": "task_status_idx",
+          "columns": [
+            "status"
+          ],
+          "isUnique": false
+        },
+        "task_is_archived_idx": {
+          "name": "task_is_archived_idx",
+          "columns": [
+            "is_archived"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "task_club_membership_id_club_membership_id_fk": {
+          "name": "task_club_membership_id_club_membership_id_fk",
+          "tableFrom": "task",
+          "tableTo": "club_membership",
+          "columnsFrom": [
+            "club_membership_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "task_created_by_user_id_fk": {
+          "name": "task_created_by_user_id_fk",
+          "tableFrom": "task",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "task_updated_by_user_id_fk": {
+          "name": "task_updated_by_user_id_fk",
+          "tableFrom": "task",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "drizzle_task_uuid_unique": {
+          "name": "drizzle_task_uuid_unique",
           "nullsNotDistinct": false,
           "columns": [
             "uuid"
