@@ -7,6 +7,7 @@ import {
     varchar,
     integer,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { withUuid, withArchive } from './common';
@@ -55,10 +56,9 @@ export const clubMembership = pgTable(
         ...withArchive,
     },
     (table) => ({
-        userClubIdx: uniqueIndex('user_club_idx').on(
-            table.userId,
-            table.clubId,
-        ),
+        userClubIdx: uniqueIndex('user_club_idx')
+            .on(table.userId, table.clubId)
+            .where(sql`${table.isArchived} = false`),
         roleIdx: index('club_membership_role_idx').on(table.role),
         statusIdx: index('club_membership_status_idx').on(table.status),
         clubIdx: index('club_membership_club_idx').on(table.clubId),
