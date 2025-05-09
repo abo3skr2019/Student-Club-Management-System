@@ -56,7 +56,7 @@ const clubValidation = {
     logo: z.string().url().max(4096),
     supervisorId: z.number().int().positive(),
     type: z.enum([ClubType.GENERAL, ClubType.SPECIALIZED]),
-    foundingDate: z.date().optional(),
+    foundingDate: z.coerce.date().optional(),
     status: z.enum([ClubStatus.ACTIVE, ClubStatus.INACTIVE]),
     createdBy: z.number().int().positive(),
     updatedBy: z.number().int().positive(),

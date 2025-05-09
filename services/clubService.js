@@ -154,22 +154,15 @@ const findByUUID = async (uuid, params = {}) => {
  * @returns {Promise<Object>} Created club
  */
 const createClub = async (data, userId) => {
-    // Transform data before validation
-    const transformedData = {
+    // Add userId data
+    const clubData = {
         ...data,
-        foundingDate: data.foundingDate
-            ? new Date(data.foundingDate)
-            : undefined,
         createdBy: userId,
         updatedBy: userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
     };
 
-    const validatedData = insertClubSchema.parse(transformedData);
-
     // Check if name already exists (case-insensitive)
-    const nameLower = validatedData.name.trim().toLowerCase();
+    const nameLower = clubData.name.trim().toLowerCase();
     const existingClub = await db.query.club.findFirst({
         where: sql`
             LOWER(${club.name}) = ${nameLower}
@@ -181,7 +174,7 @@ const createClub = async (data, userId) => {
         throw createError(409, 'Club with this name already exists');
     }
 
-    const [newClub] = await db.insert(club).values(validatedData).returning();
+    const [newClub] = await db.insert(club).values(clubData).returning();
 
     return newClub;
 };
@@ -198,11 +191,9 @@ const updateClub = async (uuid, data, userId) => {
         throw createError(400, 'Invalid UUID format');
     }
 
-    const validatedData = updateClubSchema.parse(data);
-
     // Check if name already exists (case-insensitive)
-    if (validatedData.name) {
-        const nameLower = validatedData.name.trim().toLowerCase();
+    if (data.name) {
+        const nameLower = data.name.trim().toLowerCase();
         const existingClub = await db.query.club.findFirst({
             where: sql`
                 LOWER(${club.name}) = ${nameLower}
@@ -219,7 +210,7 @@ const updateClub = async (uuid, data, userId) => {
     const [updatedClub] = await db
         .update(club)
         .set({
-            ...validatedData,
+            ...data,
             updatedBy: userId,
             updatedAt: new Date(),
         })
@@ -537,8 +528,6 @@ const updateMembership = async (uuid, data, userId) => {
         throw createError(400, 'Invalid UUID format');
     }
 
-    const validatedData = updateClubMembershipSchema.parse(data);
-
     // Fetch existing membership to check status
     const existingMembership = await db.query.clubMembership.findFirst({
         where: eq(clubMembership.uuid, uuid),
@@ -550,13 +539,13 @@ const updateMembership = async (uuid, data, userId) => {
 
     // Build update object
     const updateData = {
-        ...validatedData,
+        ...data,
         updatedBy: userId,
     };
 
     // Only set joinedAt if status is changing from non-active to active
     if (
-        validatedData.status === MembershipStatus.ACTIVE &&
+        data.status === MembershipStatus.ACTIVE &&
         existingMembership.status !== MembershipStatus.ACTIVE
     ) {
         updateData.joinedAt = new Date();

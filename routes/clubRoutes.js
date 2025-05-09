@@ -4,8 +4,18 @@ const clubController = require('../controllers/clubController');
 const { isAuthenticated } = require('../middleware/CheckAuth');
 const { parseQueryParams } = require('../middleware/QueryParser');
 const { authorize } = require('../middleware/authorize');
+const validateBody = require('../middleware/validateBody');
 const { GlobalRole, ClubRole } = require('../dist/lib/constants');
 const asyncHandler = require('../utils/asyncHandler');
+const {
+    insertClubSchema,
+    updateClubSchema,
+} = require('../dist/db/schema/club');
+const {
+    insertClubMembershipSchema,
+    updateClubMembershipSchema,
+    createMembershipSchema,
+} = require('../dist/db/schema/clubMembership');
 
 // ============= CLUB ROUTES =============
 
@@ -24,6 +34,7 @@ router.post(
     '/',
     isAuthenticated,
     authorize([GlobalRole.INMA_ADMIN], []),
+    validateBody(insertClubSchema),
     asyncHandler(clubController.createClub),
 );
 
@@ -32,6 +43,7 @@ router.put(
     '/:clubUuid',
     isAuthenticated,
     authorize([GlobalRole.INMA_ADMIN], [ClubRole.CLUB_ADMIN]),
+    validateBody(updateClubSchema),
     asyncHandler(clubController.updateClub),
 );
 
@@ -82,6 +94,7 @@ router.post(
     '/:clubUuid/memberships',
     isAuthenticated,
     authorize([GlobalRole.INMA_ADMIN], [ClubRole.CLUB_ADMIN, ClubRole.HR]),
+    validateBody(createMembershipSchema),
     asyncHandler(clubController.createMembership),
 );
 
@@ -90,6 +103,7 @@ router.put(
     '/:clubUuid/memberships/:membershipUuid',
     isAuthenticated,
     authorize([GlobalRole.INMA_ADMIN], [ClubRole.CLUB_ADMIN, ClubRole.HR]),
+    validateBody(updateClubMembershipSchema),
     asyncHandler(clubController.updateMembership),
 );
 
