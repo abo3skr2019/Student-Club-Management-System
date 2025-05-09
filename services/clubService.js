@@ -1,6 +1,6 @@
 const { db } = require('../dist/db');
 const { club, clubMembership, task } = require('../dist/db/schema');
-const { eq, and, neq, or, count, sql } = require('drizzle-orm');
+const { eq, and, or, count, sql } = require('drizzle-orm');
 const { ClubRole, MembershipStatus } = require('../dist/lib/constants');
 const { buildFilterConditions } = require('../utils/queryFilterBuilder');
 const { buildSelectFields } = require('../utils/queryFieldSelector');

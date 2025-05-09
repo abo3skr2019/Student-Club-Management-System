@@ -1,7 +1,17 @@
 /**
  * Utilities for building DB queries from parsed request filters
  */
-const { eq, neq, gt, gte, lt, lte } = require('drizzle-orm');
+const {
+    eq,
+    ne,
+    gt,
+    gte,
+    lt,
+    lte,
+    inArray,
+    notInArray,
+} = require('drizzle-orm');
+const createError = require('http-errors');
 
 /**
  * Translate parsedQuery.filters into Drizzle conditions
@@ -21,7 +31,7 @@ function buildFilterConditions(filters = {}, model) {
                     conditions.push(eq(model[field], value));
                     break;
                 case 'neq':
-                    conditions.push(neq(model[field], value));
+                    conditions.push(ne(model[field], value));
                     break;
                 case 'gt':
                     conditions.push(gt(model[field], value));
@@ -37,16 +47,22 @@ function buildFilterConditions(filters = {}, model) {
                     break;
                 case 'in':
                     conditions.push(
-                        model[field].in(Array.isArray(value) ? value : [value]),
-                    );
-                    break;
-                case 'nin':
-                    conditions.push(
-                        model[field].notIn(
+                        inArray(
+                            model[field],
                             Array.isArray(value) ? value : [value],
                         ),
                     );
                     break;
+                case 'nin':
+                    conditions.push(
+                        notInArray(
+                            model[field],
+                            Array.isArray(value) ? value : [value],
+                        ),
+                    );
+                    break;
+                default:
+                    throw createError(400, `Invalid filter operator: ${op}`);
             }
         }
     }
