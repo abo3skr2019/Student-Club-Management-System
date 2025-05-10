@@ -1,6 +1,6 @@
 const { db } = require('../dist/db');
 const { club, clubMembership, task } = require('../dist/db/schema');
-const { eq, and, or, count, sql } = require('drizzle-orm');
+const { eq, and, or, count, sql, inArray } = require('drizzle-orm');
 const { ClubRole, MembershipStatus } = require('../dist/lib/constants');
 const { buildFilterConditions } = require('../utils/queryFilterBuilder');
 const { buildSelectFields } = require('../utils/queryFieldSelector');
@@ -311,7 +311,7 @@ const getAllClubMemberships = async (clubUuid, params = {}) => {
 
         // Only add to filter if we found matching users
         if (userIds.length > 0) {
-            whereConditions.push(clubMembership.userId.in(userIds));
+            whereConditions.push(inArray(clubMembership.userId, userIds));
         }
     }
 
@@ -672,7 +672,7 @@ const leaveClub = async (clubUuid, userId) => {
             );
 
         // If this is the last club admin, prevent leaving
-        if (result.count === 1) {
+        if (Number(result.count) === 1) {
             throw createError(
                 400,
                 'Cannot leave club as you are the last admin. Please assign another admin first.',
@@ -729,7 +729,7 @@ const deleteMembership = async (uuid, userId) => {
             );
 
         // If this is the last club admin, prevent deletion
-        if (result.count === 1) {
+        if (Number(result.count) === 1) {
             throw createError(
                 400,
                 'Cannot delete the last club admin. Please assign another admin first.',
@@ -807,7 +807,7 @@ const resetClubTerm = async (clubUuid, userId) => {
                   .where(
                       and(
                           eq(task.isArchived, false),
-                          task.clubMembershipId.in(membershipIds),
+                          inArray(task.clubMembershipId, membershipIds),
                       ),
                   )
                   .returning()

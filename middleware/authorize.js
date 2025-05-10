@@ -5,7 +5,7 @@
 const createError = require('http-errors');
 const { db } = require('../dist/db');
 const { club, clubMembership } = require('../dist/db/schema');
-const { eq, and, or } = require('drizzle-orm');
+const { eq, and, inArray } = require('drizzle-orm');
 const {
     GlobalRole,
     ClubRole,
@@ -77,12 +77,8 @@ function requireClubRole(...allowedClubRoles) {
                     eq(clubMembership.userId, req.user.id),
                     eq(clubMembership.isArchived, false),
                     eq(clubMembership.status, MembershipStatus.ACTIVE),
-                    // Allow any of the permitted roles
-                    or(
-                        ...allowedClubRoles.map((role) =>
-                            eq(clubMembership.role, role),
-                        ),
-                    ),
+                    // Check if the user's role is in the array of allowed roles
+                    inArray(clubMembership.role, allowedClubRoles),
                 ),
             });
 
