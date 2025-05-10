@@ -1,18 +1,9 @@
 const { db } = require('../dist/db');
-const { club, clubMembership, task } = require('../dist/db/schema');
+const { club, clubMembership, task, user } = require('../dist/db/schema');
 const { eq, and, or, count, sql, inArray } = require('drizzle-orm');
 const { ClubRole, MembershipStatus } = require('../dist/lib/constants');
 const { buildFilterConditions } = require('../utils/queryFilterBuilder');
 const { buildSelectFields } = require('../utils/queryFieldSelector');
-const {
-    insertClubSchema,
-    updateClubSchema,
-} = require('../dist/db/schema/club');
-const {
-    insertClubMembershipSchema,
-    updateClubMembershipSchema,
-} = require('../dist/db/schema/clubMembership');
-const { user } = require('../dist/db/schema');
 const createError = require('http-errors');
 
 // Helper function for UUID validation
