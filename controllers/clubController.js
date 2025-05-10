@@ -1,6 +1,4 @@
 const clubService = require('../services/clubService');
-const { ClubRole } = require('../dist/db/schema/user');
-const { GlobalRole } = require('../dist/db/schema/user');
 
 /**
  * Get all clubs
@@ -8,23 +6,14 @@ const { GlobalRole } = require('../dist/db/schema/user');
  * @param {Object} res Express response object
  */
 const getAllClubs = async (req, res) => {
-    try {
-        const clubs = await clubService.getAllClubs();
-        res.render('clubs/club-list', {
-            clubs: clubs.map((club) => ({
-                ...club,
-                clubAdmin: club.memberships[0]?.user || null,
-            })),
-            user: req.user,
-            isAdmin: req.user?.role === ClubRole.ADMIN,
-        });
-    } catch (error) {
-        console.error('Error in getAllClubs:', error);
-        res.status(500).render('error', {
-            message: 'Failed to fetch clubs',
-            user: req.user,
-        });
-    }
+    // Pass the entire parsedQuery object to the service
+    const { items, pagination } = await clubService.getAllClubs(
+        req.parsedQuery,
+    );
+    return res.status(200).json({
+        data: items,
+        pagination,
+    });
 };
 
 /**
@@ -32,50 +21,14 @@ const getAllClubs = async (req, res) => {
  * @param {Object} req Express request object
  * @param {Object} res Express response object
  */
-const getClubById = async (req, res) => {
-    try {
-        const clubData = await clubService.findByUUID(req.params.clubId);
-        const isClubAdmin = clubData.memberships.some(
-            (m) => m.user.id === req.user?.id && m.role === ClubRole.CLUB_ADMIN,
-        );
-
-        res.render('clubs/club-details', {
-            club: {
-                ...clubData,
-                clubAdmin: clubData.adminMembership?.user || null,
-            },
-            user: req.user,
-            isAdmin: req.user?.globalRole === GlobalRole.ADMIN,
-            isClubAdmin,
-            error: req.query.error,
-            email: req.query.email,
-        });
-    } catch (error) {
-        console.error('Error in getClubById:', error);
-        res.status(404).render('error', {
-            message: 'Club not found',
-            user: req.user,
-        });
-    }
-};
-
-/**
- * Render Club Creation Form
- * @param {Object} req Express request object
- * @param {Object} res Express response object
- */
-const renderCreateClubForm = async (req, res) => {
-    try {
-        res.render('clubs/create-club', {
-            user: req.user,
-        });
-    } catch (error) {
-        console.error('Error in renderCreateClubForm:', error);
-        res.status(500).render('error', {
-            message: 'Error loading form',
-            user: req.user,
-        });
-    }
+const getClubByUuid = async (req, res) => {
+    const clubData = await clubService.findByUUID(
+        req.params.clubUuid,
+        req.parsedQuery,
+    );
+    return res.status(200).json({
+        data: clubData,
+    });
 };
 
 /**
@@ -84,65 +37,10 @@ const renderCreateClubForm = async (req, res) => {
  * @param {Object} res Express response object
  */
 const createClub = async (req, res) => {
-    try {
-        const clubData = await clubService.createClub(req.body, req.user.id);
-        res.redirect(`/clubs/${clubData.uuid}`);
-    } catch (error) {
-        console.error('Error in createClub:', error);
-        res.status(400).render('clubs/create-club', {
-            club: req.body,
-            error: error.message,
-            user: req.user,
-        });
-    }
-};
-
-/**
- * Render Edit Club Form
- * @param {Object} req Express request object
- * @param {Object} res Express response object
- */
-const renderEditClubForm = async (req, res) => {
-    try {
-        const clubData = await clubService.findByUUID(req.params.clubId);
-        res.render('clubs/update-club', {
-            club: clubData,
-            user: req.user,
-        });
-    } catch (error) {
-        console.error('Error in renderEditClubForm:', error);
-        res.status(404).render('error', {
-            message: 'Club not found',
-            user: req.user,
-        });
-    }
-};
-
-const joinClub = async (req, res) => {
-    try {
-        const { clubId } = req.params;
-        const userId = req.user.id;
-        const clubData = await clubService.findByUUID(clubId);
-        if (!clubData) {
-            return res.status(404).render('error', {
-                message: 'Club not found',
-                user: req.user,
-            });
-        }
-        // Check if the user is already a member of the club
-        const isMember = clubData.memberships.some(
-            (membership) => membership.user.id === userId,
-        );
-        if (isMember) {
-            return res.redirect(`/clubs/${clubId}?error=already_member`);
-        }
-        // Join the club
-        await clubService.joinClub(clubId, userId);
-        res.redirect(`/clubs/${clubId}`);
-    } catch (error) {
-        console.error('Error in joinClub:', error);
-        res.status(500).json({ message: 'Error joining club' });
-    }
+    const clubData = await clubService.createClub(req.body, req.user.id);
+    res.status(201).json({
+        data: clubData,
+    });
 };
 
 /**
@@ -151,143 +49,163 @@ const joinClub = async (req, res) => {
  * @param {Object} res Express response object
  */
 const updateClub = async (req, res) => {
-    try {
-        const clubData = await clubService.updateClub(
-            req.params.clubId,
-            req.body,
-        );
-        res.redirect(`/clubs/${clubData.uuid}/dashboard`);
-    } catch (error) {
-        console.error('Error in updateClub:', error);
-        if (error.message === 'Club not found') {
-            return res.status(404).render('error', {
-                message: 'Club not found',
-                user: req.user,
-            });
-        }
-        res.render('clubs/update-club', {
-            club: { uuid: req.params.clubId, ...req.body },
-            error: error.message,
-            user: req.user,
-        });
-    }
+    const clubData = await clubService.updateClub(
+        req.params.clubUuid,
+        req.body,
+        req.user.id,
+    );
+    res.status(200).json({
+        data: clubData,
+    });
 };
 
 /**
- * Render Assign Club Admin Form
+ * Delete club
  * @param {Object} req Express request object
  * @param {Object} res Express response object
  */
-const renderAssignClubAdmin = async (req, res) => {
-    try {
-        const clubData = await clubService.findByUUID(req.params.clubId);
-        res.render('clubs/assign-admin', {
-            club: clubData,
-            user: req.user,
-        });
-    } catch (error) {
-        console.error('Error in renderAssignClubAdmin:', error);
-        res.render('error', {
-            message: 'Club not found',
-            user: req.user,
-        });
-    }
+const deleteClub = async (req, res) => {
+    await clubService.deleteClub(req.params.clubUuid, req.user.id);
+    res.status(204).end();
 };
 
 /**
- * Assign new club admin
+ * Get all memberships for a club
  * @param {Object} req Express request object
  * @param {Object} res Express response object
  */
-const assignClubAdmin = async (req, res) => {
-    try {
-        const { email } = req.body;
-        await clubService.assignClubAdmin(req.params.clubId, email);
-        res.redirect(`/clubs/${req.params.clubId}?success=admin_assigned`);
-    } catch (error) {
-        console.error('Error in assignClubAdmin:', error);
+const getAllMemberships = async (req, res) => {
+    // Pass the entire parsedQuery object to the service
+    const { items, pagination } = await clubService.getAllClubMemberships(
+        req.params.clubUuid,
+        req.parsedQuery,
+    );
 
-        if (error.message === 'User not found') {
-            return res.redirect(
-                `/clubs/${req.params.clubId}?error=user_not_found&email=${encodeURIComponent(req.body.email)}`,
-            );
-        }
-
-        if (error.message === 'User is already an admin of this club') {
-            return res.redirect(
-                `/clubs/${req.params.clubId}?error=already_admin&email=${encodeURIComponent(req.body.email)}`,
-            );
-        }
-
-        if (error.message === 'Invalid email format') {
-            return res.redirect(
-                `/clubs/${req.params.clubId}?error=invalid_email&email=${encodeURIComponent(req.body.email)}`,
-            );
-        }
-
-        if (error.message === 'Club not found') {
-            return res.redirect(
-                `/clubs/${req.params.clubId}?error=club_not_found`,
-            );
-        }
-
-        return res.render('error', {
-            message: 'Error loading assign admin form',
-            user: req.user,
-        });
-    }
+    return res.status(200).json({
+        data: items,
+        pagination,
+    });
 };
 
 /**
- * Render club dashboard
+ * Get specific membership
  * @param {Object} req Express request object
  * @param {Object} res Express response object
  */
-const renderDashboard = async (req, res) => {
-    try {
-        const clubData = await clubService.getDashboardData(req.params.clubId);
+const getMembershipByUuid = async (req, res) => {
+    const membership = await clubService.getMembershipByUUID(
+        req.params.membershipUuid,
+        req.parsedQuery,
+    );
+    res.status(200).json({
+        data: membership,
+    });
+};
 
-        res.render('club-dashboard', {
-            title: `وصل - لوحة تحكم ${clubData.name}`,
-            HeaderOrSidebar: 'sidebar',
-            extraCSS: '<link href="/css/club-dashboard.css" rel="stylesheet">',
-            currentPage: 'club-dashboard',
-            club: {
-                ...clubData,
-                clubAdmin: clubData.memberships[0]?.user || null,
-                createdEvents: clubData.createdEvents.map((event) => ({
-                    ...event,
-                    eventStart: new Date(event.eventStart).toISOString(),
-                    eventEnd: new Date(event.eventEnd).toISOString(),
-                })),
-            },
-            error: null,
-            user: req.user,
-        });
-    } catch (error) {
-        console.error('Error in renderDashboard:', error);
-        if (error.message === 'Club not found') {
-            return res.status(404).render('error', {
-                message: 'Club not found',
-                user: req.user,
-            });
-        }
-        res.status(500).render('error', {
-            message: 'Error loading club dashboard',
-            user: req.user,
-        });
-    }
+/**
+ * Create membership
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ */
+const createMembership = async (req, res) => {
+    const membership = await clubService.createMembership(
+        req.params.clubUuid,
+        {
+            email: req.body.email,
+            role: req.body.role, // Optional
+            tag: req.body.tag, // Optional
+        },
+        req.user.id,
+    );
+
+    res.status(201).json({
+        data: membership,
+    });
+};
+
+/**
+ * Update membership
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ */
+const updateMembership = async (req, res) => {
+    const membership = await clubService.updateMembership(
+        req.params.membershipUuid,
+        req.body,
+        req.user.id,
+    );
+    res.status(200).json({
+        data: membership,
+    });
+};
+
+/**
+ * Join club
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ */
+const joinClub = async (req, res) => {
+    const membership = await clubService.joinClub(
+        req.params.clubUuid,
+        req.user.id,
+    );
+    res.status(201).json({
+        data: membership,
+    });
+};
+
+/**
+ * Leave club
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ */
+const leaveClub = async (req, res) => {
+    const updatedMembership = await clubService.leaveClub(
+        req.params.clubUuid,
+        req.user.id,
+    );
+    res.status(200).json({
+        data: updatedMembership,
+    });
+};
+
+/**
+ * Delete membership
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ */
+const deleteMembership = async (req, res) => {
+    await clubService.deleteMembership(req.params.membershipUuid, req.user.id);
+    res.status(204).end();
+};
+
+/**
+ * Reset club term - archives inactive/denied memberships and ALL tasks
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ */
+const resetClubTerm = async (req, res) => {
+    const result = await clubService.resetClubTerm(
+        req.params.clubUuid,
+        req.user.id,
+    );
+    res.status(200).json({
+        data: result,
+    });
 };
 
 module.exports = {
     getAllClubs,
-    getClubById,
-    renderCreateClubForm,
+    getClubByUuid,
     createClub,
-    renderEditClubForm,
     updateClub,
-    renderAssignClubAdmin,
-    assignClubAdmin,
-    renderDashboard,
+    deleteClub,
+    getAllMemberships,
+    getMembershipByUuid,
+    createMembership,
+    updateMembership,
     joinClub,
+    leaveClub,
+    deleteMembership,
+    resetClubTerm,
 };

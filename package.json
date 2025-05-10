@@ -27,6 +27,7 @@
         "express": "^4.21.2",
         "express-ejs-layouts": "^2.5.1",
         "express-session": "^1.18.1",
+        "http-errors": "^2.0.0",
         "node-schedule": "^2.1.1",
         "passport": "^0.7.0",
         "passport-github2": "^0.1.12",

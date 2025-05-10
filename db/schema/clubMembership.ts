@@ -7,6 +7,7 @@ import {
     varchar,
     integer,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { withUuid, withArchive } from './common';
@@ -55,10 +56,9 @@ export const clubMembership = pgTable(
         ...withArchive,
     },
     (table) => ({
-        userClubIdx: uniqueIndex('user_club_idx').on(
-            table.userId,
-            table.clubId,
-        ),
+        userClubIdx: uniqueIndex('user_club_idx')
+            .on(table.userId, table.clubId)
+            .where(sql`${table.isArchived} = false`),
         roleIdx: index('club_membership_role_idx').on(table.role),
         statusIdx: index('club_membership_status_idx').on(table.status),
         clubIdx: index('club_membership_club_idx').on(table.clubId),
@@ -84,7 +84,7 @@ const clubMembershipValidation = {
     createdBy: z.number().int().positive(),
     updatedBy: z.number().int().positive(),
     isArchived: z.boolean(),
-    archivedAt: z.date().optional(),
+    archivedAt: z.coerce.date().optional(),
 };
 
 export const insertClubMembershipSchema = createInsertSchema(
@@ -92,3 +92,12 @@ export const insertClubMembershipSchema = createInsertSchema(
 ).extend(clubMembershipValidation);
 export const selectClubMembershipSchema = createSelectSchema(clubMembership);
 export const updateClubMembershipSchema = insertClubMembershipSchema.partial();
+
+// Additional schema for the API that accepts email
+export const createMembershipSchema = z.object({
+    email: z.string().email(),
+    role: z
+        .enum([ClubRole.CLUB_ADMIN, ClubRole.HR, ClubRole.MEMBER])
+        .optional(),
+    tag: z.string().max(50).optional(),
+});
