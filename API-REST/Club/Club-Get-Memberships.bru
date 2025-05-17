@@ -1,0 +1,94 @@
+meta {
+  name: Club-Get-Memberships
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:5000/clubs/{{clubUuid}}/memberships?status={{membershipStatus}}&role={{memberRole}}&limit={{limit}}&offset={{offset}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 1
+  clubUuid: "club-uuid-here"
+  membershipStatus: "active"
+  memberRole: "member"
+  limit: 20
+  offset: 0
+}
+
+docs {
+  # Get Club Memberships API
+  
+  This endpoint retrieves all memberships for a specific club with optional filtering.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - User must be an INMA Admin, UNI Admin, SUPERVISOR, or club admin/HR
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club to get memberships for
+  
+  ## Query Parameters
+  - `status`: Filter by membership status (optional)
+    - Available statuses: active, inactive, pending, denied
+  - `role`: Filter by club role (optional)
+    - Available roles: clubAdmin, hr, member
+  - `limit`: Maximum number of results to return (optional, default: 20)
+  - `offset`: Number of results to skip for pagination (optional, default: 0)
+  
+  ## Example
+  ```
+  GET /clubs/550e8400-e29b-41d4-a716-446655440000/memberships?status=active&role=member
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with array of membership data and pagination metadata:
+    ```json
+    {
+      "data": [
+        {
+          "uuid": "membership-uuid-1",
+          "status": "active",
+          "role": "member",
+          "joinedAt": "2024-01-15T10:30:00Z",
+          "user": {
+            "uuid": "user-uuid-1",
+            "displayName": "John Smith",
+            "email": "john.smith@university.edu.sa",
+            "profileImage": "https://example.com/avatar1.jpg"
+          }
+        },
+        {
+          "uuid": "membership-uuid-2",
+          "status": "active",
+          "role": "member",
+          "joinedAt": "2024-02-20T14:45:00Z",
+          "user": {
+            "uuid": "user-uuid-2",
+            "displayName": "Jane Doe",
+            "email": "jane.doe@university.edu.sa",
+            "profileImage": "https://example.com/avatar2.jpg"
+          }
+        }
+      ],
+      "pagination": {
+        "total": 45,
+        "limit": 20,
+        "offset": 0,
+        "hasMore": true
+      }
+    }
+    ```
+  - `401 Unauthorized` if user is not authenticated
+  - `403 Forbidden` if user lacks necessary permissions
+  - `404 Not Found` if the club doesn't exist
+  - `500 Internal Server Error` for server issues
+}

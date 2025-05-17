@@ -1,0 +1,79 @@
+meta {
+  name: Club-Get-All
+  type: http
+  seq: 11
+}
+
+get {
+  url: http://localhost:5000/clubs?type={{clubType}}&status={{clubStatus}}&search={{searchQuery}}&limit={{limit}}&offset={{offset}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  clubType: "specialized"
+  clubStatus: "active"
+  searchQuery: "programming"
+  limit: 20
+  offset: 0
+}
+
+docs {
+  # Get All Clubs API
+  
+  This endpoint retrieves all clubs in the system with optional filtering.
+  
+  ## Authentication
+  - No authentication required
+  
+  ## Query Parameters
+  - `type`: Filter by club type (optional)
+    - Available types: general, specialized
+  - `status`: Filter by club status (optional)
+    - Available statuses: active, inactive
+  - `search`: Search query to filter clubs by name or description (optional)
+  - `limit`: Maximum number of results to return (optional, default: 20)
+  - `offset`: Number of results to skip for pagination (optional, default: 0)
+  - `fields`: Comma-separated list of club fields to include (optional)
+  - `include`: Comma-separated list of related entities to include (optional)
+    - Available relations: supervisor, memberCount
+  
+  ## Example
+  ```
+  GET /clubs?type=specialized&status=active&search=programming&limit=20&offset=0
+  ```
+  
+  ## Response
+  - `200 OK` on success with array of club data and pagination metadata:
+    ```json
+    {
+      "data": [
+        {
+          "uuid": "club-uuid-1",
+          "name": "Programming Club",
+          "description": "A club for students interested in programming",
+          "logo": "https://example.com/club-logo1.png",
+          "type": "specialized",
+          "status": "active",
+          "memberCount": 45
+        },
+        {
+          "uuid": "club-uuid-2",
+          "name": "Web Programming Society",
+          "description": "Learn web development and programming skills",
+          "logo": "https://example.com/club-logo2.png",
+          "type": "specialized",
+          "status": "active",
+          "memberCount": 32
+        }
+      ],
+      "pagination": {
+        "total": 5,
+        "limit": 20,
+        "offset": 0,
+        "hasMore": false
+      }
+    }
+    ```
+  - `500 Internal Server Error` for server issues
+}

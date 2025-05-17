@@ -1,0 +1,62 @@
+meta {
+  name: Club-Reset-Term
+  type: http
+  seq: 12
+}
+
+put {
+  url: http://localhost:5000/clubs/{{clubUuid}}/term-reset
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{adminId}}
+}
+
+vars:pre-request {
+  adminId: 1
+  clubUuid: "club-uuid-here"
+}
+
+docs {
+  # Reset Club Term API
+  
+  This endpoint resets a club for a new academic term by archiving inactive/denied memberships and all tasks.
+  
+  ## Authentication
+  - Requires a valid admin ID in the x-user-id header
+  - User must be an INMA Admin or club admin
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club to reset
+  
+  ## Example
+  ```
+  PUT /clubs/550e8400-e29b-41d4-a716-446655440000/term-reset
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with summary of changes
+    ```json
+    {
+      "message": "Club term reset successfully",
+      "data": {
+        "archivedMemberships": 12,
+        "archivedTasks": 25,
+        "activeMembershipsRemaining": 5
+      }
+    }
+    ```
+  - `401 Unauthorized` if the admin is not authenticated
+  - `403 Forbidden` if the admin lacks necessary permissions
+  - `404 Not Found` if the club doesn't exist
+  - `500 Internal Server Error` for server issues
+  
+  ## Important Notes
+  - This action archives (soft deletes) inactive and denied memberships
+  - All tasks related to the club are archived regardless of status
+  - Active and pending memberships are preserved
+  - This is typically done at the beginning of a new academic term
+}
