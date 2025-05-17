@@ -90,12 +90,9 @@ export const createProfile = async (
     }
     try {
         // Validate input
-        console.log('Request body:', req.body);
         const parsed = insertUserSchema.safeParse(req.body);
         if (!parsed.success) {
-            console.log('Validation error:', parsed.error.format());
             // Validated variables
-            console.log('Parsed data:', parsed.data);
             res.status(400).json({ errors: parsed.error.format() });
             return;
         }
