@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import {
   findUserById,
-  updateUserById,
   deleteUserById,
 } from '../services/userService';
 
