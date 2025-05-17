@@ -5,7 +5,8 @@
     "main": "app.js",
     "scripts": {
         "test": "jest",
-        "dev": "node --watch app.js",
+        "dev": "pnpm dev:build",
+        "dev:nocompile": "node --watch app.js",
         "dev:build": "tsc --watch & node --watch app.js",
         "db:generate": "drizzle-kit generate:pg",
         "db:push": "drizzle-kit push:pg",
