@@ -118,3 +118,93 @@ export const deleteUserById = async (id: number): Promise<void> => {
 export const listUsers = async (): Promise<User[]> => {
     return db.query.user.findMany();
 };
+
+/**
+ * Find a user by ID with optional field selection and relations includes
+ */
+export const findUserByIdWithOptions = async (
+    id: number,
+    options: { fields?: string[]; include?: string[] } = {},
+): Promise<any> => {
+    const { fields = [], include = [] } = options;
+    // Fetch base user record
+    const userRecord = await findUserById(id);
+    if (!userRecord) return null;
+
+    // Build result with selected fields or all
+    const result: any = {};
+    if (fields.length) {
+        fields.forEach((f) => {
+            if (Object.prototype.hasOwnProperty.call(userRecord, f)) {
+                result[f] = (userRecord as any)[f];
+            }
+        });
+    } else {
+        Object.assign(result, userRecord);
+    }
+
+    // Conditionally fetch relations
+    for (const rel of include) {
+        switch (rel) {
+            case 'clubMemberships': {
+                const { clubMembership } = require('../db/schema');
+                const { eq } = require('drizzle-orm');
+                result.clubMemberships = await db.query.clubMembership.findMany({
+                    where: eq(clubMembership.userId, id),
+                });
+                break;
+            }
+            case 'eventRegistration': {
+                const { eventRegistration } = require('../db/schema');
+                const { eq } = require('drizzle-orm');
+                result.eventRegistration = await db.query.eventRegistration.findMany({
+                    where: eq(eventRegistration.userId, id),
+                });
+                break;
+            }
+            case 'clubsSupervised': {
+                const { club } = require('../db/schema');
+                const { eq } = require('drizzle-orm');
+                result.clubsSupervised = await db.query.club.findMany({
+                    where: eq(club.supervisorId, id),
+                });
+                break;
+            }
+            case 'createdTasks': {
+                const { task } = require('../db/schema');
+                const { eq } = require('drizzle-orm');
+                result.createdTasks = await db.query.task.findMany({
+                    where: eq(task.createdBy, id),
+                });
+                break;
+            }
+            case 'updatedTasks': {
+                const { task } = require('../db/schema');
+                const { eq } = require('drizzle-orm');
+                result.updatedTasks = await db.query.task.findMany({
+                    where: eq(task.updatedBy, id),
+                });
+                break;
+            }
+            case 'assignedTickets': {
+                const { ticket } = require('../db/schema');
+                const { eq } = require('drizzle-orm');
+                result.assignedTickets = await db.query.ticket.findMany({
+                    where: eq(ticket.assignedTo, id),
+                });
+                break;
+            }
+            case 'createdTickets': {
+                const { ticket } = require('../db/schema');
+                const { eq } = require('drizzle-orm');
+                result.createdTickets = await db.query.ticket.findMany({
+                    where: eq(ticket.createdBy, id),
+                });
+                break;
+            }
+            // Add other relations as needed
+        }
+    }
+
+    return result;
+};

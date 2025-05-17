@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import {
-    findUserById,
-    deleteUserById,
-    createUser,
-} from '../services/userService';
+import { deleteUserById, createUser, findUserByIdWithOptions } from '../services/userService';
 import { insertUserSchema } from '../db/schema/user';
 
 // Typed request with user context , Easier to migrate to jwt and msal
@@ -28,9 +24,12 @@ export const getProfile = async (
             return;
         }
 
-        const user = await findUserById(userId);
+        // extract requested fields and relations
+        const { fields = [], include = [] } = (req as any).parsedQuery || {};
+        const user = await findUserByIdWithOptions(userId, { fields, include });
         if (!user) {
             res.status(404).json({ error: 'User not found' });
+            return;
         }
 
         res.status(200).json({ user });
