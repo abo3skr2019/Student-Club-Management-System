@@ -15,7 +15,7 @@ interface AuthRequest extends Request {
 
 /**
  * GET /profile
- * Return the logged-in user's profile
+ * Return user's information
  */
 export const getProfile = async (
     req: AuthRequest,
