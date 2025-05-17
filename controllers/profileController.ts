@@ -36,33 +36,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
-/**
- * PUT /profile
- * Update the logged-in user's profile
- */
-export const updateProfile = async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
 
-    // Validate input
-    const parsed = updateUserSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res.status(400).json({ errors: parsed.error.format() });
-    }
-
-    const { firstName, lastName } = parsed.data;
-    await updateUserById(userId, { firstName, lastName });
-
-    const updated = await findUserById(userId);
-    return res.status(200).json({ user: updated });
-  } catch (error) {
-    console.error('Error in updateProfile:', error);
-    return res.status(500).json({ error: 'Server error' });
-  }
-};
 
 /**
  * DELETE /profile
