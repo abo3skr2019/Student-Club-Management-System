@@ -1,0 +1,52 @@
+meta {
+  name: Event-Join
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:5000/events/{{eventId}}/register
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 
+  eventId: 
+}
+
+docs {
+  # Event Registration API
+  
+  This endpoint allows a user to register for an event.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - This is a development/testing approach - production uses session-based auth
+  
+  ## Parameters
+  - `eventId`: UUID of the event to join (specified in the URL)
+  
+  ## Example
+  ```
+  POST /events/550e8400-e29b-41d4-a716-446655440000/register
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` if registration is successful, with updated event data
+  - `400 Bad Request` if:
+    - The user is already registered for the event
+    - No seats are available
+    - Registration is not currently open
+  - `404 Not Found` if the event doesn't exist
+  - `401 Unauthorized` if the user is not authenticated
+  
+  ## Related Endpoints
+  - To unregister from an event: `POST /events/{eventId}/unregister`
+}

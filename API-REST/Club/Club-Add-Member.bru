@@ -1,0 +1,88 @@
+meta {
+  name: Club-Add-Member
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:5000/clubs/{{clubUuid}}/memberships
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{adminId}}
+}
+
+body:json {
+  {
+    "email": "{{userEmail}}",
+    "role": "{{memberRole}}",
+    "status": "{{membershipStatus}}"
+  }
+}
+
+vars:pre-request {
+  adminId: 1
+  clubUuid: "club-uuid-here"
+  userEmail: "student@university.edu.sa"
+  memberRole: "member"
+  membershipStatus: "active"
+}
+
+docs {
+  # Add Club Member API
+  
+  This endpoint allows club administrators or HR to add a user to the club directly.
+  
+  ## Authentication
+  - Requires a valid admin ID in the x-user-id header
+  - User must be an INMA Admin, club admin, or club HR
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club to add the member to
+  
+  ## Request Body
+  - `email`: Email address of the user to add to the club (required)
+  - `role`: Role to assign to the user (optional, default: "member")
+    - Available roles: clubAdmin, hr, member
+  - `status`: Membership status (optional, default: "pending")
+    - Available statuses: active, inactive, pending, denied
+  
+  ## Example
+  ```
+  POST /clubs/550e8400-e29b-41d4-a716-446655440000/memberships
+  x-user-id: 1
+  Content-Type: application/json
+  
+  {
+    "email": "student@university.edu.sa",
+    "role": "member",
+    "status": "active"
+  }
+  ```
+  
+  ## Response
+  - `201 Created` on success with membership details
+    ```json
+    {
+      "data": {
+        "uuid": "membership-uuid",
+        "role": "member",
+        "status": "active",
+        "joinedAt": "2025-05-17T10:30:00Z",
+        "user": {
+          "uuid": "user-uuid",
+          "displayName": "John Doe",
+          "email": "student@university.edu.sa"
+        }
+      }
+    }
+    ```
+  - `400 Bad Request` if validation fails or the user already has a membership
+  - `401 Unauthorized` if the admin is not authenticated
+  - `403 Forbidden` if the admin lacks necessary permissions
+  - `404 Not Found` if the club or user doesn't exist
+  - `500 Internal Server Error` for server issues
+}

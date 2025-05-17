@@ -1,0 +1,71 @@
+meta {
+  name: Club-Get-Info
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:5000/clubs/{{clubUuid}}?fields={{selectedFields}}&include={{includeRelations}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 1
+  clubUuid: "club-uuid-here"
+  selectedFields: "uuid,name,description,logo,type,foundingDate,status"
+  includeRelations: "memberships,events,supervisor"
+}
+
+docs {
+  # Club Information API
+  
+  This endpoint retrieves detailed information about a specific club.
+  
+  ## Authentication
+  - No authentication required for basic club information
+  - Some fields may be restricted to club members or administrators
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club to retrieve
+  
+  ## Query Parameters
+  - `fields`: Comma-separated list of club fields to include in the response
+    - Available fields: uuid, name, description, logo, type, foundingDate, status, createdAt, updatedAt
+  - `include`: Comma-separated list of relations to include with the club
+    - Available relations: memberships, events, supervisor, tasks
+  
+  ## Example
+  ```
+  GET /clubs/550e8400-e29b-41d4-a716-446655440000?fields=name,description,status&include=supervisor
+  ```
+  
+  ## Response
+  - `200 OK` on success with the requested club data
+  - `404 Not Found` if the club doesn't exist
+  - `500 Internal Server Error` for server issues
+  
+  ## Sample Response
+  ```json
+  {
+    "data": {
+      "uuid": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Programming Club",
+      "description": "A club for students interested in programming",
+      "logo": "https://example.com/club-logo.png",
+      "type": "specialized",
+      "foundingDate": "2025-01-15",
+      "status": "active",
+      "supervisor": {
+        "uuid": "supervisor-uuid",
+        "displayName": "Dr. Jane Smith",
+        "email": "jane.smith@university.edu.sa"
+      }
+    }
+  }
+  ```
+}

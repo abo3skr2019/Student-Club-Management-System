@@ -1,0 +1,83 @@
+meta {
+  name: Club-Update
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:5000/clubs/{{clubUuid}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+body:json {
+  {
+    "name": "{{clubName}}",
+    "description": "{{clubDescription}}",
+    "logo": "{{clubLogo}}",
+    "supervisorId": {{supervisorId}},
+    "type": "{{clubType}}",
+    "status": "{{clubStatus}}"
+  }
+}
+
+vars:pre-request {
+  userId: 1
+  clubUuid: "club-uuid-here"
+  clubName: "Updated Programming Club"
+  clubDescription: "An updated club for students interested in programming and software development"
+  clubLogo: "https://ui-avatars.com/api/?name={{urlEncode clubName}}&background=random"
+  supervisorId: 2
+  clubType: "specialized"
+  clubStatus: "active"
+}
+
+docs {
+  # Club Update API
+  
+  This endpoint updates an existing club's information.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - User must be either an INMA Admin or the club's admin
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club to update
+  
+  ## Request Body
+  All fields are optional. Only provide the fields you want to update.
+  
+  - `name`: Club name (3-100 characters, must be unique)
+  - `description`: Club description (max 500 characters)
+  - `logo`: URL to club logo image
+  - `supervisorId`: ID of the faculty supervisor for the club
+  - `type`: Club type, either "general" or "specialized"
+  - `status`: Club status, either "active" or "inactive"
+  
+  ## Example
+  ```
+  PUT /clubs/550e8400-e29b-41d4-a716-446655440000
+  x-user-id: 1
+  Content-Type: application/json
+  
+  {
+    "name": "Updated Programming Club",
+    "description": "An updated club for students interested in programming",
+    "status": "inactive"
+  }
+  ```
+  
+  ## Response
+  - `200 OK` on success with updated club details
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if user is not authenticated
+  - `403 Forbidden` if user lacks necessary permissions
+  - `404 Not Found` if the club doesn't exist
+  - `409 Conflict` if club name already exists
+  - `500 Internal Server Error` for server issues
+}

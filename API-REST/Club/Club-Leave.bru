@@ -1,0 +1,50 @@
+meta {
+  name: Club-Leave
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:5000/clubs/{{clubUuid}}/memberships/me
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 5
+  clubUuid: "club-uuid-here"
+}
+
+docs {
+  # Leave Club API
+  
+  This endpoint allows a user to leave a club they are currently a member of.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - User must be a current member of the club (with any role)
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club to leave
+  
+  ## Example
+  ```
+  DELETE /clubs/550e8400-e29b-41d4-a716-446655440000/memberships/me
+  x-user-id: 5
+  ```
+  
+  ## Response
+  - `204 No Content` on successful removal of membership
+  - `401 Unauthorized` if the user is not authenticated
+  - `403 Forbidden` if the user is not a member of the club
+  - `404 Not Found` if the club doesn't exist
+  - `500 Internal Server Error` for server issues
+  
+  ## Important Notes
+  - Club admins may need to transfer their role before leaving
+  - If the user is the only admin, they may not be able to leave until another admin is appointed
+}

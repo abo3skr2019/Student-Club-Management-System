@@ -1,0 +1,87 @@
+meta {
+  name: Create-User
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  displayName: John Doe
+  firstName: John
+  lastName: Doe
+  nationalId: 1234567890
+  phoneNumber: 0545838124
+  email: 554098886@university.edu.sa
+  profileImage: https://ui-avatars.com/api/?name={{firstName}}%20{{lastName}}
+  globalRole: user
+}
+
+docs {
+  # User Creation API
+  
+  This endpoint creates a new user in the system.
+  
+  ## Request Body
+  - `displayName`: Full display name (min 2 characters) - required
+  - `firstName`: First name (min 2 characters) - required
+  - `lastName`: Last name (optional)
+  - `nationalId`: 10-digit national ID (digits only) - required
+  - `phoneNumber`: 10-digit phone number (digits only) - required
+  - `email`: Valid university email address - required
+  - `profileImage`: URL to profile image - required
+  - `providers`: Array of authentication providers (usually empty for direct creation)
+  - `globalRole`: User role in the system (options: user, supervisor, uniAdmin, inmaAdmin)
+  
+  ## Global Role Options
+  - `user`: Regular student user
+  - `supervisor`: Faculty member who can supervise clubs
+  - `uniAdmin`: University administrator with elevated privileges
+  - `inmaAdmin`: INMA platform administrator with full system access
+  
+  ## Example
+  ```
+  POST /profile
+  Content-Type: application/json
+  
+  {
+    "displayName": "John Doe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "nationalId": "1234567890",
+    "phoneNumber": "0545838124",
+    "email": "554026660@university.edu.sa",
+    "profileImage": "https://ui-avatars.com/api/?name=John+Doe",
+    "providers": [],
+    "globalRole": "user"
+  }
+  ```
+  
+  ## Response
+  - `201 Created` on success with created user details
+  - `400 Bad Request` if validation fails
+  - `409 Conflict` if email or nationalId already exists
+  - `500 Internal Server Error` for server issues
+}

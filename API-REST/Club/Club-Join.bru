@@ -1,0 +1,76 @@
+meta {
+  name: Club-Join
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:5000/clubs/{{clubUuid}}/memberships/me
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  userId: 5
+  clubUuid: "club-uuid-here"
+}
+
+docs {
+  # Join Club API
+  
+  This endpoint allows a user to request membership in a club. The request will be pending until approved by a club administrator.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - Only regular users can join clubs (globalRole must be "user")
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club to join
+  
+  ## Request Body
+  - Empty JSON object (no additional data needed)
+  
+  ## Example
+  ```
+  POST /clubs/550e8400-e29b-41d4-a716-446655440000/memberships/me
+  x-user-id: 5
+  Content-Type: application/json
+  
+  {}
+  ```
+  
+  ## Response
+  - `201 Created` on success with membership details
+    ```json
+    {
+      "data": {
+        "uuid": "membership-uuid",
+        "role": "member",
+        "status": "pending",
+        "joinedAt": "2025-05-17T10:30:00Z",
+        "club": {
+          "uuid": "550e8400-e29b-41d4-a716-446655440000",
+          "name": "Programming Club"
+        },
+        "user": {
+          "uuid": "user-uuid",
+          "displayName": "John Doe"
+        }
+      }
+    }
+    ```
+  - `400 Bad Request` if the user already has a membership in this club
+  - `401 Unauthorized` if the user is not authenticated
+  - `403 Forbidden` if the user is not eligible to join clubs
+  - `404 Not Found` if the club doesn't exist
+  - `500 Internal Server Error` for server issues
+}

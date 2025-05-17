@@ -6,6 +6,16 @@
  * @returns {void}
  */
 const isAuthenticated = (req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        const userIdHeader = req.headers['x-user-id'];
+        const parsedId = Number.parseInt(userIdHeader, 10);  
+        if (Number.isFinite(parsedId)) {  
+            req.user = { id: parsedId };  
+        }  
+
+        // Bypass authentication for Test purposes
+        return next();
+    }
     if (req.isAuthenticated()) {
         return next();
     }

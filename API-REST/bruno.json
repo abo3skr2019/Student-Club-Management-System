@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Student Club Management System API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

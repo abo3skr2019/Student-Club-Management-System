@@ -1,0 +1,46 @@
+meta {
+  name: Delete-User
+  type: http
+  seq: 4
+}
+
+delete {
+  url: http://localhost:5000/profile/{{userUuid}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{adminUserId}}
+}
+
+vars:pre-request {
+  adminUserId: 1
+  userUuid: "user-uuid-to-delete"
+}
+
+docs {
+  # User Deletion API
+  
+  This endpoint permanently deletes a user account from the system. This action cannot be undone.
+  
+  ## Authentication
+  - Requires admin privileges (inmaAdmin or uniAdmin)
+  - Admin user ID must be provided in the x-user-id header
+  
+  ## Path Parameters
+  - `userUuid`: The UUID of the user to delete
+  
+  ## Example
+  ```
+  DELETE /profile/550e8400-e29b-41d4-a716-446655440000
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` if the user was successfully deleted
+  - `401 Unauthorized` if the requester is not authenticated
+  - `403 Forbidden` if the requester doesn't have admin privileges
+  - `404 Not Found` if the user doesn't exist
+  - `500 Internal Server Error` for server issues
+}

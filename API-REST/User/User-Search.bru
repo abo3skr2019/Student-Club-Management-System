@@ -1,0 +1,88 @@
+meta {
+  name: Search-Users
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:5000/profile/search?q={{searchQuery}}&role={{globalRole}}&limit={{limit}}&offset={{offset}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{requesterId}}
+}
+
+vars:pre-request {
+  requesterId: 1
+  searchQuery: "John"
+  globalRole: "user"
+  limit: 20
+  offset: 0
+}
+
+docs {
+  # User Search API
+  
+  This endpoint searches for users based on various criteria including name, email, and role.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - Regular users can only search with limited functionality
+  - Advanced search options available to admins and supervisors
+  
+  ## Query Parameters
+  - `q`: Search query - matches against displayName, firstName, lastName, or email (required)
+  - `role`: Filter by global role (optional)
+    - Available roles: user, supervisor, uniAdmin, inmaAdmin
+  - `limit`: Maximum number of results to return (optional, default: 20)
+  - `offset`: Number of results to skip for pagination (optional, default: 0)
+  
+  ## Admin-Only Parameters
+  - `uniId`: Search by university ID (exact match)
+  - `nationalId`: Search by national ID (exact match)
+  
+  ## Example
+  ```
+  GET /profile/search?q=John&role=user&limit=20&offset=0
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with array of matching users and pagination metadata:
+    ```json
+    {
+      "data": [
+        {
+          "uuid": "user-uuid-1",
+          "displayName": "John Smith",
+          "firstName": "John",
+          "lastName": "Smith",
+          "email": "john.smith@university.edu.sa",
+          "profileImage": "https://example.com/avatar1.jpg",
+          "globalRole": "user"
+        },
+        {
+          "uuid": "user-uuid-2",
+          "displayName": "Johnny Doe",
+          "firstName": "Johnny",
+          "lastName": "Doe",
+          "email": "johnny.doe@university.edu.sa",
+          "profileImage": "https://example.com/avatar2.jpg",
+          "globalRole": "user"
+        }
+      ],
+      "pagination": {
+        "total": 42,
+        "limit": 20,
+        "offset": 0,
+        "hasMore": true
+      }
+    }
+    ```
+  - `400 Bad Request` if required parameters are missing or invalid
+  - `401 Unauthorized` if the requester is not authenticated
+  - `403 Forbidden` if using admin-only parameters without admin privileges
+  - `500 Internal Server Error` for server issues
+}

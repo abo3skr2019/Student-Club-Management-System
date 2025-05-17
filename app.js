@@ -40,7 +40,7 @@ app.get('/api', (req, res) => {
     res.json({ message: 'API is working!' });
 });
 
-// API Routes
+// API Routes (including TypeScript route files)
 app.use('/clubs', require('./routes/clubRoutes'));
 app.use('/events', require('./routes/eventRoutes'));
 app.use(require('./routes/auth'));

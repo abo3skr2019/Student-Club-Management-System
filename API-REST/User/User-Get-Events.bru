@@ -1,0 +1,82 @@
+meta {
+  name: Get-User-Events
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:5000/profile/{{userUuid}}/events?status={{registrationStatus}}&timeframe={{timeframe}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{requesterId}}
+}
+
+vars:pre-request {
+  requesterId: 1
+  userUuid: "user-uuid-to-query"
+  registrationStatus: "accepted"
+  timeframe: "upcoming"
+}
+
+docs {
+  # User Events API
+  
+  This endpoint retrieves all events that a user is registered for, with optional filtering by registration status and timeframe.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - Users can view their own event registrations or admins can view any user's registrations
+  
+  ## Path Parameters
+  - `userUuid`: The UUID of the user whose event registrations to retrieve
+  
+  ## Query Parameters
+  - `status`: Filter by registration status (optional)
+    - Available statuses: pending, accepted, rejected
+    - If not provided, returns all registrations
+  - `timeframe`: Filter by event time (optional)
+    - Available timeframes: upcoming, past, all
+    - Default: all
+  
+  ## Example
+  ```
+  GET /profile/550e8400-e29b-41d4-a716-446655440000/events?status=accepted&timeframe=upcoming
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with array of event registration data:
+    ```json
+    [
+      {
+        "eventUuid": "event-uuid-1",
+        "eventName": "Programming Workshop",
+        "clubUuid": "club-uuid-1",
+        "clubName": "Programming Club",
+        "status": "accepted",
+        "registeredAt": "2023-03-15T14:30:00Z",
+        "eventStartTime": "2023-04-01T13:00:00Z",
+        "eventEndTime": "2023-04-01T15:00:00Z",
+        "location": "Computer Lab Building A"
+      },
+      {
+        "eventUuid": "event-uuid-2",
+        "eventName": "Web Development Hackathon",
+        "clubUuid": "club-uuid-2",
+        "clubName": "Robotics Club",
+        "status": "accepted",
+        "registeredAt": "2023-03-20T10:15:00Z",
+        "eventStartTime": "2023-04-15T09:00:00Z",
+        "eventEndTime": "2023-04-16T18:00:00Z",
+        "location": "Innovation Center"
+      }
+    ]
+    ```
+  - `401 Unauthorized` if the requester is not authenticated
+  - `403 Forbidden` if the requester doesn't have permission to view this user's events
+  - `404 Not Found` if the user doesn't exist
+  - `500 Internal Server Error` for server issues
+}

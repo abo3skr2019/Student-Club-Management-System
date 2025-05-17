@@ -5,7 +5,8 @@
     "main": "app.js",
     "scripts": {
         "test": "jest",
-        "dev": "node --watch app.js",
+        "dev": "pnpm dev:build",
+        "dev:nocompile": "node --watch app.js",
         "dev:build": "tsc --watch & node --watch app.js",
         "db:generate": "drizzle-kit generate:pg",
         "db:push": "drizzle-kit push:pg",
@@ -37,6 +38,7 @@
         "zod": "^3.22.4"
     },
     "devDependencies": {
+        "@types/express": "^4.17.17",
         "@types/node": "^20.11.24",
         "drizzle-kit": "^0.20.14",
         "jest": "^29.7.0",

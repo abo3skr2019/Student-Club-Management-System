@@ -1,37 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { isAuthenticated } = require('../middleware/CheckAuth');
-const profileController = require('../controllers/profileController');
+const { parseQueryParams } = require('../middleware/QueryParser');
+const {
+    getProfile,
+    createProfile,
+    deleteAccount,
+} = require('../dist/controllers/profileController');
 
-// Render the profile update form
-router.get(
-    '/update-profile',
-    isAuthenticated,
-    profileController.renderUpdateProfileForm,
-);
-
-// Handle the profile update form submission
-router.post(
-    '/update-profile',
-    isAuthenticated,
-    profileController.updateProfile,
-);
-
-// Render the logged-in user's profile
-router.get('/profile', isAuthenticated, profileController.renderProfile);
-
-// Render delete account page
-router.get(
-    '/delete-account',
-    isAuthenticated,
-    profileController.renderDeleteAccount,
-);
-
-// Handle account deletion
-router.post(
-    '/delete-account',
-    isAuthenticated,
-    profileController.deleteAccount,
-);
+// RESTful profile endpoints
+router.get('/profile', isAuthenticated, parseQueryParams, getProfile);
+// Create new user account (registration)
+router.post('/profile', createProfile);
+router.delete('/profile', isAuthenticated, deleteAccount);
 
 module.exports = router;

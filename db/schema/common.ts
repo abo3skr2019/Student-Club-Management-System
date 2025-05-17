@@ -4,7 +4,7 @@ export const timestamps = {
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
 };
-
+// UUID Might not be needed as we will not be using a Distributed System & the DB Ids are hidden behind Encrypted Tokens
 export const withUuid = (tableName: string) => ({
     uuid: uuid('uuid')
         .notNull()

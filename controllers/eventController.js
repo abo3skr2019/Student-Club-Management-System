@@ -311,6 +311,82 @@ const deleteEvent = async (req, res) => {
     }
 };
 
+/**
+ * Create event API endpoint
+ * @param {Request} req The request object
+ * @param {Response} res The response object
+ * @returns {void}
+ */
+const createEventApi = async (req, res) => {
+    try {
+        // Get user ID from header for API authentication in non-production environments
+        // In production, req.user would be populated by passport
+        const userId = req.user ? req.user.id : parseInt(req.headers['x-user-id']);
+        
+        if (!userId) {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'Authentication required. Please provide x-user-id header.' 
+            });
+        }
+        
+        // Extract club ID from request body
+        const { clubId } = req.body;
+        
+        if (!clubId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Club ID is required' 
+            });
+        }
+        
+        // Prepare event data with proper type conversions
+        const eventData = {
+            ...req.body,
+            seatsAvailable: parseInt(req.body.seatsAvailable),
+            createdBy: userId,
+            updatedBy: userId,
+            registrationStart: new Date(req.body.registrationStart),
+            registrationEnd: new Date(req.body.registrationEnd),
+            eventStart: new Date(req.body.eventStart),
+            eventEnd: new Date(req.body.eventEnd),
+        };
+        
+        // Remove clubId from eventData as it's passed separately
+        delete eventData.clubId;
+        
+        const event = await eventService.createEvent(eventData, clubId);
+        
+        // Return success response with created event
+        res.status(201).json({
+            success: true,
+            message: 'Event created successfully',
+            data: event
+        });
+    } catch (error) {
+        console.error('Error in createEventApi:', error);
+        
+        if (error.message === 'Club not found' || error.message === 'Invalid club UUID format') {
+            return res.status(400).json({ success: false, error: error.message });
+        }
+        
+        // Handle validation errors
+        if (error.name === 'ZodError') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Validation error', 
+                details: error.errors 
+            });
+        }
+        
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to create event',
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     getAllEvents,
     getEventByUUID,
@@ -322,4 +398,5 @@ module.exports = {
     registerForEvent,
     unregisterFromEvent,
     deleteEvent,
+    createEventApi,
 };

@@ -1,0 +1,47 @@
+meta {
+  name: Create-HR-Student
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  displayName: HR Student
+  firstName: HR
+  lastName: Student
+  nationalId: 1000000005
+  phoneNumber: 0500000005
+  email: 556789990@university.edu.sa
+  profileImage: https://ui-avatars.com/api/?name={{firstName}}%20{{lastName}}
+  globalRole: user
+}
+
+docs {
+  # HR Student User Creation
+  
+  This request creates a student user who will handle HR responsibilities within clubs.
+  Note: The global role is "user" as HR Student is a club-specific role, not a global role.
+}

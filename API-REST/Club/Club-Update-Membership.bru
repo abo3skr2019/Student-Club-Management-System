@@ -1,0 +1,98 @@
+meta {
+  name: Club-Update-Membership
+  type: http
+  seq: 9
+}
+
+put {
+  url: http://localhost:5000/clubs/{{clubUuid}}/memberships/{{membershipUuid}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{adminId}}
+}
+
+body:json {
+  {
+    "role": "{{memberRole}}",
+    "status": "{{membershipStatus}}",
+    "tag": "{{memberTag}}"
+  }
+}
+
+vars:pre-request {
+  adminId: 1
+  clubUuid: "club-uuid-here"
+  membershipUuid: "membership-uuid-here"
+  memberRole: "hr"
+  membershipStatus: "active"
+  memberTag: "Technical Lead"
+}
+
+docs {
+  # Update Club Membership API
+  
+  This endpoint allows club administrators or HR to update a user's membership details.
+  
+  ## Authentication
+  - Requires a valid admin ID in the x-user-id header
+  - User must be an INMA Admin, club admin, or club HR
+  
+  ## Path Parameters
+  - `clubUuid`: UUID of the club
+  - `membershipUuid`: UUID of the membership to update
+  
+  ## Request Body
+  All fields are optional. Only provide the fields you want to update.
+  
+  - `role`: New role to assign to the user
+    - Available roles: clubAdmin, hr, member
+  - `status`: New membership status
+    - Available statuses: active, inactive, pending, denied
+  - `tag`: Optional tag for the member (max 50 characters)
+    - Examples: "Technical Lead", "Event Coordinator", "Design Team"
+  
+  ## Example
+  ```
+  PUT /clubs/550e8400-e29b-41d4-a716-446655440000/memberships/abcdef12-3456-7890-abcd-ef1234567890
+  x-user-id: 1
+  Content-Type: application/json
+  
+  {
+    "role": "hr",
+    "status": "active",
+    "tag": "Technical Lead"
+  }
+  ```
+  
+  ## Response
+  - `200 OK` on success with updated membership details
+    ```json
+    {
+      "data": {
+        "uuid": "abcdef12-3456-7890-abcd-ef1234567890",
+        "role": "hr",
+        "status": "active",
+        "tag": "Technical Lead",
+        "joinedAt": "2025-01-15T10:30:00Z",
+        "user": {
+          "uuid": "user-uuid",
+          "displayName": "John Doe",
+          "email": "john.doe@university.edu.sa"
+        }
+      }
+    }
+    ```
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if the admin is not authenticated
+  - `403 Forbidden` if the admin lacks necessary permissions
+  - `404 Not Found` if the club or membership doesn't exist
+  - `500 Internal Server Error` for server issues
+  
+  ## Important Notes
+  - There must always be at least one clubAdmin in a club
+  - If attempting to change the only clubAdmin to another role, the request will fail
+}

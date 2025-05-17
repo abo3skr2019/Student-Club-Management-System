@@ -1,0 +1,46 @@
+meta {
+  name: Create-Supervisor
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  displayName: Faculty Supervisor
+  firstName: Faculty
+  lastName: Supervisor
+  nationalId: 1000000003
+  phoneNumber: 0500000003
+  email: supervisor@university.edu.sa
+  profileImage: https://ui-avatars.com/api/?name={{firstName}}%20{{lastName}}
+  globalRole: supervisor
+}
+
+docs {
+  # Supervisor User Creation
+  
+  This request creates a faculty member who can supervise clubs.
+}
