@@ -1,0 +1,22 @@
+meta {
+  name: Create-User
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5000/profile
+  auth: none
+}
+
+body:json {
+  "displayName":   "John Doe",
+  "firstName":     "John",
+  "lastName":      "Doe",
+  "nationalId":    "1234567890",
+  "phoneNumber":   "0123456789",
+  "email":         "554026660@university.edu",
+  "profileImage":  "https://example.com/avatar.jpg",
+  "providers":     [],
+  "globalRole":    "USER"
+}
