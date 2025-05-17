@@ -5,7 +5,6 @@ import {
   updateUserById,
   deleteUserById,
 } from '../services/userService';
-import { updateUserSchema } from '../db/schema/user';
 
 // Typed request with user context
 interface AuthRequest extends Request {
