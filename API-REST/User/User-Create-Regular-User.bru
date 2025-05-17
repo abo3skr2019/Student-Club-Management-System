@@ -1,0 +1,46 @@
+meta {
+  name: Create-Regular-User
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  displayName: Regular User
+  firstName: Regular
+  lastName: User
+  nationalId: 1000000006
+  phoneNumber: 0500000006
+  email: regular332156660user@university.edu.sa
+  profileImage: https://ui-avatars.com/api/?name={{firstName}}%20{{lastName}}
+  globalRole: user
+}
+
+docs {
+  # Regular User Creation
+  
+  This request creates a regular student user with standard permissions.
+}

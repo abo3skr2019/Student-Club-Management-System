@@ -1,0 +1,46 @@
+meta {
+  name: Create-Uni-Admin
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  displayName: University Admin
+  firstName: University
+  lastName: Admin
+  nationalId: 1000000002
+  phoneNumber: 0500000002
+  email: admin@university.edu.sa
+  profileImage: https://ui-avatars.com/api/?name={{firstName}}%20{{lastName}}
+  globalRole: uniAdmin
+}
+
+docs {
+  # University Admin User Creation
+  
+  This request creates a University administrator with elevated privileges.
+}

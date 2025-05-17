@@ -1,0 +1,46 @@
+meta {
+  name: Create-Inma-Admin
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  displayName: Inma Admin
+  firstName: Inma
+  lastName: Admin
+  nationalId: 1000000001
+  phoneNumber: 0500000001
+  email: admin@inma.org.sa
+  profileImage: https://ui-avatars.com/api/?name={{firstName}}%20{{lastName}}
+  globalRole: inmaAdmin
+}
+
+docs {
+  # Inma Admin User Creation
+  
+  This request creates an INMA platform administrator with full system access.
+}

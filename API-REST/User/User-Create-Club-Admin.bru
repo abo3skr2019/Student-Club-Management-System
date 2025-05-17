@@ -1,0 +1,47 @@
+meta {
+  name: Create-Club-Admin
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  displayName: Club Admin
+  firstName: Club
+  lastName: Admin
+  nationalId: 1000000004
+  phoneNumber: 0500000004
+  email: 998764441@university.edu.sa
+  profileImage: https://ui-avatars.com/api/?name={{firstName}}%20{{lastName}}
+  globalRole: user
+}
+
+docs {
+  # Club Admin User Creation
+  
+  This request creates a user who will serve as a club administrator.
+  Note: The global role is "user" as club admin is a club-specific role, not a global role.
+}
