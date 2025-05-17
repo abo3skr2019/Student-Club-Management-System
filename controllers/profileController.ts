@@ -70,19 +70,17 @@ export const deleteAccount = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
-interface BypassRequest extends Request {
-    bypass?: boolean;
-}
+
 
 /**
  * POST /profile
  * Create a new user account
  */
-export const createProfile = async (req: BypassRequest, res: Response): Promise<void> => {
-    if (req.bypass!== true) {
-        res.status(403).json({ error: 'Forbidden' });
-        return;
-    }
+export const createProfile = async (req: Request, res: Response): Promise<void> => {
+  if (process.env.NODE_ENV === 'production') {
+    res.status(403).json({ error: 'Forbidden' });
+    return;
+  }
   try {
     // Validate input
     const parsed = insertUserSchema.safeParse(req.body);

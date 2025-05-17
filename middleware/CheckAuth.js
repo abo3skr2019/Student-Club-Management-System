@@ -6,7 +6,7 @@
  * @returns {void}
  */
 const isAuthenticated = (req, res, next) => {
-    if (req.bypass === true) {
+    if (process.env.NODE_ENV !== 'production') {
         // Bypass authentication for Test purposes
         return next();
     }
