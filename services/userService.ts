@@ -4,6 +4,9 @@ import { user } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
+// environment-based domain for university email derivation
+const uniEmailDomain = process.env.UNI_EMAIL_DOMAIN ?? 'university';
+
 // User model types
 export type User = InferSelectModel<typeof user>;
 export type NewUser = InferInsertModel<typeof user>;
@@ -74,7 +77,14 @@ export const findUserByNationalId = async (
  * @returns Created user record
  */
 export const createUser = async (data: NewUser): Promise<User> => {
-    const [created] = await db.insert(user).values(data).returning();
+    // derive uniId from institutional email if not provided
+    const insertData = { ...data };
+    const emailPattern = new RegExp(`^(\\d{9})@${uniEmailDomain}\\.edu\\.sa$`);
+    const match = data.email.match(emailPattern);
+    if (match) {
+        insertData.uniId = match[1];
+    }
+    const [created] = await db.insert(user).values(insertData).returning();
     return created;
 };
 
