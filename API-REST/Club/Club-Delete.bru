@@ -1,7 +1,7 @@
 meta {
   name: Club-Delete
   type: http
-  seq: 7
+  seq: 2
 }
 
 delete {
@@ -12,12 +12,12 @@ delete {
 
 headers {
   Content-Type: application/json
-  x-user-id: {{userId}}
+  x-user-id: {{adminId}}
 }
 
 vars:pre-request {
-  userId: 
-  clubUuid: 
+  adminId: 1
+  clubUuid: "club-uuid-here"
 }
 
 docs {
@@ -26,11 +26,10 @@ docs {
   This endpoint permanently deletes a club from the system.
   
   ## Authentication
-  - Requires a valid user ID in the x-user-id header
-  - This is a development/testing approach - production uses session-based auth
+  - Requires a valid admin ID in the x-user-id header
   - User must be an INMA Admin (Institution Management Admin)
   
-  ## Parameters
+  ## Path Parameters
   - `clubUuid`: UUID of the club to delete (specified in the URL)
   
   ## Example

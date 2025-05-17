@@ -1,7 +1,7 @@
 meta {
   name: Club-Create
   type: http
-  seq: 6
+  seq: 1
 }
 
 post {
@@ -12,24 +12,30 @@ post {
 
 headers {
   Content-Type: application/json
-  x-user-id: {{userId}}
+  x-user-id: {{adminId}}
 }
 
 body:json {
   {
-    "name": "Programming Club",
-    "description": "A club for students interested in programming and software development",
-    "logo": "https://example.com/club-logo.png",
+    "name": "{{clubName}}",
+    "description": "{{clubDescription}}",
+    "logo": "{{clubLogo}}",
     "supervisorId": {{supervisorId}},
-    "type": "specialized",
-    "foundingDate": "2025-01-15",
-    "status": "active"
+    "type": "{{clubType}}",
+    "foundingDate": "{{foundingDate}}",
+    "status": "{{clubStatus}}"
   }
 }
 
 vars:pre-request {
-  userId: 
-  supervisorId: 
+  adminId: 1
+  clubName: "Programming Club"
+  clubDescription: "A club for students interested in programming and software development"
+  clubLogo: "https://ui-avatars.com/api/?name={{urlEncode clubName}}&background=random"
+  supervisorId: 2
+  clubType: "specialized"
+  foundingDate: "{{formatDate 'YYYY-MM-DD'}}"
+  clubStatus: "active"
 }
 
 docs {
