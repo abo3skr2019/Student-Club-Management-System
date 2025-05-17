@@ -3,7 +3,9 @@ import { z } from 'zod';
 import {
   findUserById,
   deleteUserById,
+  createUser,
 } from '../services/userService';
+import { insertUserSchema } from '../db/schema/user';
 
 // Typed request with user context
 interface AuthRequest extends Request {
@@ -63,6 +65,37 @@ export const deleteAccount = async (req: AuthRequest, res: Response): Promise<vo
     return;
   } catch (error) {
     console.error('Error in deleteAccount:', error);
+    res.status(500).json({ error: 'Server error' });
+    return;
+  }
+};
+
+interface BypassRequest extends Request {
+    bypass?: boolean;
+}
+
+/**
+ * POST /profile
+ * Create a new user account
+ */
+export const createProfile = async (req: BypassRequest, res: Response): Promise<void> => {
+    if (req.bypass!== true) {
+        res.status(403).json({ error: 'Forbidden' });
+        return;
+    }
+  try {
+    // Validate input
+    const parsed = insertUserSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ errors: parsed.error.format() });
+      return;
+    }
+    // Create user
+    const user = await createUser(parsed.data);
+    res.status(201).json({ user });
+    return;
+  } catch (error) {
+    console.error('Error in createProfile:', error);
     res.status(500).json({ error: 'Server error' });
     return;
   }
