@@ -7,7 +7,7 @@ import {
 } from '../services/userService';
 import { insertUserSchema } from '../db/schema/user';
 
-// Typed request with user context
+// Typed request with user context , Easier to migrate to jwt and msal
 interface AuthRequest extends Request {
     user?: { id: number };
     session?: any;
