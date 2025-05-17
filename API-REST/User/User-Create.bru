@@ -1,0 +1,100 @@
+meta {
+  name: Create-User
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:5000/profile
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-admin-id: {{adminId}}
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "nationalId": "{{nationalId}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "email": "{{email}}",
+    "profileImage": "{{profileImage}}",
+    "uniId": "{{uniId}}",
+    "providers": [],
+    "globalRole": "{{globalRole}}"
+  }
+}
+
+vars:pre-request {
+  adminId: 1
+  displayName: "John Doe"
+  firstName: "John"
+  lastName: "Doe"
+  nationalId: "1234567890"
+  phoneNumber: "0545838124"
+  email: "554026660@university.edu.sa"
+  uniId: "123456789"
+  profileImage: "https://ui-avatars.com/api/?name={{urlEncode `$firstName+$lastName`}}"
+  globalRole: "user"
+}
+
+docs {
+  # User Creation API
+  
+  This endpoint creates a new user in the system.
+  
+  ## Authentication
+  - Requires admin privileges (inmaAdmin or uniAdmin)
+  - Admin user ID must be provided in the x-admin-id header
+  
+  ## Request Body
+  - `displayName`: Full display name (min 2 characters)
+  - `firstName`: First name (min 2 characters)
+  - `lastName`: Last name (optional)
+  - `nationalId`: 10-digit national ID (digits only)
+  - `phoneNumber`: 10-digit phone number (digits only) 
+  - `email`: Valid university email address
+  - `uniId`: 9-digit university ID (optional)
+  - `profileImage`: URL to profile image
+  - `providers`: Array of authentication providers (usually empty for direct creation)
+  - `globalRole`: User role in the system (options: user, supervisor, uniAdmin, inmaAdmin)
+  
+  ## Global Role Options
+  - `user`: Regular student user
+  - `supervisor`: Faculty member who can supervise clubs
+  - `uniAdmin`: University administrator with elevated privileges
+  - `inmaAdmin`: INMA platform administrator with full system access
+  
+  ## Example
+  ```
+  POST /profile
+  Content-Type: application/json
+  x-admin-id: 1
+  
+  {
+    "displayName": "John Doe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "nationalId": "1234567890",
+    "phoneNumber": "0545838124",
+    "email": "554026660@university.edu.sa",
+    "uniId": "123456789",
+    "profileImage": "https://ui-avatars.com/api/?name=John+Doe",
+    "providers": [],
+    "globalRole": "user"
+  }
+  ```
+  
+  ## Response
+  - `201 Created` on success with created user details
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if the requester is not authenticated
+  - `403 Forbidden` if the requester doesn't have admin privileges
+  - `409 Conflict` if email, nationalId, or uniId already exists
+  - `500 Internal Server Error` for server issues
+}

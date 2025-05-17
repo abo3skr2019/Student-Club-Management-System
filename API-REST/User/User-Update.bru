@@ -1,0 +1,86 @@
+meta {
+  name: Update-User
+  type: http
+  seq: 3
+}
+
+patch {
+  url: http://localhost:5000/profile/{{userUuid}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{requesterId}}
+}
+
+body:json {
+  {
+    "displayName": "{{displayName}}",
+    "firstName": "{{firstName}}",
+    "lastName": "{{lastName}}",
+    "phoneNumber": "{{phoneNumber}}",
+    "profileImage": "{{profileImage}}"
+  }
+}
+
+vars:pre-request {
+  requesterId: 1
+  userUuid: "user-uuid-to-update"
+  displayName: "Jane Doe"
+  firstName: "Jane"
+  lastName: "Doe"
+  phoneNumber: "0545838125"
+  profileImage: "https://ui-avatars.com/api/?name={{urlEncode `$firstName+$lastName`}}"
+}
+
+docs {
+  # User Update API
+  
+  This endpoint updates an existing user's information.
+  
+  ## Authentication
+  - Users can only update their own profiles unless they have admin privileges
+  - User ID must be provided in the x-user-id header
+  
+  ## Path Parameters
+  - `userUuid`: The UUID of the user to update
+  
+  ## Request Body (all fields optional)
+  - `displayName`: Full display name (min 2 characters)
+  - `firstName`: First name (min 2 characters)
+  - `lastName`: Last name (optional, can be null)
+  - `phoneNumber`: 10-digit phone number (digits only)
+  - `profileImage`: URL to profile image
+  
+  ## Admin-Only Fields
+  The following fields can only be updated by admins (inmaAdmin or uniAdmin):
+  - `email`: Valid university email address
+  - `nationalId`: 10-digit national ID (digits only)
+  - `uniId`: 9-digit university ID
+  - `globalRole`: User role in the system
+  
+  ## Example
+  ```
+  PATCH /profile/550e8400-e29b-41d4-a716-446655440000
+  Content-Type: application/json
+  x-user-id: 1
+  
+  {
+    "displayName": "Jane Doe",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "phoneNumber": "0545838125",
+    "profileImage": "https://ui-avatars.com/api/?name=Jane+Doe"
+  }
+  ```
+  
+  ## Response
+  - `200 OK` on success with updated user details
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if the requester is not authenticated
+  - `403 Forbidden` if the requester doesn't have permission to update this user
+  - `404 Not Found` if the user doesn't exist
+  - `500 Internal Server Error` for server issues
+}

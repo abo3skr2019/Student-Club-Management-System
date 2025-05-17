@@ -1,0 +1,78 @@
+meta {
+  name: Club-Create
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:5000/clubs
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+body:json {
+  {
+    "name": "Programming Club",
+    "description": "A club for students interested in programming and software development",
+    "logo": "https://example.com/club-logo.png",
+    "supervisorId": {{supervisorId}},
+    "type": "specialized",
+    "foundingDate": "2025-01-15",
+    "status": "active"
+  }
+}
+
+vars:pre-request {
+  userId: 
+  supervisorId: 
+}
+
+docs {
+  # Club Creation API
+  
+  This endpoint creates a new club in the system.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - This is a development/testing approach - production uses session-based auth
+  - User must be an INMA Admin (Institution Management Admin)
+  
+  ## Request Body
+  - `name`: Club name (3-100 characters, must be unique)
+  - `description`: Club description (max 500 characters)
+  - `logo`: URL to club logo image
+  - `supervisorId`: ID of the faculty supervisor for the club
+  - `type`: Club type, either "general" or "specialized"
+  - `foundingDate`: Date when the club was founded (optional)
+  - `status`: Club status, either "active" or "inactive"
+  
+  ## Example
+  ```
+  POST /clubs
+  x-user-id: 1
+  Content-Type: application/json
+  
+  {
+    "name": "Programming Club",
+    "description": "A club for students interested in programming",
+    "logo": "https://example.com/club-logo.png",
+    "supervisorId": 5,
+    "type": "specialized",
+    "foundingDate": "2025-01-15",
+    "status": "active"
+  }
+  ```
+  
+  ## Response
+  - `201 Created` on success with club details
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if user is not authenticated
+  - `403 Forbidden` if user lacks necessary permissions
+  - `409 Conflict` if club name already exists
+  - `500 Internal Server Error` for server issues
+}

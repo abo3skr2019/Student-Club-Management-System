@@ -1,0 +1,54 @@
+meta {
+  name: Get-User-Info
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5000/profile?fields={{selectedFields}}&include={{includeRelations}}
+  body: none
+  auth: none
+}
+
+params:query {
+  fields: {{selectedFields}}
+  include: {{includeRelations}}
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 1
+  selectedFields: "firstName,lastName,uniId,globalRole,profileImage,displayName,email"
+  includeRelations: "eventRegistration,clubMemberships"
+}
+
+docs {
+  # User Information API
+  
+  This endpoint retrieves user information with configurable field selection and relation inclusion.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - This is a development/testing approach - production uses session-based auth
+  
+  ## Query Parameters
+  - `fields`: Comma-separated list of user fields to include in the response
+    - Available fields: uuid, uniId, nationalId, phoneNumber, displayName, firstName, lastName, email, profileImage, globalRole
+  - `include`: Comma-separated list of relations to include with the user
+    - Available relations: eventRegistration, clubMemberships, clubsSupervised
+  
+  ## Example
+  ```
+  GET /profile?fields=firstName,lastName,email&include=eventRegistration
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with the requested user data
+  - `401 Unauthorized` if user is not authenticated
+  - `404 Not Found` if user doesn't exist
+  - `500 Internal Server Error` for server issues
+}

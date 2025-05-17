@@ -1,0 +1,51 @@
+meta {
+  name: Event-Leave
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:5000/events/{{eventId}}/unregister
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 
+  eventId: 
+}
+
+docs {
+  # Event Unregistration API
+  
+  This endpoint allows a user to unregister from an event they previously registered for.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - This is a development/testing approach - production uses session-based auth
+  
+  ## Parameters
+  - `eventId`: UUID of the event to leave (specified in the URL)
+  
+  ## Example
+  ```
+  POST /events/550e8400-e29b-41d4-a716-446655440000/unregister
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` if unregistration is successful, with updated event data
+  - `400 Bad Request` if:
+    - The user is not registered for the event
+    - Unregistration is not allowed at this time (e.g., event has started)
+  - `404 Not Found` if the event doesn't exist
+  - `401 Unauthorized` if the user is not authenticated
+  
+  ## Related Endpoints
+  - To register for an event: `POST /events/{eventId}/register`
+}

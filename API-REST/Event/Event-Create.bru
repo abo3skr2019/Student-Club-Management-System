@@ -1,0 +1,74 @@
+meta {
+  name: Event-Create
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5000/events
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+body:json {
+  {
+    "name": "Tech Conference 2025",
+    "description": "Annual technology conference featuring workshops, keynotes, and networking opportunities",
+    "poster": "https://example.com/event-poster.jpg",
+    "location": "University Main Auditorium",
+    "registrationStart": "2025-05-20T09:00:00Z",
+    "registrationEnd": "2025-05-25T18:00:00Z",
+    "eventStart": "2025-06-01T09:00:00Z",
+    "eventEnd": "2025-06-02T17:00:00Z",
+    "seatsAvailable": 200,
+    "category": "technology",
+    "clubId": "{{clubUuid}}",
+    "createdBy": 1,
+    "updatedBy": 1
+  }
+}
+
+vars:pre-request {
+  userId: 
+  clubUuid: 
+}
+
+docs {
+  # Event Creation API
+  
+  This endpoint creates a new event in the system.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - This is a development/testing approach - production uses session-based auth
+  - User must be an INMA Admin, Club Admin, or HR
+  
+  ## Example
+  ```
+  GET /events
+  x-user-id: 1
+  ```
+  - `name`: Event name (3-100 characters)
+  - `description`: Event description (max 1000 characters)
+  - `poster`: URL to event poster image
+  - `location`: Event location (3-255 characters)
+  - `registrationStart`: Registration start date/time (ISO format)
+  - `registrationEnd`: Registration end date/time (ISO format)
+  - `eventStart`: Event start date/time (ISO format)
+  - `eventEnd`: Event end date/time (ISO format)
+  - `seatsAvailable`: Number of available seats (1-10000)
+  - `category`: Event category (one of predefined categories)
+  - `clubId`: UUID of the club organizing the event
+  
+  ## Response
+  - `201 Created` on success with event details
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if user is not authenticated
+  - `403 Forbidden` if user lacks necessary permissions
+  - `500 Internal Server Error` for server issues
+}

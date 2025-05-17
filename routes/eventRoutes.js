@@ -3,7 +3,9 @@ const router = express.Router();
 const eventController = require('../controllers/eventController');
 const { isAuthenticated } = require('../middleware/CheckAuth');
 const { authorize } = require('../middleware/authorize');
-const { ClubRole } = require('../dist/lib/constants');
+const { ClubRole, GlobalRole } = require('../dist/lib/constants');
+const validateBody = require('../middleware/validateBody');
+const { insertEventSchema } = require('../dist/db/schema/event');
 
 // Event edit routes
 router.get(
@@ -42,5 +44,12 @@ router.post(
 // Public Routes
 router.get('/', eventController.getAllEvents);
 router.get('/:eventId', eventController.getEventById);
+
+// API endpoint for event creation
+router.post(
+    '/',
+    validateBody(insertEventSchema),
+    eventController.createEventApi
+);
 
 module.exports = router;

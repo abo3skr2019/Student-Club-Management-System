@@ -1,0 +1,70 @@
+meta {
+  name: Get-User-Clubs
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:5000/profile/{{userUuid}}/clubs?status={{membershipStatus}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{requesterId}}
+}
+
+vars:pre-request {
+  requesterId: 1
+  userUuid: "user-uuid-to-query"
+  membershipStatus: "active"
+}
+
+docs {
+  # User Clubs API
+  
+  This endpoint retrieves all clubs that a user is a member of, with optional filtering by membership status.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - Users can view their own club memberships or admins can view any user's memberships
+  
+  ## Path Parameters
+  - `userUuid`: The UUID of the user whose club memberships to retrieve
+  
+  ## Query Parameters
+  - `status`: Filter by membership status (optional)
+    - Available statuses: active, inactive, pending, denied
+    - If not provided, returns all memberships
+  
+  ## Example
+  ```
+  GET /profile/550e8400-e29b-41d4-a716-446655440000/clubs?status=active
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with array of club membership data:
+    ```json
+    [
+      {
+        "clubUuid": "club-uuid-1",
+        "clubName": "Programming Club",
+        "role": "clubAdmin",
+        "status": "active",
+        "joinedAt": "2023-01-15T14:30:00Z"
+      },
+      {
+        "clubUuid": "club-uuid-2",
+        "clubName": "Robotics Club",
+        "role": "member",
+        "status": "active",
+        "joinedAt": "2023-02-20T10:15:00Z"
+      }
+    ]
+    ```
+  - `401 Unauthorized` if the requester is not authenticated
+  - `403 Forbidden` if the requester doesn't have permission to view this user's clubs
+  - `404 Not Found` if the user doesn't exist
+  - `500 Internal Server Error` for server issues
+}
