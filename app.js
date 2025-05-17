@@ -7,6 +7,9 @@ const pgSession = require('connect-pg-simple')(session);
 const { Pool } = require('pg');
 const { db, connectDB } = require('./dist/db');
 
+// Register ts-node for loading TypeScript files at runtime
+require('ts-node').register();
+
 const app = express();
 
 // PostgreSQL Pool (Separate from drizzle)
@@ -40,11 +43,13 @@ app.get('/api', (req, res) => {
     res.json({ message: 'API is working!' });
 });
 
-// API Routes
+// API Routes (including TypeScript route files)
 app.use('/clubs', require('./routes/clubRoutes'));
 app.use('/events', require('./routes/eventRoutes'));
 app.use(require('./routes/auth'));
-app.use(require('./routes/profile'));
+// Profile REST API routes (TypeScript)
+const profileRouter = require('./routes/profile.ts').default;
+app.use(profileRouter);
 app.use(require('./routes/main-misc'));
 
 // Global error handlers
