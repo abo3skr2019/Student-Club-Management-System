@@ -14,8 +14,8 @@ export type NewUser = InferInsertModel<typeof user>;
  * @returns User record or null
  */
 export const findUserById = async (id: number): Promise<User | null> => {
-  const record = await db.query.user.findFirst({ where: eq(user.id, id) });
-  return record ?? null;
+    const record = await db.query.user.findFirst({ where: eq(user.id, id) });
+    return record ?? null;
 };
 
 /**
@@ -24,8 +24,10 @@ export const findUserById = async (id: number): Promise<User | null> => {
  * @returns User record or null
  */
 export const findUserByUUID = async (uuid: string): Promise<User | null> => {
-  const record = await db.query.user.findFirst({ where: eq(user.uuid, uuid) });
-  return record ?? null;
+    const record = await db.query.user.findFirst({
+        where: eq(user.uuid, uuid),
+    });
+    return record ?? null;
 };
 
 /**
@@ -34,8 +36,10 @@ export const findUserByUUID = async (uuid: string): Promise<User | null> => {
  * @returns User record or null
  */
 export const findUserByEmail = async (email: string): Promise<User | null> => {
-  const record = await db.query.user.findFirst({ where: eq(user.email, email) });
-  return record ?? null;
+    const record = await db.query.user.findFirst({
+        where: eq(user.email, email),
+    });
+    return record ?? null;
 };
 
 /**
@@ -44,8 +48,10 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
  * @returns User record or null
  */
 export const findUserByUniId = async (uniId: string): Promise<User | null> => {
-  const record = await db.query.user.findFirst({ where: eq(user.uniId, uniId) });
-  return record ?? null;
+    const record = await db.query.user.findFirst({
+        where: eq(user.uniId, uniId),
+    });
+    return record ?? null;
 };
 
 /**
@@ -53,9 +59,13 @@ export const findUserByUniId = async (uniId: string): Promise<User | null> => {
  * @param nationalId - National ID
  * @returns User record or null
  */
-export const findUserByNationalId = async (nationalId: string): Promise<User | null> => {
-  const record = await db.query.user.findFirst({ where: eq(user.nationalId, nationalId) });
-  return record ?? null;
+export const findUserByNationalId = async (
+    nationalId: string,
+): Promise<User | null> => {
+    const record = await db.query.user.findFirst({
+        where: eq(user.nationalId, nationalId),
+    });
+    return record ?? null;
 };
 
 /**
@@ -64,8 +74,8 @@ export const findUserByNationalId = async (nationalId: string): Promise<User | n
  * @returns Created user record
  */
 export const createUser = async (data: NewUser): Promise<User> => {
-  const [created] = await db.insert(user).values(data).returning();
-  return created;
+    const [created] = await db.insert(user).values(data).returning();
+    return created;
 };
 
 /**
@@ -74,13 +84,13 @@ export const createUser = async (data: NewUser): Promise<User> => {
  * @param data - Partial user data to update
  */
 export const updateUserById = async (
-  id: number,
-  data: Partial<Omit<NewUser, 'id' | 'uuid'>>
+    id: number,
+    data: Partial<Omit<NewUser, 'id' | 'uuid'>>,
 ): Promise<void> => {
-  await db
-    .update(user)
-    .set({ ...data, updatedAt: new Date() })
-    .where(eq(user.id, id));
+    await db
+        .update(user)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(user.id, id));
 };
 
 /**
@@ -88,7 +98,7 @@ export const updateUserById = async (
  * @param id - User numeric ID
  */
 export const deleteUserById = async (id: number): Promise<void> => {
-  await db.delete(user).where(eq(user.id, id));
+    await db.delete(user).where(eq(user.id, id));
 };
 
 /**
@@ -96,5 +106,5 @@ export const deleteUserById = async (id: number): Promise<void> => {
  * @returns Array of user records
  */
 export const listUsers = async (): Promise<User[]> => {
-  return db.query.user.findMany();
+    return db.query.user.findMany();
 };

@@ -6,17 +6,20 @@ meta {
 
 post {
   url: http://localhost:5000/profile
+  body: json
   auth: none
 }
 
 body:json {
-  "displayName":   "John Doe",
-  "firstName":     "John",
-  "lastName":      "Doe",
-  "nationalId":    "1234567890",
-  "phoneNumber":   "0123456789",
-  "email":         "554026660@university.edu",
-  "profileImage":  "https://example.com/avatar.jpg",
-  "providers":     [],
-  "globalRole":    "USER"
+  {
+    "displayName": "John Doe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "nationalId": "1234567890",
+    "phoneNumber": "0545838124",
+    "email": "554026660@university.edu",
+    "profileImage": "https://example.com/avatar.jpg",
+    "providers": [],
+    "globalRole": "user"
+  }
 }
