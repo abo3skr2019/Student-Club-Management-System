@@ -31,15 +31,12 @@ export const getProfile = async (
         const user = await findUserById(userId);
         if (!user) {
             res.status(404).json({ error: 'User not found' });
-            return;
         }
 
         res.status(200).json({ user });
-        return;
     } catch (error) {
         console.error('Error in getProfile:', error);
         res.status(500).json({ error: 'Server error' });
-        return;
     }
 };
 
@@ -68,11 +65,9 @@ export const deleteAccount = async (
         }
 
         res.status(200).json({ success: true });
-        return;
     } catch (error) {
         console.error('Error in deleteAccount:', error);
         res.status(500).json({ error: 'Server error' });
-        return;
     }
 };
 
@@ -99,10 +94,8 @@ export const createProfile = async (
         // Create user
         const user = await createUser(parsed.data);
         res.status(201).json({ user });
-        return;
     } catch (error) {
         console.error('Error in createProfile:', error);
         res.status(500).json({ error: 'Server error' });
-        return;
     }
 };
