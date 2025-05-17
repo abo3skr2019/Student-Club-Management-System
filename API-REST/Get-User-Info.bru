@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: http://localhost:5000/profile
+  url: http://localhost:5000/profile?fields=firstName,lastName,uniId,globalRole,profileImage&include=eventRegistration
   body: none
   auth: none
+}
+
+params:query {
+  fields: firstName,lastName,uniId,globalRole,profileImage
+  include: eventRegistration
 }
 
 headers {
