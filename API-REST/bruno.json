@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "API-REST",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

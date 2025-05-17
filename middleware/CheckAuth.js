@@ -6,6 +6,10 @@
  * @returns {void}
  */
 const isAuthenticated = (req, res, next) => {
+    if (req.bypass === true) {
+        // Bypass authentication for Test purposes
+        return next();
+    }
     if (req.isAuthenticated()) {
         return next();
     }
