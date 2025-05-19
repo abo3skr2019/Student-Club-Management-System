@@ -6,6 +6,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const { db } = require('../dist/db');
 const { user: userTable } = require('../dist/db/schema/user');
 const { eq } = require('drizzle-orm');
+const bcrypt = require('bcrypt');
 
 passport.use(
     new GoogleStrategy(
@@ -190,6 +191,83 @@ router.get('/login', (req, res) => {
         extraCSS: '<link href="/css/login.css" rel="stylesheet">',
         currentPage: 'login',
     });
+});
+// TMP Directories
+router.post('/login/tmp', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await db
+            .select()
+            .from(userTable)
+            .where(and(eq(userTable.email, email), eq(userTable.password, password)))
+            .limit(1);  
+    if (user.length > 0) {
+        res.json({
+            "data":{
+                "token":"1234",
+                "user":user[0]
+            }
+        })
+    }
+    else {
+        res.status(400).json({
+            error: "Invalid email or password"
+        })
+    }
+});
+router.post('/registr/tmp', async (req, res) => {
+    try {
+        const { displayName, firstName, lastName, email, password } = req.body;
+        
+        // Check if user already exists
+        const existingUser = await db
+            .select()
+            .from(userTable)
+            .where(eq(userTable.email, email))
+            .limit(1);
+            
+        if (existingUser.length > 0) {
+            return res.status(400).json({
+                error: "User with this email already exists"
+            });
+        }
+        
+        // Create new user
+        const newUser = {
+            displayName: displayName || `${firstName} ${lastName}`,
+            firstName,
+            lastName,
+            email,
+            password: await bcrypt.hash(password, 10),
+            profileImage: `https://ui-avatars.com/api/?name=${firstName}+${lastName}`,
+            providers: []
+        };
+        
+        const [createdUser] = await db
+            .insert(userTable)
+            .values(newUser)
+            .returning(
+                userTable.id,
+                userTable.displayName,
+                userTable.firstName,
+                userTable.lastName,
+                userTable.email,
+                userTable.profileImage,
+                userTable.providers,
+            );
+            
+        // Return token
+        res.json({
+            "data": {
+                "token": "1234", // In a real app, generate a proper JWT token
+                "user": createdUser
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Server error while registering user"
+        });
+    }
 });
 
 router.get('/login-failure', (req, res) => {
