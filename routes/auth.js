@@ -5,7 +5,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
 const { db } = require('../dist/db');
 const { user: userTable } = require('../dist/db/schema/user');
-const { eq } = require('drizzle-orm');
+const { eq, and } = require('drizzle-orm');
 const bcrypt = require('bcrypt');
 
 passport.use(
@@ -194,11 +194,16 @@ router.get('/login', (req, res) => {
 });
 // TMP Directories
 router.post('/login/tmp', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, nationalId } = req.body;
+    if(!email || !nationalId) {
+        return res.status(400).json({
+            error: "Missing required fields"
+        })
+    }
     const user = await db
             .select()
             .from(userTable)
-            .where(and(eq(userTable.email, email), eq(userTable.password, password)))
+            .where(and(eq(userTable.email, email), eq(userTable.nationalId, nationalId)))
             .limit(1);  
     if (user.length > 0) {
         res.json({
@@ -210,13 +215,18 @@ router.post('/login/tmp', async (req, res) => {
     }
     else {
         res.status(400).json({
-            error: "Invalid email or password"
+            error: "Invalid email or nationalId"
         })
     }
 });
-router.post('/registr/tmp', async (req, res) => {
+router.post('/register/tmp', async (req, res) => {
     try {
-        const { displayName, firstName, lastName, email, password } = req.body;
+        const { displayName, firstName, lastName, email, phoneNumber } = req.body;
+        if(!displayName || !firstName || !lastName || !email || !phoneNumber) {
+            return res.status(400).json({
+                error: "Missing required fields"
+            })
+        }
         
         // Check if user already exists
         const existingUser = await db
@@ -237,22 +247,18 @@ router.post('/registr/tmp', async (req, res) => {
             firstName,
             lastName,
             email,
-            password: await bcrypt.hash(password, 10),
             profileImage: `https://ui-avatars.com/api/?name=${firstName}+${lastName}`,
+            nationalId: Math.floor(Math.random() * 10000000),
+            phoneNumber,
             providers: []
         };
         
+        console.log(newUser);
         const [createdUser] = await db
             .insert(userTable)
             .values(newUser)
             .returning(
-                userTable.id,
-                userTable.displayName,
-                userTable.firstName,
-                userTable.lastName,
-                userTable.email,
-                userTable.profileImage,
-                userTable.providers,
+               
             );
             
         // Return token
