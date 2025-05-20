@@ -10,18 +10,15 @@ const { z } = require('zod');
 const getAllEvents = async (req, res) => {
     try {
         const events = await eventService.getAllEvents();
-        res.render('events/event-list', {
-            events,
-            user: req.user,
-            currentPage: 'events',
-            HeaderOrSidebar: 'header',
+        res.json({
+            success: true,
+            data: events
         });
     } catch (error) {
         console.error('Error in getAllEvents:', error);
-        res.render('error', {
-            message: 'Error fetching events',
-            user: req.user,
-            currentPage: 'events',
+        res.status(500).json({
+            success: false,
+            error: 'Error fetching events'
         });
     }
 };
@@ -36,16 +33,19 @@ const getEventByUUID = async (req, res) => {
     try {
         const { uuid } = req.params;
         const eventData = await eventService.findByUUID(uuid);
-        res.json(eventData);
+        res.json({
+            success: true,
+            data: eventData
+        });
     } catch (error) {
         console.error('Error in getEventByUUID:', error);
         if (error.message === 'Invalid UUID format') {
-            return res.status(400).json({ error: error.message });
+            return res.status(400).json({ success: false, error: error.message });
         }
         if (error.message === 'Event not found') {
-            return res.status(404).json({ error: error.message });
+            return res.status(404).json({ success: false, error: error.message });
         }
-        res.status(500).json({ error: 'Failed to fetch event' });
+        res.status(500).json({ success: false, error: 'Failed to fetch event' });
     }
 };
 
@@ -77,56 +77,52 @@ const getEventById = async (req, res) => {
                         ['clubAdmin', 'hr'].includes(m.role),
                 ));
 
-        res.render('events/event-details', {
-            event: eventData,
-            isRegistered,
-            isEventAdmin,
-            registeredUsersData: eventData.registeredUsers.map((reg) => ({
-                user: reg.user,
-                registrationDate: reg.registrationDate,
-            })),
-            user: req.user,
-            currentPage: 'events',
+        res.json({
+            success: true,
+            data: {
+                event: eventData,
+                isRegistered,
+                isEventAdmin,
+                registeredUsersData: eventData.registeredUsers.map((reg) => ({
+                    user: reg.user,
+                    registrationDate: reg.registrationDate,
+                }))
+            }
         });
     } catch (error) {
         console.error('Error in getEventById:', error);
-        res.render('error', {
-            message: error.message || 'Error fetching event details',
-            user: req.user,
-            currentPage: 'events',
+        res.status(error.message === 'Event not found' ? 404 : 500).json({
+            success: false,
+            error: error.message || 'Error fetching event details'
         });
     }
 };
 
 /**
- * Render create event form
+ * Get club for event creation
  * @param {Request} req The request object
  * @param {Response} res The response object
  * @returns {void}
  */
-const renderCreateEventForm = async (req, res) => {
+const getClubForEventCreation = async (req, res) => {
     try {
         const club = await eventService.findClubByUUID(req.params.clubId);
         if (!club) {
-            return res.render('error', {
-                message: 'Club not found',
-                user: req.user,
-                currentPage: 'events',
+            return res.status(404).json({
+                success: false,
+                error: 'Club not found'
             });
         }
 
-        res.render('events/create-event', {
-            club,
-            user: req.user,
-            HeaderOrSidebar: 'sidebar',
-            currentPage: 'events',
+        res.json({
+            success: true,
+            data: { club }
         });
     } catch (error) {
-        console.error('Error in renderCreateEventForm:', error);
-        res.render('error', {
-            message: error.message || 'Error loading create event form',
-            user: req.user,
-            currentPage: 'events',
+        console.error('Error in getClubForEventCreation:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Error loading club data'
         });
     }
 };
@@ -153,46 +149,45 @@ const createEvent = async (req, res) => {
             eventData,
             req.params.clubId,
         );
-        res.redirect(`/events/${event.uuid}`);
+        res.status(201).json({
+            success: true,
+            data: event
+        });
     } catch (err) {
-        res.render('events/create-event', {
+        res.status(400).json({
+            success: false,
             error: err.message,
-            club: { uuid: req.params.clubId },
-            user: req.user,
-            currentPage: 'events',
+            clubId: req.params.clubId
         });
     }
 };
 
 /**
- * Render edit event form
+ * Get event for editing
  * @param {Request} req The request object
  * @param {Response} res The response object
  * @returns {void}
  */
-const renderEditEventForm = async (req, res) => {
+const getEventForEditing = async (req, res) => {
     try {
         const eventData = await eventService.findByUUID(req.params.eventId);
 
         if (!eventData) {
-            return res.render('error', {
-                message: 'Event not found',
-                user: req.user,
-                currentPage: 'events',
+            return res.status(404).json({
+                success: false,
+                error: 'Event not found'
             });
         }
 
-        res.render('events/edit-event', {
-            event: eventData,
-            user: req.user,
-            currentPage: 'events',
+        res.json({
+            success: true,
+            data: { event: eventData }
         });
     } catch (error) {
-        console.error('Error in renderEditEventForm:', error);
-        res.render('error', {
-            message: error.message || 'Error loading edit form',
-            user: req.user,
-            currentPage: 'events',
+        console.error('Error in getEventForEditing:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Error loading event data'
         });
     }
 };
@@ -219,16 +214,15 @@ const updateEvent = async (req, res) => {
             req.params.eventId,
             updateData,
         );
-        res.redirect(`/events/${event.uuid}`);
+        res.json({
+            success: true,
+            data: event
+        });
     } catch (err) {
-        // Fetch the full event data for re-rendering
-        const eventData = await eventService.findByUUID(req.params.eventId);
-
-        res.render('events/edit-event', {
+        res.status(400).json({
+            success: false,
             error: err.message,
-            event: eventData,
-            user: req.user,
-            currentPage: 'events',
+            eventId: req.params.eventId
         });
     }
 };
@@ -245,21 +239,23 @@ const registerForEvent = async (req, res) => {
         const userId = req.user.id;
 
         const eventData = await eventService.registerUser(eventId, userId);
-        res.json(eventData);
+        res.json({
+            success: true,
+            data: eventData
+        });
     } catch (error) {
         console.error('Error in registerForEvent:', error);
         if (error.message === 'Event not found') {
-            return res.status(404).json({ error: error.message });
+            return res.status(404).json({ success: false, error: error.message });
         }
         if (
             error.message === 'User is already registered for this event' ||
             error.message === 'No seats available' ||
-            error.message ===
-                'Registration is not currently open for this event'
+            error.message === 'Registration is not currently open for this event'
         ) {
-            return res.status(400).json({ error: error.message });
+            return res.status(400).json({ success: false, error: error.message });
         }
-        res.status(500).json({ error: 'Failed to register user for event' });
+        res.status(500).json({ success: false, error: 'Failed to register user for event' });
     }
 };
 
@@ -275,19 +271,22 @@ const unregisterFromEvent = async (req, res) => {
         const userId = req.user.id;
 
         const eventData = await eventService.unregisterUser(eventId, userId);
-        res.json(eventData);
+        res.json({
+            success: true,
+            data: eventData
+        });
     } catch (error) {
         console.error('Error in unregisterFromEvent:', error);
         if (error.message === 'Event not found') {
-            return res.status(404).json({ error: error.message });
+            return res.status(404).json({ success: false, error: error.message });
         }
         if (
             error.message === 'User is not registered for this event' ||
             error.message === 'Cannot unregister from this event at this time'
         ) {
-            return res.status(400).json({ error: error.message });
+            return res.status(400).json({ success: false, error: error.message });
         }
-        res.status(500).json({ error: 'Failed to unregister user from event' });
+        res.status(500).json({ success: false, error: 'Failed to unregister user from event' });
     }
 };
 
@@ -305,9 +304,9 @@ const deleteEvent = async (req, res) => {
     } catch (error) {
         console.error('Error in deleteEvent:', error);
         if (error.message === 'Event not found') {
-            return res.status(404).json({ error: error.message });
+            return res.status(404).json({ success: false, error: error.message });
         }
-        res.status(500).json({ error: 'Failed to delete event' });
+        res.status(500).json({ success: false, error: 'Failed to delete event' });
     }
 };
 
@@ -391,9 +390,9 @@ module.exports = {
     getAllEvents,
     getEventByUUID,
     getEventById,
-    renderCreateEventForm,
+    getClubForEventCreation,
     createEvent,
-    renderEditEventForm,
+    getEventForEditing,
     updateEvent,
     registerForEvent,
     unregisterFromEvent,
