@@ -32,7 +32,7 @@ docs {
   
   ## Example
   ```
-  GET /clubs?type=specialized&status=active&search=programming&limit=20&offset=0
+  GET /clubs
   ```
   
   ## Response
@@ -60,10 +60,12 @@ docs {
         }
       ],
       "pagination": {
-        "total": 5,
-        "limit": 20,
-        "offset": 0,
-        "hasMore": false
+        "page": 1,
+        "limit": 10,
+        "total": 1,
+        "totalPages": 1,
+        "hasNext": false,
+        "hasPrev": false
       }
     }
     ```
