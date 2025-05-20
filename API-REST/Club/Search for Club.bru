@@ -1,13 +1,27 @@
 meta {
-  name: Club-Get-All
+  name: Search for Club
   type: http
-  seq: 13
+  seq: 11
 }
 
 get {
-  url: http://localhost:5000/clubs
+  url: http://localhost:5000/clubs?type={{clubType}}&status={{clubStatus}}&search={{searchQuery}}&limit={{limit}}
   body: none
   auth: none
+}
+
+params:query {
+  type: {{clubType}}
+  status: {{clubStatus}}
+  search: {{searchQuery}}
+  limit: {{limit}}
+}
+
+vars:pre-request {
+  clubType: "specialized"
+  clubStatus: "active"
+  searchQuery: "programming"
+  limit: 20
 }
 
 docs {
@@ -32,7 +46,7 @@ docs {
   
   ## Example
   ```
-  GET /clubs
+  GET /clubs?type=specialized&status=active&search=programming&limit=20&offset=0
   ```
   
   ## Response
@@ -60,12 +74,10 @@ docs {
         }
       ],
       "pagination": {
-        "page": 1,
-        "limit": 10,
-        "total": 1,
-        "totalPages": 1,
-        "hasNext": false,
-        "hasPrev": false
+        "total": 5,
+        "limit": 20,
+        "offset": 0,
+        "hasMore": false
       }
     }
     ```

@@ -20,9 +20,9 @@ headers {
 }
 
 vars:pre-request {
-  userId: 1
+  userId: 6
   selectedFields: "firstName,lastName,uniId,globalRole,profileImage,displayName,email"
-  includeRelations: "eventRegistration,clubMemberships"
+  includeRelations: "eventRegistration"
 }
 
 docs {
@@ -43,7 +43,7 @@ docs {
   ## Example
   ```
   GET /profile?fields=firstName,lastName,email&include=eventRegistration
-  x-user-id: 1
+  x-user-id: 6
   ```
   
   ## Response
@@ -51,4 +51,33 @@ docs {
   - `401 Unauthorized` if user is not authenticated
   - `404 Not Found` if user doesn't exist
   - `500 Internal Server Error` for server issues
+  
+  ### 200 Response Example
+  ```json
+  {
+    "user": {
+      "firstName": "Regular",
+      "lastName": "User",
+      "uniId": "556098882",
+      "globalRole": "user",
+      "profileImage": "https://ui-avatars.com/api/?name=Regular%20User",
+      "displayName": "Regular User",
+      "email": "556098882@university.edu.sa",
+      "eventRegistration": [
+        {
+          "id": 3,
+          "userId": 6,
+          "eventId": 1,
+          "status": "accepted",
+          "createdBy": 6,
+          "updatedBy": 6,
+          "isArchived": false,
+          "archivedAt": null,
+          "createdAt": "2025-05-20T09:27:06.371Z",
+          "updatedAt": "2025-05-20T09:27:06.371Z"
+        }
+      ]
+    }
+  }
+  ```
 }

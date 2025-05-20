@@ -372,7 +372,9 @@ const createEventApi = async (req, res) => {
     } catch (error) {
         console.error('Error in createEventApi:', error);
         
-        if (error.message === 'Club not found' || error.message === 'Invalid club UUID format') {
+        if (error.message === 'Club not found' || 
+            error.message === 'Invalid club UUID format' ||
+            error.message === 'Invalid club ID format') {
             return res.status(400).json({ success: false, error: error.message });
         }
         

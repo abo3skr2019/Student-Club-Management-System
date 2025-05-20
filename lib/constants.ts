@@ -44,6 +44,14 @@ export const EVENT_CATEGORIES = [
     'networking',
 ] as const;
 
+// Event statuses
+export const EVENT_STATUSES = [
+    'upcoming',
+    'ongoing',
+    'completed',
+    'cancelled',
+] as const;
+
 // Event Registration statuses
 export const EVENT_REGISTRATION_STATUSES = [
     'pending',

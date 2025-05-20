@@ -134,19 +134,27 @@ const findByUUID = async (uuid) => {
 /**
  * Create new event
  * @param {Object} eventData Pre-validated event data
- * @param {String} clubId Club UUID
+ * @param {Number|String} clubId Club ID or UUID
  * @returns {Promise<Object>} Created event
  */
 const createEvent = async (eventData, clubId) => {
     try {
-        if (!isValidUUID(clubId)) {
-            throw new Error('Invalid club UUID format');
+        let clubData;
+        
+        // Handle both numeric IDs and UUIDs
+        if (typeof clubId === 'number' || !isNaN(Number(clubId))) {
+            // If clubId is a number, search by numeric ID
+            clubData = await db.query.club.findFirst({
+                where: eq(club.id, Number(clubId)),
+            });
+        } else if (isValidUUID(clubId)) {
+            // If clubId is a valid UUID, search by UUID
+            clubData = await db.query.club.findFirst({
+                where: eq(club.uuid, clubId),
+            });
+        } else {
+            throw new Error('Invalid club ID format');
         }
-
-        // First get the club data to get its ID
-        const clubData = await db.query.club.findFirst({
-            where: eq(club.uuid, clubId),
-        });
 
         if (!clubData) {
             throw new Error('Club not found');
@@ -157,7 +165,6 @@ const createEvent = async (eventData, clubId) => {
             ...eventData,
             clubId: clubId,  // UUID string for validation
             status: 'upcoming',
-            seatsRemaining: eventData.seatsAvailable,
         };
 
         console.log("Data to validate:", dataToValidate);
