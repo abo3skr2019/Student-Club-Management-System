@@ -30,7 +30,7 @@
         {
             "label": "Create All Users",
             "type": "shell",
-            "command": "cd API-REST && ./create-all-users.sh",
+            "command": "sleep 0.25 && cd API-REST && ./create-all-users.sh",
             "problemMatcher": []
         },
         {
