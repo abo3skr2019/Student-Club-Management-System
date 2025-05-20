@@ -70,7 +70,7 @@ const eventValidation = {
     seatsRemaining: z.number().int().optional(),
     status: z.enum(EVENT_STATUSES),
     category: z.enum(EVENT_CATEGORIES),
-    clubId: z.number().int().positive(),
+    clubId: z.union([z.number().int().positive(), z.string().uuid()]),
     createdBy: z.number().int().positive(),
     updatedBy: z.number().int().positive(),
     isArchived: z.boolean().default(false),
@@ -89,19 +89,19 @@ const transformedEventSchema = baseEventSchema.transform((data) => {
     return data;
 })
 .refine((data) => data.seatsRemaining === undefined || 
-    data.seatsRemaining <= data.seatsAvailable, {
+    (data.seatsRemaining as number) <= (data.seatsAvailable as number), {
     message: 'Remaining seats cannot exceed available seats',
     path: ['seatsRemaining']
 });
 
 export const insertEventSchema = transformedEventSchema
-    .refine((data) => data.registrationEnd > data.registrationStart, {
+    .refine((data) => (data.registrationEnd as Date) > (data.registrationStart as Date), {
         message: 'Registration end must be after registration start',
     })
-    .refine((data) => data.eventEnd > data.eventStart, {
+    .refine((data) => (data.eventEnd as Date) > (data.eventStart as Date), {
         message: 'Event end must be after event start',
     })
-    .refine((data) => data.eventStart > data.registrationEnd, {
+    .refine((data) => (data.eventStart as Date) > (data.registrationEnd as Date), {
         message: 'Event must start after registration ends',
     });
 

@@ -359,8 +359,8 @@ const createEventApi = async (req, res) => {
 
         console.log("eventData",eventData);
         
-        // Ensure clubId is passed as a string to createEvent
-        const event = await eventService.createEvent(eventData, String(clubId));
+        // Call createEvent with the processed clubId
+        const event = await eventService.createEvent(eventData, parseInt(clubId, 10));
         console.log("event",event);
         
         // Return success response with created event

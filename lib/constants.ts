@@ -48,6 +48,7 @@ export const EVENT_CATEGORIES = [
 export const EVENT_STATUSES = [
     'upcoming',
     'ongoing',
+    'registration_open',
     'completed',
     'cancelled',
 ] as const;
