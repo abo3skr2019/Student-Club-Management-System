@@ -210,10 +210,13 @@ const updateEvent = async (req, res) => {
             eventEnd: new Date(req.body.eventEnd),
         };
 
+        console.log("updateData",updateData);
+
         const event = await eventService.updateEvent(
             req.params.eventId,
             updateData,
         );
+        console.log("event",event);
         res.json({
             success: true,
             data: event

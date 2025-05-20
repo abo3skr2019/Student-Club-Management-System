@@ -200,6 +200,8 @@ const updateEvent = async (eventId, updateData) => {
             throw new Error('Invalid UUID format');
         }
 
+        console.log("updateData in updateEvent",updateData);
+
         // If seatsRemaining is in the update data, throw error
         if ('seatsRemaining' in updateData) {
             throw new Error('Cannot directly update seatsRemaining');
@@ -207,13 +209,16 @@ const updateEvent = async (eventId, updateData) => {
 
         const validatedData = updateEventSchema.parse(updateData);
         const existingEvent = await findByUUID(eventId);
-
+        console.log("existingEvent",existingEvent);
         // Only check seats if admin is updating seatsAvailable
+        console.log("validatedData",validatedData);
         if (validatedData.seatsAvailable !== undefined) {
             const registeredCount = await db
                 .select({ count: sql`count(*)` })
                 .from(userToEventJoined)
                 .where(eq(userToEventJoined.eventId, existingEvent.id));
+
+            console.log("registeredCount",registeredCount);
 
             if (validatedData.seatsAvailable < registeredCount[0].count) {
                 throw new Error(
@@ -225,6 +230,8 @@ const updateEvent = async (eventId, updateData) => {
             validatedData.seatsRemaining =
                 validatedData.seatsAvailable - registeredCount[0].count;
         }
+
+        console.log("validatedData",validatedData);
 
         const [updatedEvent] = await db
             .update(event)

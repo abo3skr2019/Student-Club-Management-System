@@ -7,6 +7,7 @@
  */
 const isAuthenticated = (req, res, next) => {
     if (process.env.NODE_ENV !== 'production') {
+        console.log("NODE_ENV", process.env.NODE_ENV);
         const userIdHeader = req.headers['x-user-id'];
         const parsedId = Number.parseInt(userIdHeader, 10);  
         if (Number.isFinite(parsedId)) {  
