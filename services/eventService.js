@@ -165,11 +165,9 @@ const createEvent = async (eventData, clubId) => {
             ...eventData,
             clubId: clubData.id,
             status: 'upcoming',
-            seatsRemaining: eventData.seatsAvailable,
         };
 
         const validatedData = insertEventSchema.parse(dataToValidate);
-
         const [newEvent] = await db
             .insert(event)
             .values(validatedData)

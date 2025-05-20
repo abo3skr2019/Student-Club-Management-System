@@ -10,7 +10,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { timestamps, withArchive, withUuid } from './common';
 import { club } from './club';
-import { EVENT_CATEGORIES } from '../../lib/constants';
+import { EVENT_CATEGORIES, EVENT_STATUSES } from '../../lib/constants';
 import { user } from './user';
 
 // Event table definition
@@ -28,6 +28,11 @@ export const event = pgTable(
         eventStart: timestamp('event_start').notNull(),
         eventEnd: timestamp('event_end').notNull(),
         seatsAvailable: integer('seats_available').notNull(),
+        seatsRemaining: integer('seats_remaining').$defaultFn(() => 0).notNull(),
+        status: varchar('status', {
+            enum: EVENT_STATUSES,
+            length: 20,
+        }).notNull().default('upcoming'),
         category: varchar('category', {
             length: 20,
             enum: EVENT_CATEGORIES,
@@ -62,6 +67,7 @@ const eventValidation = {
     eventStart: z.coerce.date(),
     eventEnd: z.coerce.date(),
     seatsAvailable: z.number().int().min(1).max(10000),
+    seatsRemaining: z.number().int().optional(),
     category: z.enum(EVENT_CATEGORIES),
     clubId: z.number().int().positive(),
     createdBy: z.number().int().positive(),
@@ -71,9 +77,18 @@ const eventValidation = {
 };
 
 // Base schema without refinements for updates
-const baseEventSchema = createInsertSchema(event).extend(eventValidation);
+const baseEventSchema = createInsertSchema(event)
+    .extend(eventValidation);
 
-export const insertEventSchema = baseEventSchema
+// Add transformation to set seatsRemaining default
+const transformedEventSchema = baseEventSchema.transform((data) => {
+    if (data.seatsRemaining === undefined && data.seatsAvailable !== undefined) {
+        data.seatsRemaining = data.seatsAvailable;
+    }
+    return data;
+});
+
+export const insertEventSchema = transformedEventSchema
     .refine((data) => data.registrationEnd > data.registrationStart, {
         message: 'Registration end must be after registration start',
     })
