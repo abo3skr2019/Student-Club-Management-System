@@ -152,23 +152,34 @@ const createEvent = async (eventData, clubId) => {
             throw new Error('Club not found');
         }
 
-        // Now add the clubId to the event data before validation
+        // For validation, we use the UUID string to satisfy zod schema
         const dataToValidate = {
             ...eventData,
-            clubId: clubData.id,
+            clubId: clubId,  // UUID string for validation
             status: 'upcoming',
             seatsRemaining: eventData.seatsAvailable,
         };
 
+        console.log("Data to validate:", dataToValidate);
+        
+        // Check if the data passes validation first
         const validatedData = insertEventSchema.parse(dataToValidate);
+        
+        // But for database insertion, use the numeric ID from the club record
+        const dataToInsert = {
+            ...validatedData,
+            clubId: clubData.id,  // Numeric ID for database insertion
+        };
+        
+        console.log("Data to insert:", dataToInsert);
 
         const [newEvent] = await db
             .insert(event)
-            .values(validatedData)
+            .values(dataToInsert)
             .returning();
 
-        // Set initial status
-        await updateEventStatus(newEvent.uuid);
+        // No need to update status for a brand new event - it's already set to 'upcoming'
+        // await updateEventStatus(newEvent.uuid);
 
         return newEvent;
     } catch (error) {

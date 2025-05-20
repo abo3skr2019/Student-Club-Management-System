@@ -353,8 +353,12 @@ const createEventApi = async (req, res) => {
         
         // Remove clubId from eventData as it's passed separately
         delete eventData.clubId;
+
+        console.log("eventData",eventData);
         
-        const event = await eventService.createEvent(eventData, clubId);
+        // Ensure clubId is passed as a string to createEvent
+        const event = await eventService.createEvent(eventData, String(clubId));
+        console.log("event",event);
         
         // Return success response with created event
         res.status(201).json({
