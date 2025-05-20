@@ -3,7 +3,7 @@ const {
     event,
     club,
     user,
-    userToEventJoined,
+    eventRegistration,
     clubMembership,
 } = require('../dist/db/schema');
 const { eq, and, sql } = require('drizzle-orm');
@@ -222,8 +222,8 @@ const updateEvent = async (eventId, updateData) => {
         if (validatedData.seatsAvailable !== undefined) {
             const registeredCount = await db
                 .select({ count: sql`count(*)` })
-                .from(userToEventJoined)
-                .where(eq(userToEventJoined.eventId, existingEvent.id));
+                .from(eventRegistration)
+                .where(eq(eventRegistration.eventId, existingEvent.id));
 
             console.log("registeredCount",registeredCount);
 
@@ -276,11 +276,11 @@ const registerUser = async (eventId, userId) => {
         }
 
         // Check if already registered
-        const existingRegistration = await db.query.userToEventJoined.findFirst(
+        const existingRegistration = await db.query.eventRegistration.findFirst(
             {
                 where: and(
-                    eq(userToEventJoined.eventId, eventData.id),
-                    eq(userToEventJoined.userId, userId),
+                    eq(eventRegistration.eventId, eventData.id),
+                    eq(eventRegistration.userId, userId),
                 ),
             },
         );
@@ -290,9 +290,11 @@ const registerUser = async (eventId, userId) => {
         }
 
         // Register user
-        await db.insert(userToEventJoined).values({
+        await db.insert(eventRegistration).values({
             eventId: eventData.id,
             userId: userId,
+            createdBy: userId,
+            updatedBy: userId,
         });
 
         // Update seats remaining
@@ -326,11 +328,11 @@ const unregisterUser = async (eventId, userId) => {
         }
 
         // Check if registered
-        const existingRegistration = await db.query.userToEventJoined.findFirst(
+        const existingRegistration = await db.query.eventRegistration.findFirst(
             {
                 where: and(
-                    eq(userToEventJoined.eventId, eventData.id),
-                    eq(userToEventJoined.userId, userId),
+                    eq(eventRegistration.eventId, eventData.id),
+                    eq(eventRegistration.userId, userId),
                 ),
             },
         );
@@ -341,11 +343,11 @@ const unregisterUser = async (eventId, userId) => {
 
         // Unregister user
         await db
-            .delete(userToEventJoined)
+            .delete(eventRegistration)
             .where(
                 and(
-                    eq(userToEventJoined.eventId, eventData.id),
-                    eq(userToEventJoined.userId, userId),
+                    eq(eventRegistration.eventId, eventData.id),
+                    eq(eventRegistration.userId, userId),
                 ),
             );
 
