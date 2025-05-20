@@ -26,16 +26,16 @@ body:json {
     "eventStart": "2025-06-01T09:00:00Z",
     "eventEnd": "2025-06-02T17:00:00Z",
     "seatsAvailable": 200,
-    "category": "technology",
-    "clubId": "{{clubUuid}}",
+    "category": "bootcamp",
+    "clubId": {{clubId}},
     "createdBy": 1,
     "updatedBy": 1
   }
 }
 
 vars:pre-request {
-  userId: 
-  clubUuid: 
+  userId: 4
+  clubId: 1
 }
 
 docs {
@@ -63,7 +63,7 @@ docs {
   - `eventEnd`: Event end date/time (ISO format)
   - `seatsAvailable`: Number of available seats (1-10000)
   - `category`: Event category (one of predefined categories)
-  - `clubId`: UUID of the club organizing the event
+  - `clubId`: Numeric ID or UUID of the club organizing the event
   
   ## Response
   - `201 Created` on success with event details
