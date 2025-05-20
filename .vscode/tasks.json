@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Reset DB",
+            "type": "shell",
+            "command": "./ResetDB.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start API Dev",
+            "type": "shell",
+            "command": "pnpm run dev",
+            "isBackground": true,
+            "presentation": {
+                "panel": "new"
+            },
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": "."
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*Restarting 'app.js'*",
+                    "endsPattern": ".*Server is running at http://localhost:5000*"
+                }
+            }
+        },
+        {
+            "label": "Create All Users",
+            "type": "shell",
+            "command": "cd API-REST && ./create-all-users.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Dev Reset Script",
+            "dependsOn": [
+                "Reset DB",
+                "Start API Dev",
+                "Create All Users"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        }
+    ]
+}

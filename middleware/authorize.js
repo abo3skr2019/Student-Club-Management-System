@@ -33,9 +33,6 @@ function authorize(allowedGlobalRoles = [], allowedClubRoles = []) {
         if (!req.user) {
             return next(createError(401, 'Authentication required'));
         }
-        console.log('User:', req.user);
-        console.log('user Global Roles:', req.user.globalRole);
-        console.log('user Club Roles:', req.user.clubRoles);
         // First check if user has one of the allowed global roles
         if (allowedGlobalRoles.includes(req.user.globalRole)) {
             return next();
