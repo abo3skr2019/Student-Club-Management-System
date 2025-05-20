@@ -58,8 +58,8 @@ const clubValidation = {
     type: z.enum([ClubType.GENERAL, ClubType.SPECIALIZED]),
     foundingDate: z.coerce.date().optional(),
     status: z.enum([ClubStatus.ACTIVE, ClubStatus.INACTIVE]),
-    createdBy: z.number().int().positive(),
-    updatedBy: z.number().int().positive(),
+    createdBy: z.number().int().positive().optional(),
+    updatedBy: z.number().int().positive().optional(),
 };
 
 export const insertClubSchema = createInsertSchema(club).extend(clubValidation);

@@ -145,9 +145,11 @@ const findByUUID = async (uuid, params = {}) => {
  * @returns {Promise<Object>} Created club
  */
 const createClub = async (data, userId) => {
-    // Add userId data
+    // Add userId data and ensure foundingDate is properly handled
     const clubData = {
         ...data,
+        // Convert foundingDate to ISO string if it's a Date object
+        foundingDate: data.foundingDate ? new Date(data.foundingDate).toISOString().split('T')[0] : undefined,
         createdBy: userId,
         updatedBy: userId,
     };
@@ -182,9 +184,17 @@ const updateClub = async (uuid, data, userId) => {
         throw createError(400, 'Invalid UUID format');
     }
 
+    // Process data to ensure proper format
+    const updateData = {...data};
+    
+    // Handle foundingDate special case
+    if (updateData.foundingDate) {
+        updateData.foundingDate = new Date(updateData.foundingDate).toISOString().split('T')[0];
+    }
+
     // Check if name already exists (case-insensitive)
-    if (data.name) {
-        const nameLower = data.name.trim().toLowerCase();
+    if (updateData.name) {
+        const nameLower = updateData.name.trim().toLowerCase();
         const existingClub = await db.query.club.findFirst({
             where: sql`
                 LOWER(${club.name}) = ${nameLower}
@@ -201,7 +211,7 @@ const updateClub = async (uuid, data, userId) => {
     const [updatedClub] = await db
         .update(club)
         .set({
-            ...data,
+            ...updateData,
             updatedBy: userId,
             updatedAt: new Date(),
         })
