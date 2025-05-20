@@ -68,6 +68,7 @@ const eventValidation = {
     eventEnd: z.coerce.date(),
     seatsAvailable: z.number().int().min(1).max(10000),
     seatsRemaining: z.number().int().optional(),
+    status: z.enum(EVENT_STATUSES),
     category: z.enum(EVENT_CATEGORIES),
     clubId: z.number().int().positive(),
     createdBy: z.number().int().positive(),
@@ -86,6 +87,11 @@ const transformedEventSchema = baseEventSchema.transform((data) => {
         data.seatsRemaining = data.seatsAvailable;
     }
     return data;
+})
+.refine((data) => data.seatsRemaining === undefined || 
+    data.seatsRemaining <= data.seatsAvailable, {
+    message: 'Remaining seats cannot exceed available seats',
+    path: ['seatsRemaining']
 });
 
 export const insertEventSchema = transformedEventSchema
