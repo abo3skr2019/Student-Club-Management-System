@@ -1,13 +1,27 @@
 meta {
-  name: Club-Get-All
+  name: Search for Club
   type: http
-  seq: 13
+  seq: 11
 }
 
 get {
-  url: http://localhost:5000/clubs
+  url: http://localhost:5000/clubs?type={{clubType}}&status={{clubStatus}}&search={{searchQuery}}&limit={{limit}}
   body: none
   auth: none
+}
+
+params:query {
+  type: {{clubType}}
+  status: {{clubStatus}}
+  search: {{searchQuery}}
+  limit: {{limit}}
+}
+
+vars:pre-request {
+  clubType: "specialized"
+  clubStatus: "active"
+  searchQuery: "programming"
+  limit: 20
 }
 
 docs {
