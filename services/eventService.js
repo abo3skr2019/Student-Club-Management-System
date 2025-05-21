@@ -164,7 +164,7 @@ const createEvent = async (eventData, clubId) => {
         const dataToValidate = {
             ...eventData,
             clubId: clubId,  // UUID string for validation
-            status: eventData.status || 'upcoming',  // Use provided status or default to 'upcoming'
+            // Status will default to 'upcoming' via the schema
         };
 
         console.log("Data to validate:", dataToValidate);
