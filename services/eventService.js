@@ -132,6 +132,88 @@ const findByUUID = async (uuid) => {
 };
 
 /**
+ * Find event by ID (supports both numeric IDs and UUIDs)
+ * @param {Number|String} id Event ID or UUID
+ * @returns {Promise<Object>} Event object
+ */
+const findEventById = async (id) => {
+    try {
+        // Check if the ID is a UUID
+        if (isValidUUID(id)) {
+            return await findByUUID(id);
+        }
+        
+        // Check if it's a numeric ID
+        const numericId = Number(id);
+        if (!isNaN(numericId)) {
+            const eventData = await db.query.event.findFirst({
+                where: eq(event.id, numericId),
+                columns: {
+                    id: true,
+                    uuid: true,
+                    name: true,
+                    description: true,
+                    poster: true,
+                    registrationStart: true,
+                    registrationEnd: true,
+                    eventStart: true,
+                    eventEnd: true,
+                    location: true,
+                    status: true,
+                    seatsAvailable: true,
+                    seatsRemaining: true,
+                    category: true,
+                },
+                with: {
+                    club: {
+                        columns: {
+                            name: true,
+                            uuid: true,
+                            logo: true,
+                        },
+                        with: {
+                            memberships: {
+                                columns: {
+                                    userId: true,
+                                    role: true,
+                                },
+                            },
+                        },
+                    },
+                    registeredUsers: {
+                        columns: {
+                            registrationDate: true,
+                        },
+                        with: {
+                            user: {
+                                columns: {
+                                    uuid: true,
+                                    displayName: true,
+                                    email: true,
+                                    profileImage: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            if (!eventData) {
+                throw new Error('Event not found');
+            }
+
+            return eventData;
+        }
+        
+        // If it's neither a UUID nor a numeric ID
+        throw new Error('Invalid event ID format');
+    } catch (error) {
+        console.error('Error in findEventById:', error);
+        throw error;
+    }
+};
+
+/**
  * Create new event
  * @param {Object} eventData Pre-validated event data
  * @param {Number|String} clubId Club ID or UUID
@@ -197,25 +279,19 @@ const createEvent = async (eventData, clubId) => {
 
 /**
  * Update event
- * @param {String} eventId Event UUID
+ * @param {String|Number} eventId Event ID or UUID
  * @param {Object} updateData Pre-validated update data
  * @returns {Promise<Object>} Updated event
  */
 const updateEvent = async (eventId, updateData) => {
     try {
-        if (!isValidUUID(eventId)) {
-            throw new Error('Invalid UUID format');
-        }
-
-        console.log("updateData in updateEvent", updateData);
-
         // If seatsRemaining is in the update data, throw error
         if ('seatsRemaining' in updateData) {
             throw new Error('Cannot directly update seatsRemaining');
         }
 
         // Get existing event first to check what we're updating
-        const existingEvent = await findByUUID(eventId);
+        const existingEvent = await findEventById(eventId);
         console.log("existingEvent", existingEvent);
         
         if (!existingEvent) {
@@ -249,10 +325,10 @@ const updateEvent = async (eventId, updateData) => {
         const [updatedEvent] = await db
             .update(event)
             .set(validatedData)
-            .where(eq(event.uuid, eventId))
+            .where(eq(event.id, existingEvent.id))
             .returning();
 
-        await updateEventStatus(eventId);
+        await updateEventStatus(existingEvent.uuid);
 
         return updatedEvent;
     } catch (error) {
@@ -263,13 +339,13 @@ const updateEvent = async (eventId, updateData) => {
 
 /**
  * Register user for event
- * @param {String} eventId Event UUID
+ * @param {String|Number} eventId Event ID or UUID
  * @param {number} userId User ID
  * @returns {Promise<Object>} Updated event
  */
 const registerUser = async (eventId, userId) => {
     try {
-        const eventData = await findByUUID(eventId);
+        const eventData = await findEventById(eventId);
 
         if (eventData.status !== 'registration_open') {
             throw new Error(
@@ -321,13 +397,13 @@ const registerUser = async (eventId, userId) => {
 
 /**
  * Unregister user from event
- * @param {String} eventId Event UUID
+ * @param {String|Number} eventId Event ID or UUID
  * @param {number} userId User ID
  * @returns {Promise<Object>} Updated event
  */
 const unregisterUser = async (eventId, userId) => {
     try {
-        const eventData = await findByUUID(eventId);
+        const eventData = await findEventById(eventId);
 
         if (eventData.status !== 'registration_open') {
             throw new Error('Cannot unregister from this event at this time');
@@ -375,12 +451,12 @@ const unregisterUser = async (eventId, userId) => {
 
 /**
  * Delete event
- * @param {String} eventId Event UUID
+ * @param {String|Number} eventId Event ID or UUID
  * @returns {Promise<void>}
  */
 const deleteEvent = async (eventId) => {
     try {
-        const eventData = await findByUUID(eventId);
+        const eventData = await findEventById(eventId);
         // Cascade will handle deleting all registrations automatically
         await db.delete(event).where(eq(event.id, eventData.id));
     } catch (error) {
@@ -407,6 +483,7 @@ const findClubByUUID = async (uuid) => {
 module.exports = {
     getAllEvents,
     findByUUID,
+    findEventById,
     createEvent,
     updateEvent,
     registerUser,

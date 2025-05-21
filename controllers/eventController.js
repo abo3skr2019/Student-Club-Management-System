@@ -24,22 +24,22 @@ const getAllEvents = async (req, res) => {
 };
 
 /**
- * Get event by UUID
+ * Get event by UUID or ID
  * @param {Request} req The request object
  * @param {Response} res The response object
  * @returns {void}
  */
-const getEventByUUID = async (req, res) => {
+const getEventByUuidOrId = async (req, res) => {
     try {
         const { uuid } = req.params;
-        const eventData = await eventService.findByUUID(uuid);
+        const eventData = await eventService.findEventById(uuid);
         res.json({
             success: true,
             data: eventData
         });
     } catch (error) {
-        console.error('Error in getEventByUUID:', error);
-        if (error.message === 'Invalid UUID format') {
+        console.error('Error in getEventByUuidOrId:', error);
+        if (error.message === 'Invalid UUID format' || error.message === 'Invalid event ID format') {
             return res.status(400).json({ success: false, error: error.message });
         }
         if (error.message === 'Event not found') {
@@ -58,7 +58,7 @@ const getEventByUUID = async (req, res) => {
 const getEventById = async (req, res) => {
     try {
         const { eventId } = req.params;
-        const eventData = await eventService.findByUUID(eventId);
+        const eventData = await eventService.findEventById(eventId);
 
         // Get registration status
         const isRegistered =
@@ -91,10 +91,13 @@ const getEventById = async (req, res) => {
         });
     } catch (error) {
         console.error('Error in getEventById:', error);
-        res.status(error.message === 'Event not found' ? 404 : 500).json({
-            success: false,
-            error: error.message || 'Error fetching event details'
-        });
+        if (error.message === 'Invalid UUID format' || error.message === 'Invalid event ID format') {
+            return res.status(400).json({ success: false, error: error.message });
+        }
+        if (error.message === 'Event not found') {
+            return res.status(404).json({ success: false, error: error.message });
+        }
+        res.status(500).json({ success: false, error: 'Failed to fetch event details' });
     }
 };
 
@@ -170,7 +173,7 @@ const createEvent = async (req, res) => {
  */
 const getEventForEditing = async (req, res) => {
     try {
-        const eventData = await eventService.findByUUID(req.params.eventId);
+        const eventData = await eventService.findEventById(req.params.eventId);
 
         if (!eventData) {
             return res.status(404).json({
@@ -185,6 +188,9 @@ const getEventForEditing = async (req, res) => {
         });
     } catch (error) {
         console.error('Error in getEventForEditing:', error);
+        if (error.message === 'Invalid UUID format' || error.message === 'Invalid event ID format') {
+            return res.status(400).json({ success: false, error: error.message });
+        }
         res.status(500).json({
             success: false,
             error: error.message || 'Error loading event data'
@@ -285,6 +291,12 @@ const registerForEvent = async (req, res) => {
             return res.status(404).json({ success: false, error: error.message });
         }
         if (
+            error.message === 'Invalid UUID format' ||
+            error.message === 'Invalid event ID format'
+        ) {
+            return res.status(400).json({ success: false, error: error.message });
+        }
+        if (
             error.message === 'User is already registered for this event' ||
             error.message === 'No seats available' ||
             error.message === 'Registration is not currently open for this event'
@@ -317,6 +329,12 @@ const unregisterFromEvent = async (req, res) => {
             return res.status(404).json({ success: false, error: error.message });
         }
         if (
+            error.message === 'Invalid UUID format' ||
+            error.message === 'Invalid event ID format'
+        ) {
+            return res.status(400).json({ success: false, error: error.message });
+        }
+        if (
             error.message === 'User is not registered for this event' ||
             error.message === 'Cannot unregister from this event at this time'
         ) {
@@ -341,6 +359,9 @@ const deleteEvent = async (req, res) => {
         console.error('Error in deleteEvent:', error);
         if (error.message === 'Event not found') {
             return res.status(404).json({ success: false, error: error.message });
+        }
+        if (error.message === 'Invalid UUID format' || error.message === 'Invalid event ID format') {
+            return res.status(400).json({ success: false, error: error.message });
         }
         res.status(500).json({ success: false, error: 'Failed to delete event' });
     }
@@ -431,7 +452,7 @@ const createEventApi = async (req, res) => {
 
 module.exports = {
     getAllEvents,
-    getEventByUUID,
+    getEventByUuidOrId,
     getEventById,
     getClubForEventCreation,
     createEvent,
