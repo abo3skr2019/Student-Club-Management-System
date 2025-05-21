@@ -352,6 +352,7 @@ const createEventApi = async (req, res) => {
             registrationEnd: new Date(req.body.registrationEnd),
             eventStart: new Date(req.body.eventStart),
             eventEnd: new Date(req.body.eventEnd),
+            // Default status will now be applied at the schema level
         };
         
         // Remove clubId from eventData as it's passed separately

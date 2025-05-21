@@ -1,0 +1,66 @@
+meta {
+  name: Event-Update-Status
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:5000/events/{{eventId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+body:json {
+  {
+    "status": "registration_open"
+  }
+}
+
+vars:pre-request {
+  userId: 4
+  eventId: a4a93a4f-f63d-4b3f-85f6-d7b746623b11
+}
+
+docs {
+  # Event Status Update API
+  
+  This endpoint updates an event's status to "registration_open" to allow users to register.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - User must be a Club Admin or have appropriate privileges
+  - This is a development/testing approach - production uses session-based auth
+  
+  ## Parameters
+  - `eventId`: UUID of the event to update (specified in the URL)
+  
+  ## Request Body
+  ```json
+  {
+    "status": "registration_open"
+  }
+  ```
+  
+  ## Possible Status Values
+  - upcoming: Event is scheduled but not yet open for registration
+  - registration_open: Event is open for registration
+  - ongoing: Event is currently taking place
+  - completed: Event has finished
+  - cancelled: Event has been cancelled
+  
+  ## Response
+  - `200 OK` if update is successful, with updated event data
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if the user is not authenticated
+  - `403 Forbidden` if user lacks necessary permissions
+  - `404 Not Found` if the event doesn't exist
+  
+  ## Notes
+  - You can use this endpoint to change other event properties by including them in the request body
+  - Only Club Admins can update event status
+}

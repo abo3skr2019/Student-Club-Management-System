@@ -68,7 +68,7 @@ const eventValidation = {
     eventEnd: z.coerce.date(),
     seatsAvailable: z.number().int().min(1).max(10000),
     seatsRemaining: z.number().int().optional(),
-    status: z.enum(EVENT_STATUSES),
+    status: z.enum(EVENT_STATUSES).default('upcoming'),
     category: z.enum(EVENT_CATEGORIES),
     clubId: z.union([z.number().int().positive(), z.string().uuid()]),
     createdBy: z.number().int().positive(),
