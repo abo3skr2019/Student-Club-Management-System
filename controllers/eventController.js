@@ -200,28 +200,61 @@ const getEventForEditing = async (req, res) => {
  */
 const updateEvent = async (req, res) => {
     try {
-        // Convert form data to proper types
-        const updateData = {
-            ...req.body,
-            seatsAvailable: parseInt(req.body.seatsAvailable),
-            registrationStart: new Date(req.body.registrationStart),
-            registrationEnd: new Date(req.body.registrationEnd),
-            eventStart: new Date(req.body.eventStart),
-            eventEnd: new Date(req.body.eventEnd),
-        };
+        // Only process fields that are actually provided in the request
+        const updateData = {};
+        
+        // Copy all provided fields
+        Object.keys(req.body).forEach(key => {
+            if (req.body[key] !== undefined && req.body[key] !== '') {
+                updateData[key] = req.body[key];
+            }
+        });
+        
+        // Convert numeric fields if provided
+        if (updateData.seatsAvailable !== undefined) {
+            updateData.seatsAvailable = parseInt(updateData.seatsAvailable);
+        }
+        
+        // Only convert date fields if they are provided and not empty
+        if (updateData.registrationStart) {
+            updateData.registrationStart = new Date(updateData.registrationStart);
+        }
+        
+        if (updateData.registrationEnd) {
+            updateData.registrationEnd = new Date(updateData.registrationEnd);
+        }
+        
+        if (updateData.eventStart) {
+            updateData.eventStart = new Date(updateData.eventStart);
+        }
+        
+        if (updateData.eventEnd) {
+            updateData.eventEnd = new Date(updateData.eventEnd);
+        }
 
-        console.log("updateData",updateData);
+        console.log("updateData", updateData);
 
         const event = await eventService.updateEvent(
             req.params.eventId,
             updateData,
         );
-        console.log("event",event);
+        
         res.json({
             success: true,
             data: event
         });
     } catch (err) {
+        console.error('Error updating event:', err);
+        
+        // Handle validation errors from Zod
+        if (err.name === 'ZodError') {
+            return res.status(400).json({
+                success: false,
+                error: JSON.stringify(err.errors, null, 2),
+                eventId: req.params.eventId
+            });
+        }
+        
         res.status(400).json({
             success: false,
             error: err.message,

@@ -207,25 +207,33 @@ const updateEvent = async (eventId, updateData) => {
             throw new Error('Invalid UUID format');
         }
 
-        console.log("updateData in updateEvent",updateData);
+        console.log("updateData in updateEvent", updateData);
 
         // If seatsRemaining is in the update data, throw error
         if ('seatsRemaining' in updateData) {
             throw new Error('Cannot directly update seatsRemaining');
         }
 
-        const validatedData = updateEventSchema.parse(updateData);
+        // Get existing event first to check what we're updating
         const existingEvent = await findByUUID(eventId);
-        console.log("existingEvent",existingEvent);
+        console.log("existingEvent", existingEvent);
+        
+        if (!existingEvent) {
+            throw new Error('Event not found');
+        }
+        
+        // Validate the partial update data
+        const validatedData = updateEventSchema.parse(updateData);
+        console.log("validatedData", validatedData);
+        
         // Only check seats if admin is updating seatsAvailable
-        console.log("validatedData",validatedData);
         if (validatedData.seatsAvailable !== undefined) {
             const registeredCount = await db
                 .select({ count: sql`count(*)` })
                 .from(eventRegistration)
                 .where(eq(eventRegistration.eventId, existingEvent.id));
 
-            console.log("registeredCount",registeredCount);
+            console.log("registeredCount", registeredCount);
 
             if (validatedData.seatsAvailable < registeredCount[0].count) {
                 throw new Error(
@@ -237,8 +245,6 @@ const updateEvent = async (eventId, updateData) => {
             validatedData.seatsRemaining =
                 validatedData.seatsAvailable - registeredCount[0].count;
         }
-
-        console.log("validatedData",validatedData);
 
         const [updatedEvent] = await db
             .update(event)
