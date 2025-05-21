@@ -127,7 +127,7 @@ const findByUUID = async (uuid, params = {}) => {
     const columns = buildSelectFields(fields, club);
 
     const clubData = await db.query.club.findFirst({
-        where: and(eq(club.uuid, uuid), eq(club.isArchived, false)),
+        where: eq(club.uuid, uuid),
         columns,
     });
 
