@@ -1,4 +1,6 @@
 {
+  "id": "3390dacf-b503-431c-936e-98b242325ab9",
+  "prevId": "ce926f66-b062-4957-8875-f2a6a4e0dd64",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -104,6 +106,7 @@
       },
       "indexes": {
         "club_status_idx": {
+          "name": "club_status_idx",
           "columns": [
             {
               "expression": "status",
@@ -112,13 +115,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "club_status_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "club_is_archived_idx": {
+          "name": "club_is_archived_idx",
           "columns": [
             {
               "expression": "is_archived",
@@ -127,74 +130,73 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "club_is_archived_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "club_supervisor_id_user_id_fk": {
           "name": "club_supervisor_id_user_id_fk",
           "tableFrom": "club",
+          "tableTo": "user",
           "columnsFrom": [
             "supervisor_id"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "club_created_by_user_id_fk": {
           "name": "club_created_by_user_id_fk",
           "tableFrom": "club",
+          "tableTo": "user",
           "columnsFrom": [
             "created_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "club_updated_by_user_id_fk": {
           "name": "club_updated_by_user_id_fk",
           "tableFrom": "club",
+          "tableTo": "user",
           "columnsFrom": [
             "updated_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "drizzle_club_uuid_unique": {
           "name": "drizzle_club_uuid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "club_name_unique": {
           "name": "club_name_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.club_membership": {
       "name": "club_membership",
@@ -287,6 +289,7 @@
       },
       "indexes": {
         "user_club_idx": {
+          "name": "user_club_idx",
           "columns": [
             {
               "expression": "user_id",
@@ -301,13 +304,14 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "user_club_idx",
           "isUnique": true,
+          "where": "\"club_membership\".\"is_archived\" = false",
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "club_membership_role_idx": {
+          "name": "club_membership_role_idx",
           "columns": [
             {
               "expression": "role",
@@ -316,13 +320,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "club_membership_role_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "club_membership_status_idx": {
+          "name": "club_membership_status_idx",
           "columns": [
             {
               "expression": "status",
@@ -331,13 +335,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "club_membership_status_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "club_membership_club_idx": {
+          "name": "club_membership_club_idx",
           "columns": [
             {
               "expression": "club_id",
@@ -346,13 +350,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "club_membership_club_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "club_membership_is_archived_idx": {
+          "name": "club_membership_is_archived_idx",
           "columns": [
             {
               "expression": "is_archived",
@@ -361,80 +365,79 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "club_membership_is_archived_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "club_membership_user_id_user_id_fk": {
           "name": "club_membership_user_id_user_id_fk",
           "tableFrom": "club_membership",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "club_membership_club_id_club_id_fk": {
           "name": "club_membership_club_id_club_id_fk",
           "tableFrom": "club_membership",
+          "tableTo": "club",
           "columnsFrom": [
             "club_id"
           ],
-          "tableTo": "club",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "club_membership_created_by_user_id_fk": {
           "name": "club_membership_created_by_user_id_fk",
           "tableFrom": "club_membership",
+          "tableTo": "user",
           "columnsFrom": [
             "created_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "club_membership_updated_by_user_id_fk": {
           "name": "club_membership_updated_by_user_id_fk",
           "tableFrom": "club_membership",
+          "tableTo": "user",
           "columnsFrom": [
             "updated_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "drizzle_club_membership_uuid_unique": {
           "name": "drizzle_club_membership_uuid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.event": {
       "name": "event",
@@ -507,6 +510,19 @@
           "primaryKey": false,
           "notNull": true
         },
+        "seats_remaining": {
+          "name": "seats_remaining",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'upcoming'"
+        },
         "category": {
           "name": "category",
           "type": "varchar(20)",
@@ -561,6 +577,7 @@
       },
       "indexes": {
         "club_id_idx": {
+          "name": "club_id_idx",
           "columns": [
             {
               "expression": "club_id",
@@ -569,13 +586,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "club_id_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "event_category_idx": {
+          "name": "event_category_idx",
           "columns": [
             {
               "expression": "category",
@@ -584,13 +601,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "event_category_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "event_start_idx": {
+          "name": "event_start_idx",
           "columns": [
             {
               "expression": "event_start",
@@ -599,67 +616,66 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "event_start_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "event_club_id_club_id_fk": {
           "name": "event_club_id_club_id_fk",
           "tableFrom": "event",
+          "tableTo": "club",
           "columnsFrom": [
             "club_id"
           ],
-          "tableTo": "club",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "event_created_by_user_id_fk": {
           "name": "event_created_by_user_id_fk",
           "tableFrom": "event",
+          "tableTo": "user",
           "columnsFrom": [
             "created_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "event_updated_by_user_id_fk": {
           "name": "event_updated_by_user_id_fk",
           "tableFrom": "event",
+          "tableTo": "user",
           "columnsFrom": [
             "updated_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "drizzle_event_uuid_unique": {
           "name": "drizzle_event_uuid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.event_registration": {
       "name": "event_registration",
@@ -732,6 +748,7 @@
       },
       "indexes": {
         "user_event_idx": {
+          "name": "user_event_idx",
           "columns": [
             {
               "expression": "user_id",
@@ -746,13 +763,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "user_event_idx",
           "isUnique": true,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "event_registration_status_idx": {
+          "name": "event_registration_status_idx",
           "columns": [
             {
               "expression": "status",
@@ -761,13 +778,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "event_registration_status_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "event_registration_event_idx": {
+          "name": "event_registration_event_idx",
           "columns": [
             {
               "expression": "event_id",
@@ -776,72 +793,198 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "event_registration_event_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "event_registration_user_id_user_id_fk": {
           "name": "event_registration_user_id_user_id_fk",
           "tableFrom": "event_registration",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "event_registration_event_id_event_id_fk": {
           "name": "event_registration_event_id_event_id_fk",
           "tableFrom": "event_registration",
+          "tableTo": "event",
           "columnsFrom": [
             "event_id"
           ],
-          "tableTo": "event",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "event_registration_created_by_user_id_fk": {
           "name": "event_registration_created_by_user_id_fk",
           "tableFrom": "event_registration",
+          "tableTo": "user",
           "columnsFrom": [
             "created_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "event_registration_updated_by_user_id_fk": {
           "name": "event_registration_updated_by_user_id_fk",
           "tableFrom": "event_registration",
+          "tableTo": "user",
           "columnsFrom": [
             "updated_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.image": {
+      "name": "image",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "data": {
+          "name": "data",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'general'"
+        },
+        "hash": {
+          "name": "hash",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "image_hash_idx": {
+          "name": "image_hash_idx",
+          "columns": [
+            {
+              "expression": "hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "image_purpose_idx": {
+          "name": "image_purpose_idx",
+          "columns": [
+            {
+              "expression": "purpose",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "image_uuid_unique": {
+          "name": "image_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.user": {
       "name": "user",
@@ -952,6 +1095,7 @@
       },
       "indexes": {
         "global_role_idx": {
+          "name": "global_role_idx",
           "columns": [
             {
               "expression": "global_role",
@@ -960,13 +1104,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "global_role_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "provider_idx": {
+          "name": "provider_idx",
           "columns": [
             {
               "expression": "providers",
@@ -975,13 +1119,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "provider_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "user_is_archived_idx": {
+          "name": "user_is_archived_idx",
           "columns": [
             {
               "expression": "is_archived",
@@ -990,11 +1134,10 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "user_is_archived_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -1002,36 +1145,36 @@
       "uniqueConstraints": {
         "drizzle_user_uuid_unique": {
           "name": "drizzle_user_uuid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "user_uni_id_unique": {
           "name": "user_uni_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "uni_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "user_national_id_unique": {
           "name": "user_national_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "national_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "user_email_unique": {
           "name": "user_email_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.ticket": {
       "name": "ticket",
@@ -1112,6 +1255,7 @@
       },
       "indexes": {
         "status_idx": {
+          "name": "status_idx",
           "columns": [
             {
               "expression": "status",
@@ -1120,13 +1264,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "status_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "priority_idx": {
+          "name": "priority_idx",
           "columns": [
             {
               "expression": "priority",
@@ -1135,54 +1279,53 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "priority_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "ticket_assigned_to_user_id_fk": {
           "name": "ticket_assigned_to_user_id_fk",
           "tableFrom": "ticket",
+          "tableTo": "user",
           "columnsFrom": [
             "assigned_to"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "set null"
+          "onDelete": "set null",
+          "onUpdate": "no action"
         },
         "ticket_created_by_user_id_fk": {
           "name": "ticket_created_by_user_id_fk",
           "tableFrom": "ticket",
+          "tableTo": "user",
           "columnsFrom": [
             "created_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "restrict"
+          "onDelete": "restrict",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "drizzle_ticket_uuid_unique": {
           "name": "drizzle_ticket_uuid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.task": {
       "name": "task",
@@ -1292,6 +1435,7 @@
       },
       "indexes": {
         "task_club_membership_idx": {
+          "name": "task_club_membership_idx",
           "columns": [
             {
               "expression": "club_membership_id",
@@ -1300,13 +1444,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "task_club_membership_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "task_status_idx": {
+          "name": "task_status_idx",
           "columns": [
             {
               "expression": "status",
@@ -1315,13 +1459,13 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "task_status_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "task_is_archived_idx": {
+          "name": "task_is_archived_idx",
           "columns": [
             {
               "expression": "is_archived",
@@ -1330,80 +1474,77 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "task_is_archived_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "task_club_membership_id_club_membership_id_fk": {
           "name": "task_club_membership_id_club_membership_id_fk",
           "tableFrom": "task",
+          "tableTo": "club_membership",
           "columnsFrom": [
             "club_membership_id"
           ],
-          "tableTo": "club_membership",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "task_created_by_user_id_fk": {
           "name": "task_created_by_user_id_fk",
           "tableFrom": "task",
+          "tableTo": "user",
           "columnsFrom": [
             "created_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "task_updated_by_user_id_fk": {
           "name": "task_updated_by_user_id_fk",
           "tableFrom": "task",
+          "tableTo": "user",
           "columnsFrom": [
             "updated_by"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "drizzle_task_uuid_unique": {
           "name": "drizzle_task_uuid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "uuid"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {},
   "schemas": {},
-  "_meta": {
-    "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "id": "2f1b6f93-9c45-47e8-8e71-42545da219f2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
   "sequences": {},
+  "roles": {},
   "policies": {},
   "views": {},
-  "roles": {}
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
 }

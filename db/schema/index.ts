@@ -6,3 +6,4 @@ export * from './relations';
 export * from './task';
 export * from './clubMembership';
 export * from './eventRegistration';
+export * from './image';

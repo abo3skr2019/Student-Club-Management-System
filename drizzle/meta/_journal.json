@@ -8,6 +8,20 @@
       "when": 1746793111187,
       "tag": "0000_conscious_vivisector",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1747810902876,
+      "tag": "0001_massive_galactus",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1747814554943,
+      "tag": "0002_zippy_mastermind",
+      "breakpoints": true
     }
   ]
 }
