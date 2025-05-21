@@ -14,14 +14,27 @@ const createError = require('http-errors');
 function validateBody(schema) {
     return (req, res, next) => {
         try {
-            // Check for empty body
-            if (Object.keys(req.body).length === 0) {
+            // For partial updates (like PATCH or PUT with partial data),
+            // we don't require a non-empty body
+            const isPartialSchema = schema._def && schema._def.description && 
+                schema._def.description.includes('partial');
+                
+            // Check for empty body (only for non-partial schemas)
+            if (!isPartialSchema && Object.keys(req.body).length === 0) {
                 return next(createError(400, 'Request body cannot be empty'));
             }
-
+            
+            // Clean up empty strings for date fields to prevent invalid date errors
+            const cleanBody = {...req.body};
+            ['registrationStart', 'registrationEnd', 'eventStart', 'eventEnd'].forEach(field => {
+                if (cleanBody[field] === '') {
+                    delete cleanBody[field];
+                }
+            });
+            
             // Parse and validate body with schema
             // This will transform data types and run all validations
-            req.body = schema.parse(req.body);
+            req.body = schema.parse(cleanBody);
 
             next();
         } catch (err) {
@@ -35,7 +48,10 @@ function validateBody(schema) {
                     })
                     .join('; ');
 
-                return next(createError(400, `Validation failed: ${issues}`));
+                return res.status(400).json({
+                    success: false,
+                    error: JSON.stringify(err.errors, null, 2)
+                });
             }
 
             // Pass through any other errors

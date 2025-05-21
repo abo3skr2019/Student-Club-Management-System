@@ -43,6 +43,7 @@ app.get('/api', (req, res) => {
 // API Routes (including TypeScript route files)
 app.use('/clubs', require('./routes/clubRoutes'));
 app.use('/events', require('./routes/eventRoutes'));
+app.use('/images', require('./routes/imgRoutes'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/profile'));
 app.use(require('./routes/main-misc'));

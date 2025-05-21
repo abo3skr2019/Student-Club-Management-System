@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Image Upload Test</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            input,
+            select {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            button {
+                background-color: #4caf50;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+            .result {
+                margin-top: 20px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Image Upload Test</h1>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="imageFile">Select Image:</label>
+                <input
+                    type="file"
+                    id="imageFile"
+                    name="image"
+                    accept="image/*"
+                    required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="purpose">Purpose:</label>
+                <select id="purpose" name="purpose">
+                    <option value="general">General</option>
+                    <option value="profile">Profile</option>
+                    <option value="club">Club</option>
+                    <option value="event">Event</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="userId">User ID:</label>
+                <input
+                    type="number"
+                    id="userId"
+                    name="userId"
+                    value="1"
+                    required
+                />
+            </div>
+
+            <button type="submit">Upload Image</button>
+        </form>
+
+        <div id="result" class="result">
+            <h3>Upload Result:</h3>
+            <pre id="resultContent"></pre>
+        </div>
+
+        <script>
+            document
+                .getElementById('uploadForm')
+                .addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const formData = new FormData();
+                    const fileInput = document.getElementById('imageFile');
+                    const purpose = document.getElementById('purpose').value;
+                    const userId = document.getElementById('userId').value;
+
+                    formData.append('image', fileInput.files[0]);
+
+                    try {
+                        const response = await fetch('/images/upload', {
+                            method: 'POST',
+                            headers: {
+                                'x-user-id': userId,
+                            },
+                            body: formData,
+                        });
+
+                        const result = await response.json();
+
+                        const resultElement = document.getElementById('result');
+                        const resultContent =
+                            document.getElementById('resultContent');
+
+                        resultContent.textContent = JSON.stringify(
+                            result,
+                            null,
+                            2,
+                        );
+                        resultElement.style.display = 'block';
+
+                        if (result.success) {
+                            resultElement.style.backgroundColor = '#e8f5e9';
+                        } else {
+                            resultElement.style.backgroundColor = '#ffebee';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById('resultContent').textContent =
+                            'Error: ' + error.message;
+                        document.getElementById('result').style.display =
+                            'block';
+                        document.getElementById(
+                            'result',
+                        ).style.backgroundColor = '#ffebee';
+                    }
+                });
+        </script>
+    </body>
+</html>

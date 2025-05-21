@@ -5,7 +5,7 @@ const { isAuthenticated } = require('../middleware/CheckAuth');
 const { authorize } = require('../middleware/authorize');
 const { ClubRole, GlobalRole } = require('../dist/lib/constants');
 const validateBody = require('../middleware/validateBody');
-const { insertEventSchema } = require('../dist/db/schema/event');
+const { insertEventSchema, updateEventSchema } = require('../dist/db/schema/event');
 
 // Event edit routes
 // router.get(
@@ -18,6 +18,7 @@ router.put(
     '/:eventId',
     isAuthenticated,
     authorize([], [ClubRole.CLUB_ADMIN]),
+    validateBody(updateEventSchema),
     eventController.updateEvent,
 );
 
