@@ -8,22 +8,22 @@ const validateBody = require('../middleware/validateBody');
 const { insertEventSchema } = require('../dist/db/schema/event');
 
 // Event edit routes
-router.get(
-    '/:eventId/edit',
-    isAuthenticated,
-    authorize([], [ClubRole.CLUB_ADMIN]),
-    eventController.renderEditEventForm,
-);
-router.post(
-    '/:eventId/edit',
+// router.get(
+//     '/:eventId/edit',
+//     isAuthenticated,
+//     authorize([], [ClubRole.CLUB_ADMIN]),
+//     eventController.getEventForEditing,
+// );
+router.put(
+    '/:eventId',
     isAuthenticated,
     authorize([], [ClubRole.CLUB_ADMIN]),
     eventController.updateEvent,
 );
 
 // Delete route
-router.post(
-    '/:eventId/delete',
+router.delete(
+    '/:eventId',
     isAuthenticated,
     authorize([], [ClubRole.CLUB_ADMIN]),
     eventController.deleteEvent,
@@ -41,6 +41,7 @@ router.post(
     eventController.unregisterFromEvent,
 );
 
+
 // Public Routes
 router.get('/', eventController.getAllEvents);
 router.get('/:eventId', eventController.getEventById);
@@ -48,8 +49,14 @@ router.get('/:eventId', eventController.getEventById);
 // API endpoint for event creation
 router.post(
     '/',
+    (req, res, next) => {
+        console.log("req.body",req.body);
+        next();
+    },
     validateBody(insertEventSchema),
     eventController.createEventApi
 );
+
+
 
 module.exports = router;

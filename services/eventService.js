@@ -3,7 +3,7 @@ const {
     event,
     club,
     user,
-    userToEventJoined,
+    eventRegistration,
     clubMembership,
 } = require('../dist/db/schema');
 const { eq, and, sql } = require('drizzle-orm');
@@ -160,21 +160,33 @@ const createEvent = async (eventData, clubId) => {
             throw new Error('Club not found');
         }
 
-        // Now add the clubId to the event data before validation
+        // For validation, we use the UUID string to satisfy zod schema
         const dataToValidate = {
             ...eventData,
-            clubId: clubData.id,
-            status: 'upcoming',
+            clubId: clubId,  // UUID string for validation
+            status: eventData.status || 'upcoming',  // Use provided status or default to 'upcoming'
         };
 
+        console.log("Data to validate:", dataToValidate);
+        
+        // Check if the data passes validation first
         const validatedData = insertEventSchema.parse(dataToValidate);
+        
+        // But for database insertion, use the numeric ID from the club record
+        const dataToInsert = {
+            ...validatedData,
+            clubId: clubData.id,  // Numeric ID for database insertion
+        };
+        
+        console.log("Data to insert:", dataToInsert);
+
         const [newEvent] = await db
             .insert(event)
-            .values(validatedData)
+            .values(dataToInsert)
             .returning();
 
-        // Set initial status
-        await updateEventStatus(newEvent.uuid);
+        // No need to update status for a brand new event - it's already set to 'upcoming'
+        // await updateEventStatus(newEvent.uuid);
 
         return newEvent;
     } catch (error) {
@@ -195,6 +207,8 @@ const updateEvent = async (eventId, updateData) => {
             throw new Error('Invalid UUID format');
         }
 
+        console.log("updateData in updateEvent",updateData);
+
         // If seatsRemaining is in the update data, throw error
         if ('seatsRemaining' in updateData) {
             throw new Error('Cannot directly update seatsRemaining');
@@ -202,13 +216,16 @@ const updateEvent = async (eventId, updateData) => {
 
         const validatedData = updateEventSchema.parse(updateData);
         const existingEvent = await findByUUID(eventId);
-
+        console.log("existingEvent",existingEvent);
         // Only check seats if admin is updating seatsAvailable
+        console.log("validatedData",validatedData);
         if (validatedData.seatsAvailable !== undefined) {
             const registeredCount = await db
                 .select({ count: sql`count(*)` })
-                .from(userToEventJoined)
-                .where(eq(userToEventJoined.eventId, existingEvent.id));
+                .from(eventRegistration)
+                .where(eq(eventRegistration.eventId, existingEvent.id));
+
+            console.log("registeredCount",registeredCount);
 
             if (validatedData.seatsAvailable < registeredCount[0].count) {
                 throw new Error(
@@ -220,6 +237,8 @@ const updateEvent = async (eventId, updateData) => {
             validatedData.seatsRemaining =
                 validatedData.seatsAvailable - registeredCount[0].count;
         }
+
+        console.log("validatedData",validatedData);
 
         const [updatedEvent] = await db
             .update(event)
@@ -257,11 +276,11 @@ const registerUser = async (eventId, userId) => {
         }
 
         // Check if already registered
-        const existingRegistration = await db.query.userToEventJoined.findFirst(
+        const existingRegistration = await db.query.eventRegistration.findFirst(
             {
                 where: and(
-                    eq(userToEventJoined.eventId, eventData.id),
-                    eq(userToEventJoined.userId, userId),
+                    eq(eventRegistration.eventId, eventData.id),
+                    eq(eventRegistration.userId, userId),
                 ),
             },
         );
@@ -271,9 +290,11 @@ const registerUser = async (eventId, userId) => {
         }
 
         // Register user
-        await db.insert(userToEventJoined).values({
+        await db.insert(eventRegistration).values({
             eventId: eventData.id,
             userId: userId,
+            createdBy: userId,
+            updatedBy: userId,
         });
 
         // Update seats remaining
@@ -307,11 +328,11 @@ const unregisterUser = async (eventId, userId) => {
         }
 
         // Check if registered
-        const existingRegistration = await db.query.userToEventJoined.findFirst(
+        const existingRegistration = await db.query.eventRegistration.findFirst(
             {
                 where: and(
-                    eq(userToEventJoined.eventId, eventData.id),
-                    eq(userToEventJoined.userId, userId),
+                    eq(eventRegistration.eventId, eventData.id),
+                    eq(eventRegistration.userId, userId),
                 ),
             },
         );
@@ -322,11 +343,11 @@ const unregisterUser = async (eventId, userId) => {
 
         // Unregister user
         await db
-            .delete(userToEventJoined)
+            .delete(eventRegistration)
             .where(
                 and(
-                    eq(userToEventJoined.eventId, eventData.id),
-                    eq(userToEventJoined.userId, userId),
+                    eq(eventRegistration.eventId, eventData.id),
+                    eq(eventRegistration.userId, userId),
                 ),
             );
 
