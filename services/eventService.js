@@ -36,6 +36,7 @@ const getAllEvents = async () => {
                 eventStart: true,
                 eventEnd: true,
                 location: true,
+                category: true,
                 status: true,
                 seatsAvailable: true,
                 seatsRemaining: true,

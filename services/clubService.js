@@ -138,6 +138,28 @@ const findByUUID = async (uuid, params = {}) => {
     return clubData;
 };
 
+const findById = async (id, params = {}) => {
+    // Check if the ID is a UUID
+    if (isValidUUID(id)) {
+        return await findByUUID(id);
+    }
+    
+    // Check if it's a numeric ID
+    const numericId = Number(id);
+    if (!isNaN(numericId)) {
+        const clubData = await db.query.club.findFirst({
+            where: eq(club.id, numericId),
+        });
+
+        if (!clubData) {
+            throw createError(404, 'Club not found');
+        }
+
+        return clubData;
+    }
+    throw createError(400, 'Invalid ID format');
+}
+
 /**
  * Create new club
  * @param {Object} data Club data
@@ -825,6 +847,7 @@ const resetClubTerm = async (clubUuid, userId) => {
 module.exports = {
     getAllClubs,
     findByUUID,
+    findById,
     createClub,
     updateClub,
     deleteClub,
