@@ -1,0 +1,75 @@
+meta {
+  name: Task-Get-By-ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5000/tasks/{{taskUuid}}?fields={{selectedFields}}&include={{includeRelations}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 1
+  taskUuid: "task-uuid-here"
+  selectedFields: "title,description,status,volunteeredSeconds,category"
+  includeRelations: "clubMembership,createdByUser"
+}
+
+docs {
+  # Get Task by UUID API
+  
+  This endpoint retrieves a specific task by its UUID.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  
+  ## Path Parameters
+  - `taskUuid`: Task UUID
+  
+  ## Query Parameters
+  - `fields`: Comma-separated list of fields to include
+  - `include`: Comma-separated list of relations to include
+    - Available relations: clubMembership, createdByUser, updatedByUser
+  
+  ## Example
+  ```
+  GET /tasks/550e8400-e29b-41d4-a716-446655440000?fields=title,description,status&include=clubMembership
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with task data:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "id": 1,
+        "uuid": "550e8400-e29b-41d4-a716-446655440000",
+        "title": "Website Development",
+        "description": "Develop club website",
+        "volunteeredSeconds": 7200,
+        "category": "club_programs_projects",
+        "status": "pending",
+        "attachment": null,
+        "reviewComment": null,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "clubMembership": {
+          "id": 1,
+          "role": "member",
+          "status": "active"
+        }
+      }
+    }
+    ```
+  - `400 Bad Request` if task UUID format is invalid
+  - `401 Unauthorized` if user is not authenticated
+  - `404 Not Found` if task doesn't exist or is archived
+  - `500 Internal Server Error` for server issues
+}

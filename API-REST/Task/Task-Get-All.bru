@@ -1,0 +1,83 @@
+meta {
+  name: Task-Get-All
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5000/tasks?page={{page}}&limit={{limit}}&status[eq]={{taskStatus}}&category[eq]={{taskCategory}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 1
+  page: 1
+  limit: 10
+  taskStatus: pending
+  taskCategory: club_programs_projects
+}
+
+docs {
+  # Get All Tasks API
+  
+  This endpoint retrieves all tasks with optional filtering, pagination, and sorting.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  
+  ## Query Parameters
+  - `page`: Page number (default: 1)
+  - `limit`: Items per page (default: 10, max: 50)
+  - `sort`: Sort fields (e.g., `-createdAt,title`)
+  - `fields`: Fields to include (e.g., `title,description,status`)
+  - `include`: Relations to include (e.g., `clubMembership,createdByUser`)
+  - `search`: Search term
+  - `status[eq]`: Filter by status (accepted, pending, changes_requested, denied)
+  - `category[eq]`: Filter by category
+  - `clubMembershipId[eq]`: Filter by club membership ID
+  
+  ## Example
+  ```
+  GET /tasks?page=1&limit=10&status[eq]=pending&include=clubMembership
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with array of tasks and pagination metadata:
+    ```json
+    {
+      "data": {
+        "tasks": [
+          {
+            "id": 1,
+            "uuid": "task-uuid",
+            "title": "Website Development",
+            "description": "Develop club website",
+            "volunteeredSeconds": 7200,
+            "category": "club_programs_projects",
+            "status": "pending",
+            "attachment": "https://example.com/attachment.pdf",
+            "reviewComment": null,
+            "createdAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z"
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "limit": 10,
+          "total": 1,
+          "totalPages": 1,
+          "hasNext": false,
+          "hasPrev": false
+        }
+      }
+    }
+    ```
+  - `401 Unauthorized` if user is not authenticated
+  - `500 Internal Server Error` for server issues
+}

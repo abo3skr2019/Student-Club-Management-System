@@ -1,0 +1,53 @@
+meta {
+  name: Task-Delete
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:5000/tasks/{{taskUuid}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 1
+  taskUuid: "task-uuid-here"
+}
+
+docs {
+  # Delete Task API
+  
+  This endpoint soft deletes a task by setting isArchived to true. The task is not permanently deleted but marked as archived.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - User must be the task owner or have club admin/HR role
+  
+  ## Path Parameters
+  - `taskUuid`: Task UUID
+  
+  ## Example
+  ```
+  DELETE /tasks/550e8400-e29b-41d4-a716-446655440000
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `204 No Content` on successful deletion (no response body)
+  - `400 Bad Request` if task UUID format is invalid
+  - `401 Unauthorized` if user is not authenticated
+  - `403 Forbidden` if user doesn't have permission to delete this task
+  - `404 Not Found` if task doesn't exist
+  - `500 Internal Server Error` for server issues
+  
+  ## Important Notes
+  - This is a soft delete operation
+  - The task is marked as archived with isArchived=true and archivedAt timestamp
+  - Archived tasks are automatically filtered out from GET requests
+  - System cleanup job will permanently delete tasks archived for more than 1 year
+}

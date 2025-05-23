@@ -1,0 +1,107 @@
+meta {
+  name: Task-Update
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:5000/tasks/{{taskUuid}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+body:json {
+  {
+    "title": "{{taskTitle}}",
+    "description": "{{taskDescription}}",
+    "volunteeredSeconds": {{volunteeredSeconds}},
+    "category": "{{taskCategory}}",
+    "attachment": "{{attachmentUrl}}",
+    "status": "{{taskStatus}}",
+    "reviewComment": "{{reviewComment}}"
+  }
+}
+
+vars:pre-request {
+  userId: 1
+  taskUuid: "task-uuid-here"
+  taskTitle: Updated Website Development
+  taskDescription: Updated description with new requirements
+  volunteeredSeconds: 9000
+  taskCategory: club_initiatives
+  attachmentUrl: https://example.com/updated-proposal.pdf
+  taskStatus: accepted
+  reviewComment: Good work, approved!
+}
+
+docs {
+  # Update Task API
+  
+  This endpoint updates an existing task.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - User must be the task owner or have club admin/HR role
+  
+  ## Path Parameters
+  - `taskUuid`: Task UUID
+  
+  ## Request Body
+  All fields are optional for updates:
+  - `title`: Task title (string, max 100 characters)
+  - `description`: Task description (string, max 500 characters)
+  - `volunteeredSeconds`: Time spent in seconds (integer, min 0)
+  - `category`: Task category (string, enum)
+    - Available categories: club_programs_projects, uni_collab, external_collab, club_initiatives, internal_activities, community_contributions
+  - `attachment`: URL to attachment (string, max 4096 characters)
+  - `status`: Task status (string, enum) - Usually updated by admins/HR
+    - Available statuses: pending, accepted, changes_requested, denied
+  - `reviewComment`: Review comment (string, max 500 characters) - Usually added by admins/HR
+  
+  ## Example
+  ```
+  PUT /tasks/550e8400-e29b-41d4-a716-446655440000
+  x-user-id: 1
+  Content-Type: application/json
+  
+  {
+    "title": "Updated Website Development",
+    "description": "Updated description with new requirements",
+    "volunteeredSeconds": 9000,
+    "category": "club_initiatives",
+    "status": "accepted",
+    "reviewComment": "Good work, approved!"
+  }
+  ```
+  
+  ## Response
+  - `200 OK` on success with updated task:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "id": 1,
+        "uuid": "550e8400-e29b-41d4-a716-446655440000",
+        "title": "Updated Website Development",
+        "description": "Updated description with new requirements",
+        "volunteeredSeconds": 9000,
+        "category": "club_initiatives",
+        "status": "accepted",
+        "attachment": "https://example.com/updated-proposal.pdf",
+        "reviewComment": "Good work, approved!",
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T12:00:00Z"
+      }
+    }
+    ```
+  - `400 Bad Request` if validation fails or task UUID format is invalid
+  - `401 Unauthorized` if user is not authenticated
+  - `403 Forbidden` if user doesn't have permission to update this task
+  - `404 Not Found` if task doesn't exist or is archived
+  - `500 Internal Server Error` for server issues
+}
