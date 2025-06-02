@@ -22,7 +22,7 @@ const getAllClubs = async (req, res) => {
  * @param {Object} res Express response object
  */
 const getClubByUuid = async (req, res) => {
-    const clubData = await clubService.findByUUID(
+    const clubData = await clubService.findClubById(
         req.params.clubUuid,
         req.parsedQuery,
     );

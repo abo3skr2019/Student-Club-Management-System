@@ -157,14 +157,12 @@ const findClubById = async (id, params = {}) => {
             return await findByUUID(id, params);
         }
         
-        // Check if it's a numeric ID
-        const numericId = Number(id);
-        if (!isNaN(numericId) && numericId > 0) {
+        if (isNumericId(id)) {
             const { fields = [] } = params;
             const columns = buildSelectFields(fields, club);
             
             const clubData = await db.query.club.findFirst({
-                where: eq(club.id, numericId),
+                where: eq(club.id, id),
                 columns,
             });
 
