@@ -13,6 +13,11 @@ const isValidUUID = (uuid) => {
     return uuidRegex.test(uuid);
 };
 
+// Helper function to check if string is a valid numeric ID
+const isNumericId = (id) => {
+    return !isNaN(Number(id)) && Number.isInteger(Number(id)) && Number(id) > 0;
+};
+
 // Helper function for email validation
 const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -139,6 +144,44 @@ const findByUUID = async (uuid, params = {}) => {
 };
 
 /**
+ * Find club by ID (supports both numeric IDs and UUIDs)
+ * @param {Number|String} id Club ID or UUID
+ * @param {Object} [params] Query parameters
+ * @param {Array} [params.fields] Fields to select
+ * @returns {Promise<Object>} Club data
+ */
+const findClubById = async (id, params = {}) => {
+    try {
+        // Check if the ID is a UUID
+        if (isValidUUID(id)) {
+            return await findByUUID(id, params);
+        }
+        
+        if (isNumericId(id)) {
+            const { fields = [] } = params;
+            const columns = buildSelectFields(fields, club);
+            
+            const clubData = await db.query.club.findFirst({
+                where: eq(club.id, id),
+                columns,
+            });
+
+            if (!clubData) {
+                throw createError(404, 'Club not found');
+            }
+
+            return clubData;
+        }
+        
+        // If it's neither a UUID nor a numeric ID
+        throw createError(400, 'Invalid club ID format');
+    } catch (error) {
+        console.error('Error in findClubById:', error);
+        throw error;
+    }
+};
+
+/**
  * Create new club
  * @param {Object} data Club data
  * @param {number} userId User ID creating the club
@@ -257,7 +300,7 @@ const deleteClub = async (uuid, userId) => {
 
 /**
  * Get all memberships for a club
- * @param {string} clubUuid Club UUID
+ * @param {String|Number} clubId Club ID or UUID
  * @param {Object} params Query parameters
  * @param {Object} params.pagination Pagination options (from QueryParser)
  * @param {Object} params.sort Sorting options (from QueryParser)
@@ -266,25 +309,21 @@ const deleteClub = async (uuid, userId) => {
  * @param {Array} params.fields Fields to select (from QueryParser)
  * @returns {Promise<Object>} Paginated memberships with metadata
  */
-const getAllClubMemberships = async (clubUuid, params = {}) => {
-    if (!isValidUUID(clubUuid)) {
-        throw createError(400, 'Invalid UUID format');
-    }
+const getAllClubMemberships = async (clubId, params = {}) => {
+        const clubData = await findClubById(clubId);
 
-    const clubData = await findByUUID(clubUuid);
+        // Extract pagination, sort, search, filters, and fields - QueryParser already provides defaults
+        const {
+            pagination = {},
+            sort = {},
+            search,
+            filters = {},
+            fields = [],
+        } = params;
+        const { page = 1, limit = 10 } = pagination;
 
-    // Extract pagination, sort, search, filters, and fields - QueryParser already provides defaults
-    const {
-        pagination = {},
-        sort = {},
-        search,
-        filters = {},
-        fields = [],
-    } = params;
-    const { page = 1, limit = 10 } = pagination;
-
-    // Calculate offset
-    const offset = (page - 1) * limit;
+        // Calculate offset
+        const offset = (page - 1) * limit;
 
     // Build base where conditions
     const whereConditions = [
@@ -825,6 +864,7 @@ const resetClubTerm = async (clubUuid, userId) => {
 module.exports = {
     getAllClubs,
     findByUUID,
+    findClubById,
     createClub,
     updateClub,
     deleteClub,
