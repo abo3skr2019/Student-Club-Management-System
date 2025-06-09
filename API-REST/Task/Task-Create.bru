@@ -1,0 +1,96 @@
+meta {
+  name: Task-Create
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:5000/tasks
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{userId}}
+}
+
+body:json {
+  {
+    "clubMembershipId": {{clubMembershipId}},
+    "title": "{{taskTitle}}",
+    "description": "{{taskDescription}}",
+    "volunteeredSeconds": {{volunteeredSeconds}},
+    "category": "{{taskCategory}}",
+    "attachment": "{{attachmentUrl}}"
+  }
+}
+
+vars:pre-request {
+  userId: 1
+  clubMembershipId: 1
+  taskTitle: Website Development
+  taskDescription: Develop a modern website for our programming club with member registration and event management features
+  volunteeredSeconds: 7200
+  taskCategory: club_programs_projects
+  attachmentUrl: https://example.com/project-proposal.pdf
+}
+
+docs {
+  # Create Task API
+  
+  This endpoint creates a new task for a club member.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  - User must have the club membership specified in clubMembershipId
+  
+  ## Request Body
+  - `clubMembershipId`: ID of the user's club membership (required, integer)
+  - `title`: Task title (required, string, max 100 characters)
+  - `description`: Task description (required, string, max 500 characters)
+  - `volunteeredSeconds`: Time spent in seconds (required, integer, min 0)
+  - `category`: Task category (required, string, enum)
+    - Available categories: club_programs_projects, uni_collab, external_collab, club_initiatives, internal_activities, community_contributions
+  - `attachment`: URL to attachment (optional, max 4096 characters)
+  
+  ## Example
+  ```
+  POST /tasks
+  x-user-id: 1
+  Content-Type: application/json
+  
+  {
+    "clubMembershipId": 1,
+    "title": "Website Development",
+    "description": "Develop club website",
+    "volunteeredSeconds": 7200,
+    "category": "club_programs_projects",
+    "attachment": "https://example.com/attachment.pdf"
+  }
+  ```
+  
+  ## Response
+  - `201 Created` on success with created task:
+    ```json
+    {
+      "data": {
+        "id": 1,
+        "uuid": "new-task-uuid",
+        "title": "Website Development",
+        "description": "Develop club website",
+        "volunteeredSeconds": 7200,
+        "category": "club_programs_projects",
+        "status": "pending",
+        "attachment": "https://example.com/attachment.pdf",
+        "reviewComment": null,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    }
+    ```
+  - `400 Bad Request` if validation fails
+  - `401 Unauthorized` if user is not authenticated
+  - `403 Forbidden` if user doesn't have the specified club membership
+  - `500 Internal Server Error` for server issues
+}

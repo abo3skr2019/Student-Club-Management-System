@@ -1,0 +1,109 @@
+meta {
+  name: Task-Get-All-For-Membership
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:5000/tasks/memberships/{{membershipUuid}}/tasks?page={{page}}&limit={{limit}}&status[eq]={{taskStatus}}&category[eq]={{taskCategory}}
+  body: none
+  auth: none
+}
+
+headers {
+  x-user-id: {{userId}}
+}
+
+vars:pre-request {
+  userId: 1
+  membershipUuid: "membership-uuid-here"
+  page: 1
+  limit: 10
+  taskStatus: pending
+  taskCategory: club_programs_projects
+}
+
+docs {
+  # Get All Tasks for Membership API
+  
+  This endpoint retrieves all tasks for a specific club membership.
+  
+  ## Authentication
+  - Requires a valid user ID in the x-user-id header
+  
+  ## Path Parameters
+  - `membershipUuid`: Club Membership UUID
+  
+  ## Query Parameters
+  - `page`: Page number (default: 1)
+  - `limit`: Items per page (default: 10, max: 50)
+  - `sort`: Sort fields (e.g., `-createdAt,title`)
+  - `fields`: Fields to include (e.g., `title,description,status`)
+  - `include`: Relations to include (e.g., `clubMembership,createdByUser`)
+  - `search`: Search term (searches in title and description)
+  - `status[eq]`: Filter by status (accepted, pending, changes_requested, denied)
+  - `category[eq]`: Filter by category
+  
+  ## Example
+  ```
+  GET /tasks/memberships/550e8400-e29b-41d4-a716-446655440000/tasks?page=1&limit=10&status[eq]=pending
+  x-user-id: 1
+  ```
+  
+  ## Response
+  - `200 OK` on success with array of tasks and pagination metadata:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "tasks": [
+          {
+            "id": 1,
+            "uuid": "task-uuid",
+            "title": "Website Development",
+            "description": "Develop club website",
+            "volunteeredSeconds": 7200,
+            "category": "club_programs_projects",
+            "status": "pending",
+            "attachment": "https://example.com/attachment.pdf",
+            "reviewComment": null,
+            "createdAt": "2024-01-01T00:00:00Z",
+            "updatedAt": "2024-01-01T00:00:00Z",
+            "clubMembership": {
+              "id": 1,
+              "uuid": "membership-uuid",
+              "role": "member",
+              "status": "active",
+              "club": {
+                "id": 1,
+                "uuid": "club-uuid",
+                "name": "Programming Club"
+              },
+              "user": {
+                "id": 1,
+                "firstName": "John",
+                "lastName": "Doe"
+              }
+            }
+          }
+        ],
+        "membershipUuid": "550e8400-e29b-41d4-a716-446655440000",
+        "pagination": {
+          "page": 1,
+          "limit": 10,
+          "total": 1,
+          "pages": 1
+        }
+      }
+    }
+    ```
+  - `400 Bad Request` if membership UUID format is invalid
+  - `401 Unauthorized` if user is not authenticated
+  - `404 Not Found` if membership doesn't exist or is archived
+  - `500 Internal Server Error` for server issues
+  
+  ## Notes
+  - This endpoint returns tasks only for the specified membership
+  - Archived tasks are automatically filtered out
+  - Useful for viewing all tasks submitted by a specific member in a specific club
+}

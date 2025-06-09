@@ -44,6 +44,7 @@ app.get('/api', (req, res) => {
 app.use('/clubs', require('./routes/clubRoutes'));
 app.use('/events', require('./routes/eventRoutes'));
 app.use('/images', require('./routes/imgRoutes'));
+app.use('/tasks', require('./routes/taskRoutes'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/profile'));
 app.use(require('./routes/main-misc'));
