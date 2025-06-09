@@ -5,11 +5,31 @@ const { isAuthenticated } = require('../middleware/CheckAuth');
 const { parseQueryParams } = require('../middleware/QueryParser');
 const validateBody = require('../middleware/validateBody');
 const asyncHandler = require('../utils/asyncHandler');
-const {
-    insertTaskSchema,
-    updateTaskSchema,
-} = require('../dist/db/schema/task');
 
+
+// Get all tasks for a specific club
+router.get(
+    '/clubs/:clubUuid/tasks',
+    isAuthenticated,
+    parseQueryParams,
+    asyncHandler(taskController.getAllTasksForClub)
+);
+
+// Get all tasks for a specific membership
+router.get(
+    '/memberships/:membershipUuid/tasks',
+    isAuthenticated,
+    parseQueryParams,
+    asyncHandler(taskController.getAllTasksForMembership)
+);
+
+// Get all tasks for a specific user
+router.get(
+    '/user/:userUuid',
+    isAuthenticated,
+    parseQueryParams,
+    asyncHandler(taskController.getAllTasksForUser)
+);
 
 // Get all tasks
 router.get(
@@ -34,14 +54,14 @@ router.post(
     asyncHandler(taskController.createTask)
 );
 
-// Update task (task owner or club admin/HR)
+// Update task
 router.put(
     '/:taskUuid',
     isAuthenticated,
     asyncHandler(taskController.updateTask)
 );
 
-// Delete task - soft delete (task owner or club admin/HR)
+// Delete task - soft delete 
 router.delete(
     '/:taskUuid',
     isAuthenticated,

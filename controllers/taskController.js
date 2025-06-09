@@ -1,131 +1,232 @@
-const { db } = require('../dist/db');
-const { task } = require('../dist/db/schema');
-const { eq, and, ilike, ne, sql } = require('drizzle-orm');
+const taskService = require('../services/taskService');
 const { insertTaskSchema, updateTaskSchema } = require('../dist/db/schema/task');
+
+// Helper function for UUID validation
+const isValidUUID = (uuid) => {
+    const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+};
 
 const getAllTasks = async (req, res) => {
     try {
-        // Get query parameters (assume middleware passes these)
-        const page = parseInt(req.query.page) || 1;
-        const limit = Math.min(parseInt(req.query.limit) || 10, 50); // Max 50 items per page
-        const offset = (page - 1) * limit;
-        const search = req.query.search;
-        const status = req.query?.status?.eq;
-        const category = req.query?.category?.eq;
+        // Get user ID for myTasks filtering
+        const userId = req.user ? req.user.id : parseInt(req.headers['x-user-id']);
+        const myTasks = req.query.myTasks === 'true';
         
-        let conditions = [ne(task.isArchived, true)]; // Filter out archived tasks
-        
-        if (search) {
-            conditions.push(ilike(task.title, `%${search}%`));
-        }
-        
-        if (status) {
-            conditions.push(eq(task.status, status));
-        }
-        
-        if (category) {
-            conditions.push(eq(task.category, category));
-        }
-        
-        const tasks = await db.query.task.findMany({
-            where: and(...conditions),
-            limit: limit,
-            offset: offset,
-            with: {
-                clubMembership: true,
-                createdByUser: {
-                    columns: {
-                        displayName: true,
-                        uuid: true
-                    }
-                }
+        // Build service parameters
+        const params = {
+            pagination: {
+                page: parseInt(req.query.page) || 1,
+                limit: Math.min(parseInt(req.query.limit) || 10, 50)
+            },
+            search: req.query.search,
+            filters: {
+                status: req.query?.status?.eq ? { eq: req.query.status.eq } : undefined,
+                category: req.query?.category?.eq ? { eq: req.query.category.eq } : undefined
+            },
+            currentUserId: myTasks && userId && !isNaN(userId) ? userId : null
+        };
+
+        // Clean up undefined filters
+        Object.keys(params.filters).forEach(key => {
+            if (params.filters[key] === undefined) {
+                delete params.filters[key];
             }
         });
-        
-        const totalCount = await db.select({ count: sql`count(*)` })
-            .from(task)
-            .where(and(...conditions));
-        
-        const total = parseInt(totalCount[0]?.count || '0');
-        const pages = Math.ceil(total / limit);
-        
+
+        const result = await taskService.getAllTasks(params);
+
         res.json({
             success: true,
             data: {
-                tasks,
+                tasks: result.items,
                 pagination: {
-                    page,
-                    limit,
-                    total,
-                    pages
+                    page: result.pagination.page,
+                    limit: result.pagination.limit,
+                    total: result.pagination.total,
+                    pages: result.pagination.totalPages
                 }
             }
         });
     } catch (error) {
         console.error('Error in getAllTasks:', error);
-        res.status(500).json({
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
             success: false,
-            error: "Failed to fetch tasks",
-            message: error.message
+            error: error.message || "Failed to fetch tasks"
         });
     }
 };
 
+const getAllTasksForUser = async (req, res) => {
+    try {
+        const { userUuid } = req.params;
+        
+        // Build service parameters
+        const params = {
+            pagination: {
+                page: parseInt(req.query.page) || 1,
+                limit: Math.min(parseInt(req.query.limit) || 10, 50)
+            },
+            search: req.query.search,
+            filters: {
+                status: req.query?.status?.eq ? { eq: req.query.status.eq } : undefined,
+                category: req.query?.category?.eq ? { eq: req.query.category.eq } : undefined
+            }
+        };
+
+        // Clean up undefined filters
+        Object.keys(params.filters).forEach(key => {
+            if (params.filters[key] === undefined) {
+                delete params.filters[key];
+            }
+        });
+
+        const result = await taskService.getAllTasksForUser(userUuid, params);
+
+        res.json({
+            success: true,
+            data: {
+                tasks: result.items,
+                userUuid: result.userUuid,
+                pagination: {
+                    page: result.pagination.page,
+                    limit: result.pagination.limit,
+                    total: result.pagination.total,
+                    pages: result.pagination.totalPages
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error in getAllTasksForUser:', error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            error: error.message || "Failed to fetch user tasks"
+        });
+    }
+};
+
+const getAllTasksForClub = async (req, res) => {
+    try {
+        const { clubUuid } = req.params;
+        
+        // Build service parameters
+        const params = {
+            pagination: {
+                page: parseInt(req.query.page) || 1,
+                limit: Math.min(parseInt(req.query.limit) || 10, 50)
+            },
+            search: req.query.search,
+            filters: {
+                status: req.query?.status?.eq ? { eq: req.query.status.eq } : undefined,
+                category: req.query?.category?.eq ? { eq: req.query.category.eq } : undefined
+            }
+        };
+
+        // Clean up undefined filters
+        Object.keys(params.filters).forEach(key => {
+            if (params.filters[key] === undefined) {
+                delete params.filters[key];
+            }
+        });
+
+        const result = await taskService.getAllTasksForClub(clubUuid, params);
+
+        res.json({
+            success: true,
+            data: {
+                tasks: result.items,
+                clubUuid: result.clubUuid,
+                pagination: {
+                    page: result.pagination.page,
+                    limit: result.pagination.limit,
+                    total: result.pagination.total,
+                    pages: result.pagination.totalPages
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error in getAllTasksForClub:', error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            error: error.message || "Failed to fetch club tasks"
+        });
+    }
+};
+
+const getAllTasksForMembership = async (req, res) => {
+    try {
+        const { membershipUuid } = req.params;
+        
+        // Build service parameters
+        const params = {
+            pagination: {
+                page: parseInt(req.query.page) || 1,
+                limit: Math.min(parseInt(req.query.limit) || 10, 50)
+            },
+            search: req.query.search,
+            filters: {
+                status: req.query?.status?.eq ? { eq: req.query.status.eq } : undefined,
+                category: req.query?.category?.eq ? { eq: req.query.category.eq } : undefined
+            }
+        };
+
+        // Clean up undefined filters
+        Object.keys(params.filters).forEach(key => {
+            if (params.filters[key] === undefined) {
+                delete params.filters[key];
+            }
+        });
+
+        const result = await taskService.getAllTasksForMembership(membershipUuid, params);
+
+        res.json({
+            success: true,
+            data: {
+                tasks: result.items,
+                membershipUuid: result.membershipUuid,
+                pagination: {
+                    page: result.pagination.page,
+                    limit: result.pagination.limit,
+                    total: result.pagination.total,
+                    pages: result.pagination.totalPages
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error in getAllTasksForMembership:', error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            error: error.message || "Failed to fetch membership tasks"
+        });
+    }
+};
 
 const getTaskById = async (req, res) => {
     try {
         const { taskUuid } = req.params;
         
-        if (!isValidUUID(taskUuid)) {
-            return res.status(400).json({
-                success: false,
-                error: "Invalid task UUID format"
-            });
-        }
-        
-        const taskData = await db.query.task.findFirst({
-            where: and(
-                eq(task.uuid, taskUuid),
-                ne(task.isArchived, true) // Exclude archived tasks
-            ),
-            with: {
-                clubMembership: true,
-                createdByUser: {
-                    columns: {
-                        displayName: true,
-                        uuid: true
-                    }
-                },
-                updatedByUser: {
-                    columns: {
-                        displayName: true,
-                        uuid: true
-                    }
-                }
-            }
-        });
-        
-        if (!taskData) {
-            return res.status(404).json({
-                success: false,
-                error: "Task not found"
-            });
-        }
-        
+        const params = {};
+
+        const taskData = await taskService.findTaskById(taskUuid, params);
+
         res.json({
             success: true,
             data: taskData
         });
     } catch (error) {
         console.error('Error in getTaskById:', error);
-        res.status(500).json({
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
             success: false,
-            error: "Failed to fetch task",
-            message: error.message
+            error: error.message || "Failed to fetch task"
         });
     }
 };
-
 
 const createTask = async (req, res) => {
     try {
@@ -133,8 +234,15 @@ const createTask = async (req, res) => {
         console.log('req.headers:', req.headers);
         console.log('req.body:', req.body);
         
+        // Check if request body is empty or malformed
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Request body is required and must be valid JSON'
+            });
+        }
+        
         // Get user ID from header for API authentication in non-production environments
-        // In production, req.user would be populated by passport
         const userId = req.user ? req.user.id : parseInt(req.headers['x-user-id']);
         
         console.log('x-user-id header:', req.headers['x-user-id']);
@@ -149,38 +257,75 @@ const createTask = async (req, res) => {
             });
         }
         
-        // Prepare task data with required fields - hardcode for testing
+        // Check required fields
+        const requiredFields = ['clubMembershipId', 'title', 'description'];
+        const missingFields = requiredFields.filter(field => !req.body[field]);
+        
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                success: false,
+                error: `Missing required fields: ${missingFields.join(', ')}`
+            });
+        }
+        
+        // Handle clubMembershipId - can be either integer ID or UUID
+        let clubMembershipId;
+        
+        if (isValidUUID(req.body.clubMembershipId)) {
+            // If it's a UUID, provide helpful error message
+            return res.status(400).json({
+                success: false,
+                error: 'clubMembershipId must be an integer ID, not UUID',
+                message: 'To get the correct clubMembershipId, please use the club membership API: GET /club-memberships',
+                received: req.body.clubMembershipId,
+                expectedFormat: 'integer (e.g., 1, 2, 3)'
+            });
+        } else {
+            // Convert to integer
+            clubMembershipId = parseInt(req.body.clubMembershipId);
+            if (isNaN(clubMembershipId)) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'clubMembershipId must be a valid integer ID',
+                    received: req.body.clubMembershipId,
+                    expectedFormat: 'integer (e.g., 1, 2, 3)'
+                });
+            }
+        }
+        
+        // Prepare task data with required fields (exclude createdBy/updatedBy - service will add them)
         const taskData = {
-            clubMembershipId: req.body.clubMembershipId,
+            clubMembershipId: clubMembershipId,
             title: req.body.title,
             description: req.body.description,
             volunteeredSeconds: req.body.volunteeredSeconds,
             category: req.body.category,
             attachment: req.body.attachment,
-            createdBy: userId,
-            updatedBy: userId,
             status: 'pending'
         };
         
         console.log('taskData constructed:', taskData);
         console.log('=== DEBUG END ===');
         
-        // Validate request body
-        const validatedData = insertTaskSchema.safeParse(taskData);
+        // Validate request body (without createdBy/updatedBy since service adds them)
+        const validatedData = insertTaskSchema.omit({ createdBy: true, updatedBy: true }).safeParse(taskData);
         
         if (!validatedData.success) {
             console.log('Validation failed:', validatedData.error);
             return res.status(400).json({
                 success: false,
-                error: JSON.stringify(validatedData.error.errors, null, 2)
+                error: 'Validation failed',
+                details: validatedData.error.errors.map(err => ({
+                    field: err.path.join('.'),
+                    message: err.message,
+                    received: err.received
+                }))
             });
         }
         
-        console.log('Validation successful, inserting:', validatedData.data);
+        console.log('Validation successful, creating task with service:', validatedData.data);
         
-        const [newTask] = await db.insert(task)
-            .values(validatedData.data)
-            .returning();
+        const newTask = await taskService.createTask(validatedData.data, userId);
         
         res.status(201).json({
             success: true,
@@ -188,10 +333,21 @@ const createTask = async (req, res) => {
         });
     } catch (error) {
         console.error('Error in createTask:', error);
-        res.status(500).json({
+        
+        // Handle specific error types
+        if (error.type === 'entity.parse.failed') {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid JSON format in request body',
+                message: 'Please ensure all string values are properly quoted and JSON syntax is correct',
+                details: error.message
+            });
+        }
+        
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
             success: false,
-            error: "Failed to create task",
-            message: error.message
+            error: error.message || "Failed to create task"
         });
     }
 };
@@ -210,35 +366,8 @@ const updateTask = async (req, res) => {
             });
         }
         
-        if (!isValidUUID(taskUuid)) {
-            return res.status(400).json({
-                success: false,
-                error: "Invalid task UUID format"
-            });
-        }
-        
-        const existingTask = await db.query.task.findFirst({
-            where: and(
-                eq(task.uuid, taskUuid),
-                ne(task.isArchived, true) // Exclude archived tasks
-            )
-        });
-        
-        if (!existingTask) {
-            return res.status(404).json({
-                success: false,
-                error: "Task not found"
-            });
-        }
-        
-        // Prepare update data
-        const updateData = {
-            ...req.body,
-            updatedBy: userId
-        };
-        
         // Validate request body
-        const validatedData = updateTaskSchema.safeParse(updateData);
+        const validatedData = updateTaskSchema.safeParse(req.body);
         
         if (!validatedData.success) {
             return res.status(400).json({
@@ -247,10 +376,7 @@ const updateTask = async (req, res) => {
             });
         }
         
-        const [updatedTask] = await db.update(task)
-            .set(validatedData.data)
-            .where(eq(task.uuid, taskUuid))
-            .returning();
+        const updatedTask = await taskService.updateTask(taskUuid, validatedData.data, userId);
         
         res.json({
             success: true,
@@ -258,10 +384,10 @@ const updateTask = async (req, res) => {
         });
     } catch (error) {
         console.error('Error in updateTask:', error);
-        res.status(500).json({
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
             success: false,
-            error: "Failed to update task",
-            message: error.message
+            error: error.message || "Failed to update task"
         });
     }
 };
@@ -280,53 +406,24 @@ const deleteTask = async (req, res) => {
             });
         }
         
-        if (!isValidUUID(taskUuid)) {
-            return res.status(400).json({
-                success: false,
-                error: "Invalid task UUID format"
-            });
-        }
-        
-        const existingTask = await db.query.task.findFirst({
-            where: eq(task.uuid, taskUuid)
-        });
-        
-        if (!existingTask) {
-            return res.status(404).json({
-                success: false,
-                error: "Task not found"
-            });
-        }
-        
-        // Archive task rather than deleting
-        await db.update(task)
-            .set({ 
-                isArchived: true,
-                archivedAt: new Date(),
-                updatedBy: userId
-            })
-            .where(eq(task.uuid, taskUuid));
+        await taskService.deleteTask(taskUuid, userId);
         
         res.status(204).send();
     } catch (error) {
         console.error('Error in deleteTask:', error);
-        res.status(500).json({
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
             success: false,
-            error: "Failed to delete task",
-            message: error.message
+            error: error.message || "Failed to delete task"
         });
     }
 };
 
-// Helper function for UUID validation
-const isValidUUID = (uuid) => {
-    const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(uuid);
-};
-
 module.exports = {
     getAllTasks,
+    getAllTasksForUser,
+    getAllTasksForClub,
+    getAllTasksForMembership,
     getTaskById,
     createTask,
     updateTask,
